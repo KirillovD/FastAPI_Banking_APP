@@ -12,3 +12,24 @@ class UserCreate(BaseModel):
 class AccCreate(BaseModel):
     acc_type : Literal["checking","savings"]
     acc_balance : float=Field(default=0)
+
+
+class UserResponse(BaseModel):
+    user_id : int
+    first_name : str
+    last_name : str
+    email : str
+    credit_score : int
+
+    class Config:
+        from_attributes = True
+
+
+class AccResponse(BaseModel):
+    acc_id : int
+    owner_id : int
+    acc_type : str
+    acc_balance : int
+
+    class Config:
+        from_attributes = True

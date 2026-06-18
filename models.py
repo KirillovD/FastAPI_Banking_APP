@@ -15,7 +15,7 @@ class User(Base):
     email : Mapped[str] = mapped_column(unique=True)
     first_name : Mapped[str] = mapped_column()
     last_name : Mapped[str] = mapped_column()
-    credit_score : Mapped[int] = mapped_column()
+    credit_score : Mapped[int] = mapped_column(default=500)
     password : Mapped[str] = mapped_column()
 
     #User and Account are Python Class Objects
@@ -31,8 +31,10 @@ class Account(Base):
     owner_id : Mapped[int] = mapped_column(ForeignKey("users.user_id"))
     acc_balance : Mapped[float] = mapped_column()
     acc_type : Mapped[str] = mapped_column()
-    overdraft_limit : Mapped[int] = mapped_column()
+    overdraft_limit : Mapped[int] = mapped_column(default=0)
 
 
     owner : Mapped["User"] = relationship(back_populates="accounts")
+
+
 
