@@ -9,8 +9,11 @@ from fastapi import HTTPException
 
 router = APIRouter(
     prefix="/users",
-    tags=["Users Operations"]
-)
+    tags=["Users Operations"] )
+
+
+def get_user_by_email(email: str, db: Session):
+    return db.query(models.User).filter(models.User.email == email).first()
 
 #we use safe respose model that does not send passwod back
 @router.post("/", response_model=schemas.UserResponse)
@@ -32,11 +35,11 @@ def create_user(user: schemas.UserCreate, db : Session = Depends(get_db)):
 
 #we use safe respose model that does not send passwod back
 #we use curvy braces because user_id is a variable that is entered in the app
-@router.get("/{user_id}", response_model=schemas.UserResponse)
-def find_user(user_id : int, db : Session = Depends(get_db)):
+@router.get("/", response_model=schemas.UserResponse)
+def find_user(user_id: int = Depends(utils.verify_existing_token), db : Session = Depends(get_db)):
     db_user = db.query(models.User).filter(models.User.user_id == user_id).first()
 
-    if db_user is not None:
+    if db_user is None:
         #explain the error if user is not found
         raise HTTPException(status_code=404, detail="User not found")
 

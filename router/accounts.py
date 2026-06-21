@@ -1,23 +1,23 @@
 #this file is for all opetations with accounts
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, dependencies
 from sqlalchemy.orm import Session
 from database import get_db
-import models
-import schemas
+import models,schemas, utils
 from fastapi import HTTPException
 
 from models import Account
 
 router = APIRouter(
     prefix="/accounts",
-    tags=["Account Operations"]
+    tags=["Account Operations"],
+    dependencies = [Depends(utils.verify_existing_token)]
 )
 
-#to create account we use: user id, schemes to input and return info about account,
+#to create account we use: created token to extract user id, schemes to input and return info about account,
 #session with the database access
-@router.post("/{user_id}", response_model=schemas.AccResponse)
-def create_account(user_id : int, account : schemas.AccCreate, db : Session = Depends(get_db)):
+@router.post("/", response_model=schemas.AccResponse)
+def create_account(account : schemas.AccCreate, user_id : int = Depends(utils.verify_existing_token), db : Session = Depends(get_db)):
 
     #we check if the user exists in the first place, raise error otherwise
     user = db.query(models.User).filter(models.User.user_id == user_id).first()
@@ -32,3 +32,15 @@ def create_account(user_id : int, account : schemas.AccCreate, db : Session = De
     db.refresh(new_account)
 
     return new_account
+
+#function to get all user accounts displayed
+#again get user id from the token and open the Session
+#use list[] in the response model for multiple accounts
+@router.get("/", response_model=list[schemas.AccResponse])
+def get_all_accounts(user_id : int = Depends(utils.verify_existing_token), db : Session = Depends(get_db)):
+
+    #find all the accounts for the user id from the token
+    user_accounts = db.query(models.Account).filter(models.Account.owner == user_id).all()
+
+    return  user_accounts
+

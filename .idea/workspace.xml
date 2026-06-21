@@ -5,13 +5,14 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="6af7364f-8d3a-40e7-86f0-b569c0c900f6" name="Changes" comment="firts draft">
-      <change afterPath="$PROJECT_DIR$/router/accounts.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/utils.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/router/auth.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bankapp.db" beforeDir="false" afterPath="$PROJECT_DIR$/bankapp.db" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/router/accounts.py" beforeDir="false" afterPath="$PROJECT_DIR$/router/accounts.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/router/users.py" beforeDir="false" afterPath="$PROJECT_DIR$/router/users.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/schemas.py" beforeDir="false" afterPath="$PROJECT_DIR$/schemas.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -19,7 +20,7 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="EmbeddingIndexingInfo">
-    <option name="cachedIndexableFilesCount" value="13" />
+    <option name="cachedIndexableFilesCount" value="19" />
     <option name="fileBasedEmbeddingIndicesEnabled" value="true" />
   </component>
   <component name="FileTemplateManagerImpl">
@@ -32,67 +33,70 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
+  <component name="HighlightingSettingsPerFile">
+    <setting file="file://$PROJECT_DIR$/utils.py" root0="FORCE_HIGHLIGHTING" />
+  </component>
   <component name="McpProjectServerCommands">
     <commands />
     <urls />
   </component>
   <component name="NextEditCompletionFeaturesState">
     <decayedCancelled>
-      <entry key="MS100" value="1.0" />
-      <entry key="MS500" value="1.0000204934046841" />
-      <entry key="S2" value="1.149991382496832" />
-      <entry key="S5" value="2.167108544741305" />
-      <entry key="S10" value="3.9846254181957432" />
-      <entry key="S30" value="9.607275749655267" />
-      <entry key="S60" value="13.964118700012696" />
-      <entry key="M2" value="18.68441882244873" />
-      <entry key="M5" value="35.560541052789766" />
-      <entry key="M10" value="67.48767891166368" />
-      <entry key="M15" value="94.14349460605725" />
-      <entry key="M30" value="154.14404248738057" />
-      <entry key="H1" value="251.1171998751281" />
-      <entry key="H2" value="407.7235062561422" />
-      <entry key="H4" value="597.154773696915" />
-      <entry key="D1" value="915.2661254086704" />
-      <entry key="W1" value="996.4302343388897" />
+      <entry key="MS100" value="1.05935836174394" />
+      <entry key="MS500" value="1.9246466877024555" />
+      <entry key="S2" value="4.009086360074024" />
+      <entry key="S5" value="7.4236917632860155" />
+      <entry key="S10" value="11.610102313597832" />
+      <entry key="S30" value="21.603268733288278" />
+      <entry key="S60" value="30.41398008217726" />
+      <entry key="M2" value="40.9637821235449" />
+      <entry key="M5" value="55.57155994997541" />
+      <entry key="M10" value="67.55442115967399" />
+      <entry key="M15" value="74.69420246060369" />
+      <entry key="M30" value="85.71808236846203" />
+      <entry key="H1" value="94.95020352986663" />
+      <entry key="H2" value="104.47720229060714" />
+      <entry key="H4" value="157.30900755611862" />
+      <entry key="D1" value="850.3550979719663" />
+      <entry key="W1" value="1301.1699220399319" />
     </decayedCancelled>
     <decayedSelected>
       <entry key="MS100" value="0.0" />
-      <entry key="MS500" value="8.521973390662039E-206" />
-      <entry key="S2" value="5.403000944423484E-52" />
-      <entry key="S5" value="3.1121033952595974E-21" />
-      <entry key="S10" value="5.57862294418899E-11" />
-      <entry key="S30" value="3.823086828697958E-4" />
-      <entry key="S60" value="0.020658326442514585" />
-      <entry key="M2" value="0.24252273467231894" />
-      <entry key="M5" value="2.632292399046253" />
-      <entry key="M10" value="8.567505631973207" />
-      <entry key="M15" value="14.778910754637343" />
-      <entry key="M30" value="31.888147292660108" />
-      <entry key="H1" value="59.94747155720141" />
-      <entry key="H2" value="100.11186220573798" />
-      <entry key="H4" value="146.58877810708165" />
-      <entry key="D1" value="226.3388513747486" />
-      <entry key="W1" value="247.2270899634124" />
+      <entry key="MS500" value="4.797863573693177E-78" />
+      <entry key="S2" value="4.8129663507212894E-20" />
+      <entry key="S5" value="2.5772018654347096E-8" />
+      <entry key="S10" value="3.322200634488827E-4" />
+      <entry key="S30" value="0.31312120115265674" />
+      <entry key="S60" value="2.166188619708779" />
+      <entry key="M2" value="6.291432661414405" />
+      <entry key="M5" value="13.061820381077725" />
+      <entry key="M10" value="18.28490336237275" />
+      <entry key="M15" value="21.175482528623377" />
+      <entry key="M30" value="25.55291334772609" />
+      <entry key="H1" value="29.558409137106004" />
+      <entry key="H2" value="33.7513618208373" />
+      <entry key="H4" value="49.54296779683526" />
+      <entry key="D1" value="235.99917670595013" />
+      <entry key="W1" value="355.7771832805982" />
     </decayedSelected>
     <decayedShown>
-      <entry key="MS100" value="0.9526379980439373" />
-      <entry key="MS500" value="0.9903631524542709" />
-      <entry key="S2" value="1.147156154892746" />
-      <entry key="S5" value="2.1648236976753035" />
-      <entry key="S10" value="3.982438341163832" />
-      <entry key="S30" value="9.605818154686702" />
-      <entry key="S60" value="13.983053580619467" />
-      <entry key="M2" value="18.922800037707134" />
-      <entry key="M5" value="38.17511498744055" />
-      <entry key="M10" value="76.02637485659153" />
-      <entry key="M15" value="108.8887316110279" />
-      <entry key="M30" value="185.99426775659288" />
-      <entry key="H1" value="311.0272018661207" />
-      <entry key="H2" value="507.80295756111957" />
-      <entry key="H4" value="743.7195698701744" />
-      <entry key="D1" value="1141.5988343208292" />
-      <entry key="W1" value="1243.6563682877972" />
+      <entry key="MS100" value="1.0025318713270959" />
+      <entry key="MS500" value="1.9025451979576053" />
+      <entry key="S2" value="3.9972766904893926" />
+      <entry key="S5" value="7.415384268634354" />
+      <entry key="S10" value="11.604033139611595" />
+      <entry key="S30" value="21.892747136744763" />
+      <entry key="S60" value="32.50916464629651" />
+      <entry key="M2" value="47.15334640090713" />
+      <entry key="M5" value="68.54644134964519" />
+      <entry key="M10" value="85.77605853120829" />
+      <entry key="M15" value="95.81985448475699" />
+      <entry key="M30" value="111.24023458403113" />
+      <entry key="H1" value="124.49063991634843" />
+      <entry key="H2" value="138.21827640325537" />
+      <entry key="H4" value="206.84437649119695" />
+      <entry key="D1" value="1086.3481038405819" />
+      <entry key="W1" value="1656.9457732112314" />
     </decayedShown>
   </component>
   <component name="ProjectColorInfo">{
@@ -111,6 +115,7 @@
   "keyToString": {
     "ModuleVcsDetector.initialDetectionPerformed": "true",
     "Python.database.executor": "Run",
+    "Python.users.executor": "Debug",
     "RunOnceActivity.MCP Project settings loaded": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
@@ -140,6 +145,38 @@
       <recent name="C:\Users\1\PycharmProjects\Banking_APP" />
     </key>
   </component>
+  <component name="RunManager">
+    <configuration name="users" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="Banking_APP" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/router" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="DEBUG_JUST_MY_CODE" value="false" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="RUN_TOOL" value="" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/router/users.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Python.users" />
+      </list>
+    </recent_temporary>
+  </component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
@@ -156,6 +193,7 @@
       <updated>1781776003091</updated>
       <workItem from="1781776004167" duration="12338000" />
       <workItem from="1781807670757" duration="11580000" />
+      <workItem from="1781994481498" duration="15478000" />
     </task>
     <task id="LOCAL-00001" summary="firts draft">
       <option name="closed" value="true" />
@@ -177,5 +215,6 @@
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/Banking_APP$database.coverage" NAME="database Coverage Results" MODIFIED="1781814740217" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/Banking_APP$users.coverage" NAME="users Coverage Results" MODIFIED="1781996707498" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/router" />
   </component>
 </project>
