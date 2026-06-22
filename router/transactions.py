@@ -36,6 +36,12 @@ def transfer_money(transfer_data  : schemas.TransferMoney,
     return {"Message": "Transfer successful!", "Amount": transfer_data.transfer_amount}
 
 
+@router.get("/", response_model = list[schemas.TransactionResponse])
+def get_transactions_history(user_id : int = Depends(utils.verify_existing_token),
+                             db : Session = Depends(get_db)):
+
+    return transaction.get_transactions_history(user_id,db)
+
 
 
 

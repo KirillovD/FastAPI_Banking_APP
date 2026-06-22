@@ -16,6 +16,10 @@ router = APIRouter(
 @router.post("/", response_model=schemas.UserResponse)
 def create_user(user: schemas.UserCreate, db : Session = Depends(get_db)):
 
+    existing_user = users.get_user_by_email(user.email,db)
+    if existing_user:
+        raise exceptions.UserNotFoundException()
+
     #we take the input password from user and hash it
     hashed_pwd = utils.hash_password(user.password)
 

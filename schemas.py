@@ -1,4 +1,5 @@
 #this file has schemas to receive information from the users in the app
+from datetime import datetime
 from typing import Literal
 
 from pydantic import BaseModel, Field, EmailStr
@@ -39,6 +40,18 @@ class TransferMoney(BaseModel):
     recipient_acc_id : int
     recipient_name : str
     source_account_id : int
+    transfer_amount : float= Field(gt=0)
+
+
+class TransactionResponse(BaseModel):
+    transaction_id : int
+    sender_account_id : int
+    recipient_account_id : int
     transfer_amount : float
+    created_at : datetime
+    status : str
+    operation_type : str
+    description : str | None = None
 
-
+    class Config:
+        from_attributes = True
