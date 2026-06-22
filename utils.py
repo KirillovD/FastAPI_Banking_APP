@@ -1,8 +1,9 @@
 import bcrypt
 import jwt
 from datetime import datetime, timedelta, timezone
-from fastapi import Depends,HTTPException
+from fastapi import Depends
 from fastapi.security import OAuth2PasswordBearer
+import exceptions
 
 secret_key = "Super Secret Key"
 def hash_password(password: str) -> str:
@@ -55,7 +56,7 @@ def verify_existing_token(token: str = Depends(oauth2_scheme)) -> dict:
         return payload.get("user_id")
     except jwt.ExpiredSignatureError:
         # 4. Ошибка, если время вышло
-        raise HTTPException(status_code=401, detail="Token expired")
+        raise exceptions.TokenException(detail="Token expired")
     except jwt.InvalidTokenError:
         # 5. Ошибка, если токен подделан или сломан
-        raise HTTPException(status_code=401, detail="Invalid token")
+        raise exceptions.TokenException(detail="Token invalid")

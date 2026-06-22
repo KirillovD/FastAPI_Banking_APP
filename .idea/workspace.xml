@@ -4,12 +4,18 @@
     <option name="autoReloadType" value="ALL" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6af7364f-8d3a-40e7-86f0-b569c0c900f6" name="Changes" comment="firts draft">
-      <change afterPath="$PROJECT_DIR$/router/auth.py" afterDir="false" />
+    <list default="true" id="6af7364f-8d3a-40e7-86f0-b569c0c900f6" name="Changes" comment="created authetication and get_all_accounts">
+      <change afterPath="$PROJECT_DIR$/crud/accounts.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/crud/transaction.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/crud/users.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/exceptions.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/router/transactions.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/bankapp.db" beforeDir="false" afterPath="$PROJECT_DIR$/bankapp.db" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/database.py" beforeDir="false" afterPath="$PROJECT_DIR$/database.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/router/accounts.py" beforeDir="false" afterPath="$PROJECT_DIR$/router/accounts.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/router/auth.py" beforeDir="false" afterPath="$PROJECT_DIR$/router/auth.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/router/users.py" beforeDir="false" afterPath="$PROJECT_DIR$/router/users.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/schemas.py" beforeDir="false" afterPath="$PROJECT_DIR$/schemas.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils.py" afterDir="false" />
@@ -20,7 +26,7 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="EmbeddingIndexingInfo">
-    <option name="cachedIndexableFilesCount" value="19" />
+    <option name="cachedIndexableFilesCount" value="26" />
     <option name="fileBasedEmbeddingIndicesEnabled" value="true" />
   </component>
   <component name="FileTemplateManagerImpl">
@@ -42,61 +48,61 @@
   </component>
   <component name="NextEditCompletionFeaturesState">
     <decayedCancelled>
-      <entry key="MS100" value="1.05935836174394" />
-      <entry key="MS500" value="1.9246466877024555" />
-      <entry key="S2" value="4.009086360074024" />
-      <entry key="S5" value="7.4236917632860155" />
-      <entry key="S10" value="11.610102313597832" />
-      <entry key="S30" value="21.603268733288278" />
-      <entry key="S60" value="30.41398008217726" />
-      <entry key="M2" value="40.9637821235449" />
-      <entry key="M5" value="55.57155994997541" />
-      <entry key="M10" value="67.55442115967399" />
-      <entry key="M15" value="74.69420246060369" />
-      <entry key="M30" value="85.71808236846203" />
-      <entry key="H1" value="94.95020352986663" />
-      <entry key="H2" value="104.47720229060714" />
-      <entry key="H4" value="157.30900755611862" />
-      <entry key="D1" value="850.3550979719663" />
-      <entry key="W1" value="1301.1699220399319" />
+      <entry key="MS100" value="1.0072982417692502" />
+      <entry key="MS500" value="1.8839345652398196" />
+      <entry key="S2" value="4.479587196168369" />
+      <entry key="S5" value="5.795455283858491" />
+      <entry key="S10" value="6.359511092890454" />
+      <entry key="S30" value="10.060790016083907" />
+      <entry key="S60" value="34.14829393347452" />
+      <entry key="M2" value="87.5788129600404" />
+      <entry key="M5" value="164.8703985032058" />
+      <entry key="M10" value="211.1721365864083" />
+      <entry key="M15" value="235.40914799515227" />
+      <entry key="M30" value="276.9008435159549" />
+      <entry key="H1" value="318.94961202370433" />
+      <entry key="H2" value="364.96406854281366" />
+      <entry key="H4" value="426.1599613306702" />
+      <entry key="D1" value="1096.031261416662" />
+      <entry key="W1" value="1864.305105398556" />
     </decayedCancelled>
     <decayedSelected>
       <entry key="MS100" value="0.0" />
-      <entry key="MS500" value="4.797863573693177E-78" />
-      <entry key="S2" value="4.8129663507212894E-20" />
-      <entry key="S5" value="2.5772018654347096E-8" />
-      <entry key="S10" value="3.322200634488827E-4" />
-      <entry key="S30" value="0.31312120115265674" />
-      <entry key="S60" value="2.166188619708779" />
-      <entry key="M2" value="6.291432661414405" />
-      <entry key="M5" value="13.061820381077725" />
-      <entry key="M10" value="18.28490336237275" />
-      <entry key="M15" value="21.175482528623377" />
-      <entry key="M30" value="25.55291334772609" />
-      <entry key="H1" value="29.558409137106004" />
-      <entry key="H2" value="33.7513618208373" />
-      <entry key="H4" value="49.54296779683526" />
-      <entry key="D1" value="235.99917670595013" />
-      <entry key="W1" value="355.7771832805982" />
+      <entry key="MS500" value="1.013065793915381E-231" />
+      <entry key="S2" value="2.1278961382246998E-58" />
+      <entry key="S5" value="1.4303839154020565E-23" />
+      <entry key="S10" value="7.721457842024021E-12" />
+      <entry key="S30" value="7.660183758133409E-4" />
+      <entry key="S60" value="0.09274441967108632" />
+      <entry key="M2" value="1.1549878473838768" />
+      <entry key="M5" value="6.832427808455805" />
+      <entry key="M10" value="15.917880552815909" />
+      <entry key="M15" value="23.543774088349803" />
+      <entry key="M30" value="39.94205422491963" />
+      <entry key="H1" value="59.75664258370742" />
+      <entry key="H2" value="87.0464925986247" />
+      <entry key="H4" value="123.74131037690998" />
+      <entry key="D1" value="349.99826379823304" />
+      <entry key="W1" value="571.4997836226848" />
     </decayedSelected>
     <decayedShown>
-      <entry key="MS100" value="1.0025318713270959" />
-      <entry key="MS500" value="1.9025451979576053" />
-      <entry key="S2" value="3.9972766904893926" />
-      <entry key="S5" value="7.415384268634354" />
-      <entry key="S10" value="11.604033139611595" />
-      <entry key="S30" value="21.892747136744763" />
-      <entry key="S60" value="32.50916464629651" />
-      <entry key="M2" value="47.15334640090713" />
-      <entry key="M5" value="68.54644134964519" />
-      <entry key="M10" value="85.77605853120829" />
-      <entry key="M15" value="95.81985448475699" />
-      <entry key="M30" value="111.24023458403113" />
-      <entry key="H1" value="124.49063991634843" />
-      <entry key="H2" value="138.21827640325537" />
-      <entry key="H4" value="206.84437649119695" />
-      <entry key="D1" value="1086.3481038405819" />
-      <entry key="W1" value="1656.9457732112314" />
+      <entry key="MS100" value="0.9728914095591371" />
+      <entry key="MS500" value="1.8686624880626699" />
+      <entry key="S2" value="4.469497185327576" />
+      <entry key="S5" value="5.790128786987928" />
+      <entry key="S10" value="6.356569928441691" />
+      <entry key="S30" value="10.060004165699938" />
+      <entry key="S60" value="34.23697162689576" />
+      <entry key="M2" value="88.72074834704782" />
+      <entry key="M5" value="171.6740255976161" />
+      <entry key="M10" value="227.05238366023792" />
+      <entry key="M15" value="258.9126591222675" />
+      <entry key="M30" value="316.8050565265322" />
+      <entry key="H1" value="378.6765838213296" />
+      <entry key="H2" value="451.9885363514841" />
+      <entry key="H4" value="549.8850642722607" />
+      <entry key="D1" value="1446.0206274557834" />
+      <entry key="W1" value="2435.802755283128" />
     </decayedShown>
   </component>
   <component name="ProjectColorInfo">{
@@ -111,38 +117,41 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "Python.database.executor": "Run",
-    "Python.users.executor": "Debug",
-    "RunOnceActivity.MCP Project settings loaded": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
-    "codeWithMe.voiceChat.enabledByDefault": "false",
-    "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1": "true",
-    "git-widget-placeholder": "master",
-    "junie.onboarding.icon.badge.shown": "true",
-    "last_opened_file_path": "C:/Users/1/PycharmProjects/Banking_APP",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "to.speed.mode.migration.done": "true",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;Python.database.executor&quot;: &quot;Run&quot;,
+    &quot;Python.users.executor&quot;: &quot;Debug&quot;,
+    &quot;RunOnceActivity.MCP Project settings loaded&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
+    &quot;codeWithMe.voiceChat.enabledByDefault&quot;: &quot;false&quot;,
+    &quot;com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
+    &quot;junie.onboarding.icon.badge.shown&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/1/PycharmProjects/Banking_APP&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;to.speed.mode.migration.done&quot;: &quot;true&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   },
-  "keyToStringList": {
-    "DatabaseDriversLRU": [
-      "sqlite"
+  &quot;keyToStringList&quot;: {
+    &quot;DatabaseDriversLRU&quot;: [
+      &quot;sqlite&quot;
     ]
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\1\PycharmProjects\Banking_APP" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\1\PycharmProjects\Banking_APP\crud" />
     </key>
   </component>
   <component name="RunManager">
@@ -193,7 +202,8 @@
       <updated>1781776003091</updated>
       <workItem from="1781776004167" duration="12338000" />
       <workItem from="1781807670757" duration="11580000" />
-      <workItem from="1781994481498" duration="15478000" />
+      <workItem from="1781994481498" duration="15731000" />
+      <workItem from="1782075269009" duration="17901000" />
     </task>
     <task id="LOCAL-00001" summary="firts draft">
       <option name="closed" value="true" />
@@ -203,7 +213,15 @@
       <option name="project" value="LOCAL" />
       <updated>1781796407204</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="created authetication and get_all_accounts">
+      <option name="closed" value="true" />
+      <created>1782055168380</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1782055168380</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -211,7 +229,8 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="firts draft" />
-    <option name="LAST_COMMIT_MESSAGE" value="firts draft" />
+    <MESSAGE value="created authetication and get_all_accounts" />
+    <option name="LAST_COMMIT_MESSAGE" value="created authetication and get_all_accounts" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/Banking_APP$database.coverage" NAME="database Coverage Results" MODIFIED="1781814740217" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />

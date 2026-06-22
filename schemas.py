@@ -10,7 +10,7 @@ class UserCreate(BaseModel):
     password : str = Field(min_length=8, max_length=20, pattern="^[a-zA-Z0-9_-]+$")
 
 class AccCreate(BaseModel):
-    acc_type : Literal["Savings", "Checking", "HYSA"]
+    acc_type : Literal["Savings", "Checking"]
     acc_balance : float = Field(default=0.0)
 
 
@@ -30,7 +30,15 @@ class AccResponse(BaseModel):
     owner_id : int
     acc_type : str
     acc_balance : int
+    overdraft_limit : int = Field(default=0)
 
     class Config:
         from_attributes = True
+
+class TransferMoney(BaseModel):
+    recipient_acc_id : int
+    recipient_name : str
+    source_account_id : int
+    transfer_amount : float
+
 

@@ -14,13 +14,13 @@ DATABASE_URL = "sqlite:///bankapp.db"
 engine = create_engine(url=DATABASE_URL, connect_args={"check_same_thread":False})
 
 #creating sessions for each user to access DB separately
-Sessionlocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 #create all tables from the child class objects that have saved their structure in the metadata
 Base.metadata.create_all(bind=engine)
 
 def get_db():
-    db = Sessionlocal()
+    db = SessionLocal()
     try:
         yield db
     finally:

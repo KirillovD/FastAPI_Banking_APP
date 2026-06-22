@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 
 import utils
 from database import get_db
-from router.users import get_user_by_email
+from crud.users import get_user_by_email
 from utils import create_token
 
 from fastapi.security import OAuth2PasswordRequestForm
