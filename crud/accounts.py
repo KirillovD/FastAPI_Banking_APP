@@ -16,7 +16,7 @@ def create_account(account : schemas.AccCreate, user_id : int, db : Session):
 def get_all_accounts(user_id : int, db : Session):
 
     #find all the accounts for the user id from the token
-    user_accounts = db.query(models.Account).filter(models.Account.owner == user_id).all()
+    user_accounts = db.query(models.Account).filter(models.Account.owner_id == user_id).all()
 
     return  user_accounts
 

@@ -4,14 +4,10 @@
     <option name="autoReloadType" value="ALL" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6af7364f-8d3a-40e7-86f0-b569c0c900f6" name="Changes" comment="created crud repository for all functions that access db. Created 4 files there, for different functions.&#10;Changed all the files in router repository to only raise exceptions and use crud to access DB.&#10;Created exceptions.py file for all the exceptions tha we have">
+    <list default="true" id="6af7364f-8d3a-40e7-86f0-b569c0c900f6" name="Changes" comment="Created Transaction class in models.py&#10;added get_transaction history in routers/transactions.&#10;added class TransactionResponce in schemas.py&#10;changed and improved get_transaction history func in crud/transactions file. Now it searches for transactions not just sent but also received.&#10;&#10;&#10;&#10;changed transfer_money in the crud/transactions. Not it also adds a transfer record after transferring the money.">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bankapp.db" beforeDir="false" afterPath="$PROJECT_DIR$/bankapp.db" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/crud/transaction.py" beforeDir="false" afterPath="$PROJECT_DIR$/crud/transaction.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/router/transactions.py" beforeDir="false" afterPath="$PROJECT_DIR$/router/transactions.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/router/users.py" beforeDir="false" afterPath="$PROJECT_DIR$/router/users.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/schemas.py" beforeDir="false" afterPath="$PROJECT_DIR$/schemas.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bankapp.db" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/crud/accounts.py" beforeDir="false" afterPath="$PROJECT_DIR$/crud/accounts.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -41,61 +37,61 @@
   </component>
   <component name="NextEditCompletionFeaturesState">
     <decayedCancelled>
-      <entry key="MS100" value="1.6365757759871176" />
-      <entry key="MS500" value="4.373984207034505" />
-      <entry key="S2" value="11.398460651364967" />
-      <entry key="S5" value="20.498037154254302" />
-      <entry key="S10" value="35.7731523882055" />
-      <entry key="S30" value="74.18134291815387" />
-      <entry key="S60" value="101.5349794165676" />
-      <entry key="M2" value="140.29789099816722" />
-      <entry key="M5" value="212.82541502578533" />
-      <entry key="M10" value="293.23915228742294" />
-      <entry key="M15" value="367.22427019421104" />
-      <entry key="M30" value="624.4445684425259" />
-      <entry key="H1" value="1196.3809840471456" />
-      <entry key="H2" value="2018.3776171489483" />
-      <entry key="H4" value="2813.8311717285887" />
-      <entry key="D1" value="4411.490111585564" />
-      <entry key="W1" value="5453.201155702902" />
+      <entry key="MS100" value="1.000108141344991" />
+      <entry key="MS500" value="1.5093500795229002" />
+      <entry key="S2" value="6.456372944374642" />
+      <entry key="S5" value="11.386976979931713" />
+      <entry key="S10" value="14.927092238197323" />
+      <entry key="S30" value="46.48608321223072" />
+      <entry key="S60" value="105.9173594477141" />
+      <entry key="M2" value="179.3157255042247" />
+      <entry key="M5" value="264.22803069362584" />
+      <entry key="M10" value="315.0115581721953" />
+      <entry key="M15" value="339.64783274389526" />
+      <entry key="M30" value="401.19309850213335" />
+      <entry key="H1" value="660.0228785900293" />
+      <entry key="H2" value="1427.418015273558" />
+      <entry key="H4" value="2624.773527079109" />
+      <entry key="D1" value="5394.131928489574" />
+      <entry key="W1" value="6843.113230964973" />
     </decayedCancelled>
     <decayedSelected>
       <entry key="MS100" value="0.0" />
-      <entry key="MS500" value="2.449337196539842E-78" />
-      <entry key="S2" value="3.9596593238191326E-20" />
-      <entry key="S5" value="1.9247185251299733E-8" />
-      <entry key="S10" value="2.0649071633014612E-4" />
-      <entry key="S30" value="0.14191744769997067" />
-      <entry key="S60" value="0.8689829126020261" />
-      <entry key="M2" value="2.7286224271780073" />
-      <entry key="M5" value="7.799197857629216" />
-      <entry key="M10" value="15.973087141691371" />
-      <entry key="M15" value="24.041066371912173" />
-      <entry key="M30" value="44.24226699864462" />
-      <entry key="H1" value="71.22987808767044" />
-      <entry key="H2" value="109.02982634437235" />
-      <entry key="H4" value="163.4296667671587" />
-      <entry key="D1" value="431.03703928355543" />
-      <entry key="W1" value="687.5827684779198" />
+      <entry key="MS500" value="0.0" />
+      <entry key="S2" value="3.8262822287018354E-119" />
+      <entry key="S5" value="4.2964602710669005E-48" />
+      <entry key="S10" value="2.072790455175555E-24" />
+      <entry key="S30" value="1.2750289521853738E-8" />
+      <entry key="S60" value="1.1313233152465079E-4" />
+      <entry key="M2" value="0.011090305599487971" />
+      <entry key="M5" value="0.20879938039049323" />
+      <entry key="M10" value="0.6184225447211439" />
+      <entry key="M15" value="0.9072143544343889" />
+      <entry key="M30" value="1.7691688079884254" />
+      <entry key="H1" value="8.70063185974988" />
+      <entry key="H2" value="36.2936801871019" />
+      <entry key="H4" value="94.09446587804" />
+      <entry key="D1" value="394.81104613701234" />
+      <entry key="W1" value="682.0465311674567" />
     </decayedSelected>
     <decayedShown>
-      <entry key="MS100" value="1.5700821067399942" />
-      <entry key="MS500" value="4.3372288724499075" />
-      <entry key="S2" value="11.37397998554047" />
-      <entry key="S5" value="20.480272178645233" />
-      <entry key="S10" value="35.75813843762471" />
-      <entry key="S30" value="74.30861564194907" />
-      <entry key="S60" value="102.37992119878056" />
-      <entry key="M2" value="142.98026022558716" />
-      <entry key="M5" value="220.55483297913722" />
-      <entry key="M10" value="309.1364451587494" />
-      <entry key="M15" value="391.1890904872767" />
-      <entry key="M30" value="668.6181664457398" />
-      <entry key="H1" value="1267.5577442631918" />
-      <entry key="H2" value="2127.369212600592" />
-      <entry key="H4" value="2977.2338633227873" />
-      <entry key="D1" value="4842.515592019416" />
-      <entry key="W1" value="6140.781282596573" />
+      <entry key="MS100" value="0.9527391805143073" />
+      <entry key="MS500" value="1.4938038251090031" />
+      <entry key="S2" value="6.436480942556391" />
+      <entry key="S5" value="11.371904539160086" />
+      <entry key="S10" value="14.917116169472669" />
+      <entry key="S30" value="46.47741539765373" />
+      <entry key="S60" value="105.90822061001525" />
+      <entry key="M2" value="179.3189381498166" />
+      <entry key="M5" value="264.43088513633745" />
+      <entry key="M10" value="315.6251840967398" />
+      <entry key="M15" value="340.55105735374633" />
+      <entry key="M30" value="402.95894516926825" />
+      <entry key="H1" value="668.71643651568" />
+      <entry key="H2" value="1463.6983324510895" />
+      <entry key="H4" value="2718.8519478647354" />
+      <entry key="D1" value="5788.932259990985" />
+      <entry key="W1" value="7525.157122433607" />
     </decayedShown>
   </component>
   <component name="ProjectColorInfo">{
@@ -144,6 +140,7 @@
       <recent name="C:\Users\1\PycharmProjects\Banking_APP" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\1\PycharmProjects\Banking_APP" />
       <recent name="C:\Users\1\PycharmProjects\Banking_APP\crud" />
     </key>
   </component>
@@ -196,7 +193,7 @@
       <workItem from="1781776004167" duration="12338000" />
       <workItem from="1781807670757" duration="11580000" />
       <workItem from="1781994481498" duration="15731000" />
-      <workItem from="1782075269009" duration="30279000" />
+      <workItem from="1782075269009" duration="41299000" />
     </task>
     <task id="LOCAL-00001" summary="firts draft">
       <option name="closed" value="true" />
@@ -222,7 +219,15 @@
       <option name="project" value="LOCAL" />
       <updated>1782138142965</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="Created Transaction class in models.py&#10;added get_transaction history in routers/transactions.&#10;added class TransactionResponce in schemas.py&#10;changed and improved get_transaction history func in crud/transactions file. Now it searches for transactions not just sent but also received.&#10;&#10;&#10;&#10;changed transfer_money in the crud/transactions. Not it also adds a transfer record after transferring the money.">
+      <option name="closed" value="true" />
+      <created>1782154301401</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1782154301401</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -232,7 +237,8 @@
     <MESSAGE value="firts draft" />
     <MESSAGE value="created authetication and get_all_accounts" />
     <MESSAGE value="created crud repository for all functions that access db. Created 4 files there, for different functions.&#10;Changed all the files in router repository to only raise exceptions and use crud to access DB.&#10;Created exceptions.py file for all the exceptions tha we have" />
-    <option name="LAST_COMMIT_MESSAGE" value="created crud repository for all functions that access db. Created 4 files there, for different functions.&#10;Changed all the files in router repository to only raise exceptions and use crud to access DB.&#10;Created exceptions.py file for all the exceptions tha we have" />
+    <MESSAGE value="Created Transaction class in models.py&#10;added get_transaction history in routers/transactions.&#10;added class TransactionResponce in schemas.py&#10;changed and improved get_transaction history func in crud/transactions file. Now it searches for transactions not just sent but also received.&#10;&#10;&#10;&#10;changed transfer_money in the crud/transactions. Not it also adds a transfer record after transferring the money." />
+    <option name="LAST_COMMIT_MESSAGE" value="Created Transaction class in models.py&#10;added get_transaction history in routers/transactions.&#10;added class TransactionResponce in schemas.py&#10;changed and improved get_transaction history func in crud/transactions file. Now it searches for transactions not just sent but also received.&#10;&#10;&#10;&#10;changed transfer_money in the crud/transactions. Not it also adds a transfer record after transferring the money." />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/Banking_APP$database.coverage" NAME="database Coverage Results" MODIFIED="1781814740217" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
