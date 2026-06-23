@@ -4,10 +4,11 @@
     <option name="autoReloadType" value="ALL" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6af7364f-8d3a-40e7-86f0-b569c0c900f6" name="Changes" comment="Created Transaction class in models.py&#10;added get_transaction history in routers/transactions.&#10;added class TransactionResponce in schemas.py&#10;changed and improved get_transaction history func in crud/transactions file. Now it searches for transactions not just sent but also received.&#10;&#10;&#10;&#10;changed transfer_money in the crud/transactions. Not it also adds a transfer record after transferring the money.">
+    <list default="true" id="6af7364f-8d3a-40e7-86f0-b569c0c900f6" name="Changes" comment="Tested in swagger, everything is working&#10;&#10;&#10;&#10;changed transfer_money in the crud/transactions. Not it also adds a transfer record after transferring the money.">
+      <change afterPath="$PROJECT_DIR$/tests/conftest.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/tests/test_accounts.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bankapp.db" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/crud/accounts.py" beforeDir="false" afterPath="$PROJECT_DIR$/crud/accounts.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/test_users.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/test_users.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -15,7 +16,7 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="EmbeddingIndexingInfo">
-    <option name="cachedIndexableFilesCount" value="26" />
+    <option name="cachedIndexableFilesCount" value="28" />
     <option name="fileBasedEmbeddingIndicesEnabled" value="true" />
   </component>
   <component name="FileTemplateManagerImpl">
@@ -37,61 +38,61 @@
   </component>
   <component name="NextEditCompletionFeaturesState">
     <decayedCancelled>
-      <entry key="MS100" value="1.000108141344991" />
-      <entry key="MS500" value="1.5093500795229002" />
-      <entry key="S2" value="6.456372944374642" />
-      <entry key="S5" value="11.386976979931713" />
-      <entry key="S10" value="14.927092238197323" />
-      <entry key="S30" value="46.48608321223072" />
-      <entry key="S60" value="105.9173594477141" />
-      <entry key="M2" value="179.3157255042247" />
-      <entry key="M5" value="264.22803069362584" />
-      <entry key="M10" value="315.0115581721953" />
-      <entry key="M15" value="339.64783274389526" />
-      <entry key="M30" value="401.19309850213335" />
-      <entry key="H1" value="660.0228785900293" />
-      <entry key="H2" value="1427.418015273558" />
-      <entry key="H4" value="2624.773527079109" />
-      <entry key="D1" value="5394.131928489574" />
-      <entry key="W1" value="6843.113230964973" />
+      <entry key="MS100" value="1.8380380014222366" />
+      <entry key="MS500" value="4.924489959935929" />
+      <entry key="S2" value="14.219865937876152" />
+      <entry key="S5" value="30.030785080036733" />
+      <entry key="S10" value="54.66529775019872" />
+      <entry key="S30" value="127.23729002189626" />
+      <entry key="S60" value="186.06940048262393" />
+      <entry key="M2" value="246.04406094661934" />
+      <entry key="M5" value="335.1419594978023" />
+      <entry key="M10" value="464.23628342413036" />
+      <entry key="M15" value="595.5841291463719" />
+      <entry key="M30" value="910.8290680759786" />
+      <entry key="H1" value="1270.5122749553886" />
+      <entry key="H2" value="1597.4703122176365" />
+      <entry key="H4" value="1981.1817957338642" />
+      <entry key="D1" value="5446.447044805879" />
+      <entry key="W1" value="8527.799778128001" />
     </decayedCancelled>
     <decayedSelected>
       <entry key="MS100" value="0.0" />
-      <entry key="MS500" value="0.0" />
-      <entry key="S2" value="3.8262822287018354E-119" />
-      <entry key="S5" value="4.2964602710669005E-48" />
-      <entry key="S10" value="2.072790455175555E-24" />
-      <entry key="S30" value="1.2750289521853738E-8" />
-      <entry key="S60" value="1.1313233152465079E-4" />
-      <entry key="M2" value="0.011090305599487971" />
-      <entry key="M5" value="0.20879938039049323" />
-      <entry key="M10" value="0.6184225447211439" />
-      <entry key="M15" value="0.9072143544343889" />
-      <entry key="M30" value="1.7691688079884254" />
-      <entry key="H1" value="8.70063185974988" />
-      <entry key="H2" value="36.2936801871019" />
-      <entry key="H4" value="94.09446587804" />
-      <entry key="D1" value="394.81104613701234" />
-      <entry key="W1" value="682.0465311674567" />
+      <entry key="MS500" value="6.915511717918488E-282" />
+      <entry key="S2" value="7.130021838903334E-71" />
+      <entry key="S5" value="1.3117388268681117E-28" />
+      <entry key="S10" value="1.739944100569417E-14" />
+      <entry key="S30" value="5.112953467505605E-5" />
+      <entry key="S60" value="0.012360649256041592" />
+      <entry key="M2" value="0.21800830229874388" />
+      <entry key="M5" value="2.2094281484089584" />
+      <entry key="M10" value="7.1784259148936975" />
+      <entry key="M15" value="11.853577415372747" />
+      <entry key="M30" value="23.541554522399256" />
+      <entry key="H1" value="41.49703925259192" />
+      <entry key="H2" value="62.202743424983225" />
+      <entry key="H4" value="84.44996904410984" />
+      <entry key="D1" value="344.7476858523958" />
+      <entry key="W1" value="739.9431843930855" />
     </decayedSelected>
     <decayedShown>
-      <entry key="MS100" value="0.9527391805143073" />
-      <entry key="MS500" value="1.4938038251090031" />
-      <entry key="S2" value="6.436480942556391" />
-      <entry key="S5" value="11.371904539160086" />
-      <entry key="S10" value="14.917116169472669" />
-      <entry key="S30" value="46.47741539765373" />
-      <entry key="S60" value="105.90822061001525" />
-      <entry key="M2" value="179.3189381498166" />
-      <entry key="M5" value="264.43088513633745" />
-      <entry key="M10" value="315.6251840967398" />
-      <entry key="M15" value="340.55105735374633" />
-      <entry key="M30" value="402.95894516926825" />
-      <entry key="H1" value="668.71643651568" />
-      <entry key="H2" value="1463.6983324510895" />
-      <entry key="H4" value="2718.8519478647354" />
-      <entry key="D1" value="5788.932259990985" />
-      <entry key="W1" value="7525.157122433607" />
+      <entry key="MS100" value="1.745170752940514" />
+      <entry key="MS500" value="4.871246117907721" />
+      <entry key="S2" value="14.17844211610194" />
+      <entry key="S5" value="29.995893386197157" />
+      <entry key="S10" value="54.634511479992405" />
+      <entry key="S30" value="127.21436322025153" />
+      <entry key="S60" value="186.0647363912896" />
+      <entry key="M2" value="246.24754076987188" />
+      <entry key="M5" value="337.32982168102365" />
+      <entry key="M10" value="471.38553102415267" />
+      <entry key="M15" value="607.4067607105777" />
+      <entry key="M30" value="934.3407148573116" />
+      <entry key="H1" value="1311.983411746474" />
+      <entry key="H2" value="1659.6538377132727" />
+      <entry key="H4" value="2065.6186964227827" />
+      <entry key="D1" value="5791.185535072334" />
+      <entry key="W1" value="9267.740122130896" />
     </decayedShown>
   </component>
   <component name="ProjectColorInfo">{
@@ -106,35 +107,40 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
-    &quot;Python.database.executor&quot;: &quot;Run&quot;,
-    &quot;Python.users.executor&quot;: &quot;Debug&quot;,
-    &quot;RunOnceActivity.MCP Project settings loaded&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
-    &quot;codeWithMe.voiceChat.enabledByDefault&quot;: &quot;false&quot;,
-    &quot;com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
-    &quot;junie.onboarding.icon.badge.shown&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/1/PycharmProjects/Banking_APP&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;to.speed.mode.migration.done&quot;: &quot;true&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "Python tests.Python tests for tests.test_accounts.test_create_account.executor": "Run",
+    "Python tests.Python tests for tests.test_users.test_create_user.executor": "Run",
+    "Python tests.Python tests for tests.test_users.test_login_user.executor": "Run",
+    "Python tests.Python tests in test_users.py.executor": "Run",
+    "Python.conftest.executor": "Run",
+    "Python.database.executor": "Run",
+    "Python.users.executor": "Debug",
+    "RunOnceActivity.MCP Project settings loaded": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
+    "codeWithMe.voiceChat.enabledByDefault": "false",
+    "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1": "true",
+    "git-widget-placeholder": "master",
+    "junie.onboarding.icon.badge.shown": "true",
+    "last_opened_file_path": "C:/Users/1/PycharmProjects/Banking_APP",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "to.speed.mode.migration.done": "true",
+    "vue.rearranger.settings.migration": "true"
   },
-  &quot;keyToStringList&quot;: {
-    &quot;DatabaseDriversLRU&quot;: [
-      &quot;sqlite&quot;
+  "keyToStringList": {
+    "DatabaseDriversLRU": [
+      "sqlite"
     ]
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\1\PycharmProjects\Banking_APP" />
@@ -144,7 +150,7 @@
       <recent name="C:\Users\1\PycharmProjects\Banking_APP\crud" />
     </key>
   </component>
-  <component name="RunManager">
+  <component name="RunManager" selected="Python tests.Python tests for tests.test_accounts.test_create_account">
     <configuration name="users" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="Banking_APP" />
       <option name="ENV_FILES" value="" />
@@ -170,8 +176,65 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
+    <configuration name="Python tests for tests.test_accounts.test_create_account" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
+      <module name="Banking_APP" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="DEBUG_JUST_MY_CODE" value="false" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="RUN_TOOL" value="" />
+      <option name="_new_additionalArguments" value="&quot;&quot;" />
+      <option name="_new_target" value="&quot;tests.test_accounts.test_create_account&quot;" />
+      <option name="_new_targetType" value="&quot;PYTHON&quot;" />
+      <method v="2" />
+    </configuration>
+    <configuration name="Python tests for tests.test_users.test_create_user" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
+      <module name="Banking_APP" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="DEBUG_JUST_MY_CODE" value="false" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="RUN_TOOL" value="" />
+      <option name="_new_additionalArguments" value="&quot;&quot;" />
+      <option name="_new_target" value="&quot;tests.test_users.test_create_user&quot;" />
+      <option name="_new_targetType" value="&quot;PYTHON&quot;" />
+      <method v="2" />
+    </configuration>
+    <configuration name="Python tests for tests.test_users.test_login_user" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
+      <module name="Banking_APP" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="DEBUG_JUST_MY_CODE" value="false" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="RUN_TOOL" value="" />
+      <option name="_new_additionalArguments" value="&quot;&quot;" />
+      <option name="_new_target" value="&quot;tests.test_users.test_login_user&quot;" />
+      <option name="_new_targetType" value="&quot;PYTHON&quot;" />
+      <method v="2" />
+    </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Python tests.Python tests for tests.test_accounts.test_create_account" />
+        <item itemvalue="Python tests.Python tests for tests.test_users.test_login_user" />
+        <item itemvalue="Python tests.Python tests for tests.test_users.test_create_user" />
         <item itemvalue="Python.users" />
       </list>
     </recent_temporary>
@@ -193,7 +256,8 @@
       <workItem from="1781776004167" duration="12338000" />
       <workItem from="1781807670757" duration="11580000" />
       <workItem from="1781994481498" duration="15731000" />
-      <workItem from="1782075269009" duration="41299000" />
+      <workItem from="1782075269009" duration="41587000" />
+      <workItem from="1782213985790" duration="11768000" />
     </task>
     <task id="LOCAL-00001" summary="firts draft">
       <option name="closed" value="true" />
@@ -227,7 +291,15 @@
       <option name="project" value="LOCAL" />
       <updated>1782154301401</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="Tested in swagger, everything is working&#10;&#10;&#10;&#10;changed transfer_money in the crud/transactions. Not it also adds a transfer record after transferring the money.">
+      <option name="closed" value="true" />
+      <created>1782213615971</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1782213615971</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -238,10 +310,13 @@
     <MESSAGE value="created authetication and get_all_accounts" />
     <MESSAGE value="created crud repository for all functions that access db. Created 4 files there, for different functions.&#10;Changed all the files in router repository to only raise exceptions and use crud to access DB.&#10;Created exceptions.py file for all the exceptions tha we have" />
     <MESSAGE value="Created Transaction class in models.py&#10;added get_transaction history in routers/transactions.&#10;added class TransactionResponce in schemas.py&#10;changed and improved get_transaction history func in crud/transactions file. Now it searches for transactions not just sent but also received.&#10;&#10;&#10;&#10;changed transfer_money in the crud/transactions. Not it also adds a transfer record after transferring the money." />
-    <option name="LAST_COMMIT_MESSAGE" value="Created Transaction class in models.py&#10;added get_transaction history in routers/transactions.&#10;added class TransactionResponce in schemas.py&#10;changed and improved get_transaction history func in crud/transactions file. Now it searches for transactions not just sent but also received.&#10;&#10;&#10;&#10;changed transfer_money in the crud/transactions. Not it also adds a transfer record after transferring the money." />
+    <MESSAGE value="Tested in swagger, everything is working&#10;&#10;&#10;&#10;changed transfer_money in the crud/transactions. Not it also adds a transfer record after transferring the money." />
+    <option name="LAST_COMMIT_MESSAGE" value="Tested in swagger, everything is working&#10;&#10;&#10;&#10;changed transfer_money in the crud/transactions. Not it also adds a transfer record after transferring the money." />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/Banking_APP$database.coverage" NAME="database Coverage Results" MODIFIED="1781814740217" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Banking_APP$users.coverage" NAME="users Coverage Results" MODIFIED="1781996707498" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/router" />
+    <SUITE FILE_PATH="coverage/Banking_APP$conftest.coverage" NAME="conftest Coverage Results" MODIFIED="1782218364639" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
+    <SUITE FILE_PATH="coverage/Banking_APP$.coverage" NAME=" Coverage Results" MODIFIED="1782225033358" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>
