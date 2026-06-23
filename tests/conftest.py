@@ -47,29 +47,50 @@ def client():
     # delete everything from RAM
     Base.metadata.drop_all(bind=engine)
 
-
+#create and login one user with helper func
 @pytest.fixture()
 def auth_headers(client):
+    return  create_user_and_login(client,"john@example.com","John")
+
+
+
+#helper function can be called separately from auth headers
+#this way we test transactions by creating 2 users
+def create_user_and_login(client, email, first_name):
 
     create = client.post("/users/",
-                           json={
-                               "first_name": "John",
-                               "last_name": "Test",
-                               "email": "john@example.com",
-                               "password": "securepassword123"
-                           }
-                           )
+                             json={
+                             "first_name": first_name,
+                             "last_name": "Test",
+                             "email": email,
+                             "password": "securepassword123"
+                         }
+                         )
 
     assert create.status_code == 200
 
-    #now try to log in with the data from created user
+    # now try to log in with the data from created user
     login = client.post("/auth/",
-                           data={"username" : "john@example.com",
-                                 "password": "securepassword123"})
+                        data={"username": email,
+                              "password": "securepassword123"})
 
-    assert  login.status_code == 200
+    assert login.status_code == 200
 
     data = login.json()
     token = data["access_token"]
 
     return {"Authorization": f"Bearer {token}"}
+
+
+def create_account(client, headers, acc_type, balance):
+
+    #create acc for authenticated user
+    response = client.post("/accounts/",
+                           json={"acc_type"  : acc_type,
+                                 "acc_balance" : balance},
+                           headers=headers
+                           )
+
+    assert response.status_code == 200
+
+    return response.json()

@@ -48,3 +48,4 @@ def test_login_user(client):
     assert "access_token" in data
     assert data["token_type"] == "bearer"
     assert "password" not in data
+
