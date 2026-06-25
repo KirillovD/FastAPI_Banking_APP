@@ -59,5 +59,5 @@ class TransactionResponse(BaseModel):
 
 class CashOperation(BaseModel):
     acc_id : int
-    amount : float > 0
+    amount : float= Field(gt=0)
     

@@ -77,7 +77,7 @@ def create_transaction_record(sender_account_id : int | None,
     return new_transaction_record
 
 
-def cash_deposit_money(acc_id : int, deposit_amount : float, db : Session):
+def deposit_cash(acc_id : int, deposit_amount : float, db : Session):
 
     account = db.query(models.Account).filter(models.Account.acc_id == acc_id).first()
 
@@ -98,7 +98,7 @@ def cash_deposit_money(acc_id : int, deposit_amount : float, db : Session):
     return account
 
 
-def cash_withdraw_money(acc_id: int, withdraw_amount : float, db: Session):
+def withdraw_cash(acc_id: int, withdraw_amount : float, db: Session):
     account = db.query(models.Account).filter(models.Account.acc_id == acc_id).first()
 
     account.acc_balance -= withdraw_amount

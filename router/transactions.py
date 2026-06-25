@@ -47,6 +47,38 @@ def get_transactions_history(user_id : int = Depends(dependencies.verify_existin
 
     return transaction.get_transactions_history(user_id,db)
 
+@router.post("/deposit")
+def deposit_cash(acc_id_and_amount : schemas.CashOperation ,
+                 user_id : int = Depends(dependencies.verify_existing_token),
+                 db : Session = Depends(get_db)):
+
+    account = accounts.get_acc_by_id_with_token(user_id,acc_id_and_amount.acc_id,db)
+
+    if not account:
+        raise exceptions.AccountNotFoundException()
+
+    deposit  = transaction.deposit_cash(acc_id_and_amount.acc_id,
+                                        acc_id_and_amount.amount,
+                                        db )
+
+    return {"Message": "Deposit successful!", "Account Balance:": deposit.acc_balance }
 
 
+@router.post("/withdraw")
+def withdraw_cash(acc_id_and_amount : schemas.CashOperation ,
+                  user_id : int = Depends(dependencies.verify_existing_token),
+                  db : Session = Depends(get_db)):
 
+    account = accounts.get_acc_by_id_with_token(user_id,acc_id_and_amount.acc_id,db)
+
+    if not account:
+        raise exceptions.AccountNotFoundException()
+
+    if not transaction.is_balance_sufficient(account,acc_id_and_amount.amount):
+        raise exceptions.AccountInsufficientFundsException()
+
+    withdraw  = transaction.withdraw_cash(acc_id_and_amount.acc_id,
+                                        acc_id_and_amount.amount,
+                                        db )
+
+    return {"Message": "Withdraw successful!", "Account Balance:": withdraw.acc_balance }
