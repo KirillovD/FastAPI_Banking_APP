@@ -4,12 +4,12 @@
     <option name="autoReloadType" value="ALL" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6af7364f-8d3a-40e7-86f0-b569c0c900f6" name="Changes" comment="created conftest.py.&#10;it has everything needed to execute testing functions&#10;&#10;created test_users.py and test_accounts.py with 3 testing functions. everything works fine&#10;&#10;&#10;changed transfer_money in the crud/transactions. Not it also adds a transfer record after transferring the money.">
-      <change afterPath="$PROJECT_DIR$/tests/test_transactions.py" afterDir="false" />
+    <list default="true" id="6af7364f-8d3a-40e7-86f0-b569c0c900f6" name="Changes" comment="created tests for users, accounts and started working at transactions">
+      <change afterPath="$PROJECT_DIR$/.env" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.gitignore.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/config.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/conftest.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/conftest.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/test_accounts.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/test_accounts.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/test_users.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/test_users.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -17,7 +17,7 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="EmbeddingIndexingInfo">
-    <option name="cachedIndexableFilesCount" value="28" />
+    <option name="cachedIndexableFilesCount" value="29" />
     <option name="fileBasedEmbeddingIndicesEnabled" value="true" />
   </component>
   <component name="FileTemplateManagerImpl">
@@ -30,6 +30,18 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
+  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
+  "lastFilter": {
+    "state": "OPEN",
+    "assignee": "KirillovD"
+  }
+}]]></component>
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "https://github.com/KirillovD/FastAPI_Banking_APP.git",
+    "accountId": "ecfcd8aa-af10-4d94-98d2-ff77f8fde50e"
+  }
+}]]></component>
   <component name="HighlightingSettingsPerFile">
     <setting file="file://$PROJECT_DIR$/utils.py" root0="FORCE_HIGHLIGHTING" />
   </component>
@@ -39,61 +51,61 @@
   </component>
   <component name="NextEditCompletionFeaturesState">
     <decayedCancelled>
-      <entry key="MS100" value="1.6519618859322387" />
-      <entry key="MS500" value="4.245079210821715" />
-      <entry key="S2" value="12.415653675292111" />
-      <entry key="S5" value="27.23515363383406" />
-      <entry key="S10" value="50.27574459974285" />
-      <entry key="S30" value="126.76086631003041" />
-      <entry key="S60" value="193.63490823627887" />
-      <entry key="M2" value="253.26229826065668" />
-      <entry key="M5" value="316.6171907193785" />
-      <entry key="M10" value="382.3120062940445" />
-      <entry key="M15" value="456.8739691479557" />
-      <entry key="M30" value="727.0786527856205" />
-      <entry key="H1" value="1232.2264847586025" />
-      <entry key="H2" value="1974.0152738364468" />
-      <entry key="H4" value="2893.7246423049837" />
-      <entry key="D1" value="7154.318665481339" />
-      <entry key="W1" value="10838.99704934921" />
+      <entry key="MS100" value="2.562316128910633E-258" />
+      <entry key="MS500" value="3.0319814650804774E-52" />
+      <entry key="S2" value="1.3195706037759846E-13" />
+      <entry key="S5" value="7.12526434674598E-6" />
+      <entry key="S10" value="0.0031514876408290813" />
+      <entry key="S30" value="0.44696781608479835" />
+      <entry key="S60" value="2.735282471803182" />
+      <entry key="M2" value="9.604487327441516" />
+      <entry key="M5" value="27.546669785162614" />
+      <entry key="M10" value="42.42986329417694" />
+      <entry key="M15" value="54.14230495855294" />
+      <entry key="M30" value="136.7094180507697" />
+      <entry key="H1" value="470.2604386734408" />
+      <entry key="H2" value="1201.0392926243292" />
+      <entry key="H4" value="2261.4211564627913" />
+      <entry key="D1" value="6898.928284486206" />
+      <entry key="W1" value="10834.077651718026" />
     </decayedCancelled>
     <decayedSelected>
-      <entry key="MS100" value="0.0" />
-      <entry key="MS500" value="1.488084766913503E-91" />
-      <entry key="S2" value="1.9937644102189156E-23" />
-      <entry key="S5" value="9.810888822023716E-10" />
-      <entry key="S10" value="4.1202050777403633E-5" />
-      <entry key="S30" value="0.05814900370611303" />
-      <entry key="S60" value="0.421401544926885" />
-      <entry key="M2" value="1.3228522994135041" />
-      <entry key="M5" value="4.81986010930997" />
-      <entry key="M10" value="12.279191792753965" />
-      <entry key="M15" value="18.643190937494964" />
-      <entry key="M30" value="31.34291976879935" />
-      <entry key="H1" value="46.036219769759796" />
-      <entry key="H2" value="67.7554458139097" />
-      <entry key="H4" value="100.6146290645559" />
-      <entry key="D1" value="372.140523426949" />
-      <entry key="W1" value="798.4541263922191" />
+      <entry key="MS100" value="1.0" />
+      <entry key="MS500" value="1.0000000000232496" />
+      <entry key="S2" value="1.0021958572752163" />
+      <entry key="S5" value="1.0864660515483988" />
+      <entry key="S10" value="1.3052009728766665" />
+      <entry key="S30" value="2.304125684165146" />
+      <entry key="S60" value="4.179894159918666" />
+      <entry key="M2" value="7.114910073145369" />
+      <entry key="M5" value="10.83755372777842" />
+      <entry key="M10" value="12.71039366087337" />
+      <entry key="M15" value="13.633960489676841" />
+      <entry key="M30" value="17.630989243393753" />
+      <entry key="H1" value="29.867709282582968" />
+      <entry key="H2" value="53.8333860657166" />
+      <entry key="H4" value="91.27256235099271" />
+      <entry key="D1" value="370.41637589695654" />
+      <entry key="W1" value="808.229571646052" />
     </decayedSelected>
     <decayedShown>
-      <entry key="MS100" value="1.5877588477389644" />
-      <entry key="MS500" value="4.206177676233588" />
-      <entry key="S2" value="12.38503048898716" />
-      <entry key="S5" value="27.20935577666427" />
-      <entry key="S10" value="50.25281707489439" />
-      <entry key="S30" value="126.79786114290471" />
-      <entry key="S60" value="194.03417004260197" />
-      <entry key="M2" value="254.5635550829467" />
-      <entry key="M5" value="321.4092444486686" />
-      <entry key="M10" value="394.55480300781284" />
-      <entry key="M15" value="475.4797542282246" />
-      <entry key="M30" value="758.3890636341633" />
-      <entry key="H1" value="1278.2376961566833" />
-      <entry key="H2" value="2041.75145009153" />
-      <entry key="H4" value="2994.324494501145" />
-      <entry key="D1" value="7526.449444798474" />
-      <entry key="W1" value="11637.448138608912" />
+      <entry key="MS100" value="0.0045813865204370275" />
+      <entry key="MS500" value="0.3405645086644724" />
+      <entry key="S2" value="0.7653676725559736" />
+      <entry key="S5" value="0.9710150403976104" />
+      <entry key="S10" value="1.231495008651297" />
+      <entry key="S30" value="2.695221935558211" />
+      <entry key="S60" value="6.849513426481984" />
+      <entry key="M2" value="16.649365751163405" />
+      <entry key="M5" value="38.331531528199484" />
+      <entry key="M10" value="55.106076863951394" />
+      <entry key="M15" value="67.75082841998723" />
+      <entry key="M30" value="154.32305385196003" />
+      <entry key="H1" value="500.1126042090177" />
+      <entry key="H2" value="1254.8578612824197" />
+      <entry key="H4" value="2352.680620834416" />
+      <entry key="D1" value="7269.335036903773" />
+      <entry key="W1" value="11642.304160752858" />
     </decayedShown>
   </component>
   <component name="ProjectColorInfo">{
@@ -108,45 +120,45 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "Python tests.Python tests for tests.test_accounts.test_create_account.executor": "Run",
-    "Python tests.Python tests for tests.test_accounts.test_create_account_without_token.executor": "Run",
-    "Python tests.Python tests for tests.test_accounts.test_get_accounts_empty.executor": "Run",
-    "Python tests.Python tests for tests.test_accounts.test_get_all_accounts.executor": "Run",
-    "Python tests.Python tests for tests.test_transactions.test_transfer_money_success.executor": "Run",
-    "Python tests.Python tests for tests.test_users.test_create_user.executor": "Run",
-    "Python tests.Python tests for tests.test_users.test_login_user.executor": "Run",
-    "Python tests.Python tests in test_users.py.executor": "Run",
-    "Python.conftest.executor": "Run",
-    "Python.database.executor": "Run",
-    "Python.users.executor": "Debug",
-    "RunOnceActivity.MCP Project settings loaded": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
-    "codeWithMe.voiceChat.enabledByDefault": "false",
-    "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1": "true",
-    "git-widget-placeholder": "master",
-    "junie.onboarding.icon.badge.shown": "true",
-    "last_opened_file_path": "C:/Users/1/PycharmProjects/Banking_APP",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "settings.editor.selected.configurable": "ml.llm.LLMConfigurable",
-    "to.speed.mode.migration.done": "true",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;Python tests.Python tests for tests.test_accounts.test_create_account.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests for tests.test_accounts.test_create_account_without_token.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests for tests.test_accounts.test_get_accounts_empty.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests for tests.test_accounts.test_get_all_accounts.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests for tests.test_transactions.test_transfer_money_success.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests for tests.test_users.test_create_user.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests for tests.test_users.test_login_user.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests in test_users.py.executor&quot;: &quot;Run&quot;,
+    &quot;Python.conftest.executor&quot;: &quot;Run&quot;,
+    &quot;Python.database.executor&quot;: &quot;Run&quot;,
+    &quot;Python.users.executor&quot;: &quot;Debug&quot;,
+    &quot;RunOnceActivity.MCP Project settings loaded&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
+    &quot;codeWithMe.voiceChat.enabledByDefault&quot;: &quot;false&quot;,
+    &quot;com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
+    &quot;junie.onboarding.icon.badge.shown&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/1/PycharmProjects/Banking_APP&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;ml.llm.LLMConfigurable&quot;,
+    &quot;to.speed.mode.migration.done&quot;: &quot;true&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   },
-  "keyToStringList": {
-    "DatabaseDriversLRU": [
-      "sqlite"
+  &quot;keyToStringList&quot;: {
+    &quot;DatabaseDriversLRU&quot;: [
+      &quot;sqlite&quot;
     ]
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\1\PycharmProjects\Banking_APP" />
@@ -276,7 +288,8 @@
       <workItem from="1781994481498" duration="15731000" />
       <workItem from="1782075269009" duration="41587000" />
       <workItem from="1782213985790" duration="11852000" />
-      <workItem from="1782245101982" duration="9501000" />
+      <workItem from="1782245101982" duration="9733000" />
+      <workItem from="1782376314425" duration="1405000" />
     </task>
     <task id="LOCAL-00001" summary="firts draft">
       <option name="closed" value="true" />
@@ -326,7 +339,15 @@
       <option name="project" value="LOCAL" />
       <updated>1782234141764</updated>
     </task>
-    <option name="localTasksCounter" value="7" />
+    <task id="LOCAL-00007" summary="created tests for users, accounts and started working at transactions">
+      <option name="closed" value="true" />
+      <created>1782258389366</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1782258389366</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -339,7 +360,8 @@
     <MESSAGE value="Created Transaction class in models.py&#10;added get_transaction history in routers/transactions.&#10;added class TransactionResponce in schemas.py&#10;changed and improved get_transaction history func in crud/transactions file. Now it searches for transactions not just sent but also received.&#10;&#10;&#10;&#10;changed transfer_money in the crud/transactions. Not it also adds a transfer record after transferring the money." />
     <MESSAGE value="Tested in swagger, everything is working&#10;&#10;&#10;&#10;changed transfer_money in the crud/transactions. Not it also adds a transfer record after transferring the money." />
     <MESSAGE value="created conftest.py.&#10;it has everything needed to execute testing functions&#10;&#10;created test_users.py and test_accounts.py with 3 testing functions. everything works fine&#10;&#10;&#10;changed transfer_money in the crud/transactions. Not it also adds a transfer record after transferring the money." />
-    <option name="LAST_COMMIT_MESSAGE" value="created conftest.py.&#10;it has everything needed to execute testing functions&#10;&#10;created test_users.py and test_accounts.py with 3 testing functions. everything works fine&#10;&#10;&#10;changed transfer_money in the crud/transactions. Not it also adds a transfer record after transferring the money." />
+    <MESSAGE value="created tests for users, accounts and started working at transactions" />
+    <option name="LAST_COMMIT_MESSAGE" value="created tests for users, accounts and started working at transactions" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/Banking_APP$database.coverage" NAME="database Coverage Results" MODIFIED="1781814740217" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
