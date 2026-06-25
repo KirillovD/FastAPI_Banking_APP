@@ -44,8 +44,8 @@ class Transaction(Base):
     __tablename__ = "transactions"
 
     transaction_id : Mapped[int] = mapped_column(unique=True, primary_key=True)
-    sender_account_id : Mapped[int] = mapped_column(ForeignKey("accounts.acc_id"))
-    recipient_account_id : Mapped[int] = mapped_column(ForeignKey("accounts.acc_id"))
+    sender_account_id : Mapped[int | None] = mapped_column(ForeignKey("accounts.acc_id"),nullable=True)
+    recipient_account_id : Mapped[int | None] = mapped_column(ForeignKey("accounts.acc_id"), nullable=True)
     transfer_amount : Mapped[float] = mapped_column()
     created_at : Mapped[datetime] = mapped_column(DateTime(timezone=True),
                                                      default= lambda : datetime.now(timezone.utc),
@@ -53,8 +53,8 @@ class Transaction(Base):
                                                      )
     status : Mapped[str] = mapped_column()
     operation_type : Mapped[str] = mapped_column()
-    description : Mapped[str] = mapped_column(nullable=True)
-
+    description : Mapped[str | None] = mapped_column(nullable=True)
+    category : Mapped[str] = mapped_column()
 
     #    status : Literal["successful","failed"] = mapped_column()
     #

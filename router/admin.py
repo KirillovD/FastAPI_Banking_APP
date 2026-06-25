@@ -1,16 +1,13 @@
-from fastapi.params import Depends
 from sqlalchemy.orm import Session
-
 import dependencies
 from database import get_db
-from router.users import check_admin
 from fastapi import Depends,APIRouter
 from crud import admin
 
 router = APIRouter(
     prefix="/admin",
     tags=["Admin Operations"],
-    dependencies = [Depends(dependencies.verify_existing_token), Depends(check_admin)]
+    dependencies = [Depends(dependencies.verify_existing_token), Depends(dependencies.check_admin)]
 )
 
 

@@ -34,16 +34,7 @@ def create_user(user: schemas.UserCreate, db : Session = Depends(get_db)):
 def find_user(user_id: int = Depends(dependencies.verify_existing_token), db : Session = Depends(get_db)):
     db_user = users.find_user(user_id,db)
 
-    if db_user is None:
-        #explain the error if user is not found
+    if not db_user:
         raise exceptions.UserNotFoundException()
 
     return db_user
-
-@router.get("/")
-def check_admin(user_id: int = Depends(dependencies.verify_existing_token), db : Session = Depends(get_db)):
-
-     if not dependencies.check_admin(user_id,db):
-         raise exceptions.NotAdmin()
-
-     return True

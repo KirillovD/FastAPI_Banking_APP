@@ -32,3 +32,16 @@ def get_all_accounts(user_id : int = Depends(dependencies.verify_existing_token)
 
     return accounts.get_all_accounts(user_id, db)
 
+
+@router.get("/{acc_id}", response_model=schemas.AccResponse)
+def get_acc_by_id(acc_id : int,
+                  user_id : str = Depends(dependencies.verify_existing_token),
+                  db : Session = Depends(get_db)):
+
+    account = accounts.get_acc_by_id_with_token(user_id,acc_id,db)
+
+    if not account:
+        raise exceptions.AccountNotFoundException
+
+    return account
+

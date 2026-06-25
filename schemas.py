@@ -45,13 +45,19 @@ class TransferMoney(BaseModel):
 
 class TransactionResponse(BaseModel):
     transaction_id : int
-    sender_account_id : int
-    recipient_account_id : int
+    sender_account_id : int | None
+    recipient_account_id : int | None
     transfer_amount : float
     created_at : datetime
     status : str
     operation_type : str
     description : str | None = None
+    category : str | None
 
     class Config:
         from_attributes = True
+
+class CashOperation(BaseModel):
+    acc_id : int
+    amount : float > 0
+    
