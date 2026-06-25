@@ -23,7 +23,7 @@ def test_transfer_money_success(client,auth_headers):
                                 },
                                 headers=auth_headers
                            )
-
+    print(sender_headers,sender_user_account)
     assert response.status_code == 200
     data = response.json()
     assert data == {"Message": "Transfer successful!", "Amount": 200}

@@ -4,12 +4,13 @@
     <option name="autoReloadType" value="ALL" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6af7364f-8d3a-40e7-86f0-b569c0c900f6" name="Changes" comment="created tests for users, accounts and started working at transactions">
-      <change afterPath="$PROJECT_DIR$/.env" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.gitignore.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/config.py" afterDir="false" />
+    <list default="true" id="6af7364f-8d3a-40e7-86f0-b569c0c900f6" name="Changes" comment="created .env, gitignore and config file.&#10;posted everything on github">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/config.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/crud/accounts.py" beforeDir="false" afterPath="$PROJECT_DIR$/crud/accounts.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/router/transactions.py" beforeDir="false" afterPath="$PROJECT_DIR$/router/transactions.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/test_transactions.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/test_transactions.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -51,61 +52,61 @@
   </component>
   <component name="NextEditCompletionFeaturesState">
     <decayedCancelled>
-      <entry key="MS100" value="2.562316128910633E-258" />
-      <entry key="MS500" value="3.0319814650804774E-52" />
-      <entry key="S2" value="1.3195706037759846E-13" />
-      <entry key="S5" value="7.12526434674598E-6" />
-      <entry key="S10" value="0.0031514876408290813" />
-      <entry key="S30" value="0.44696781608479835" />
-      <entry key="S60" value="2.735282471803182" />
-      <entry key="M2" value="9.604487327441516" />
-      <entry key="M5" value="27.546669785162614" />
-      <entry key="M10" value="42.42986329417694" />
-      <entry key="M15" value="54.14230495855294" />
-      <entry key="M30" value="136.7094180507697" />
-      <entry key="H1" value="470.2604386734408" />
-      <entry key="H2" value="1201.0392926243292" />
-      <entry key="H4" value="2261.4211564627913" />
-      <entry key="D1" value="6898.928284486206" />
-      <entry key="W1" value="10834.077651718026" />
+      <entry key="MS100" value="3.46685411975856E-33" />
+      <entry key="MS500" value="3.2228643924033237E-7" />
+      <entry key="S2" value="0.027798656656446027" />
+      <entry key="S5" value="0.42667060328723716" />
+      <entry key="S10" value="1.5732986517257286" />
+      <entry key="S30" value="4.778418002821142" />
+      <entry key="S60" value="6.737244263936738" />
+      <entry key="M2" value="10.124110858468718" />
+      <entry key="M5" value="24.097454471824395" />
+      <entry key="M10" value="47.29279402767316" />
+      <entry key="M15" value="64.36949027241126" />
+      <entry key="M30" value="94.6309210181817" />
+      <entry key="H1" value="174.32428110547585" />
+      <entry key="H2" value="558.1622606977267" />
+      <entry key="H4" value="1490.5868061467982" />
+      <entry key="D1" value="6484.58122250072" />
+      <entry key="W1" value="10860.656772829838" />
     </decayedCancelled>
     <decayedSelected>
-      <entry key="MS100" value="1.0" />
-      <entry key="MS500" value="1.0000000000232496" />
-      <entry key="S2" value="1.0021958572752163" />
-      <entry key="S5" value="1.0864660515483988" />
-      <entry key="S10" value="1.3052009728766665" />
-      <entry key="S30" value="2.304125684165146" />
-      <entry key="S60" value="4.179894159918666" />
-      <entry key="M2" value="7.114910073145369" />
-      <entry key="M5" value="10.83755372777842" />
-      <entry key="M10" value="12.71039366087337" />
-      <entry key="M15" value="13.633960489676841" />
-      <entry key="M30" value="17.630989243393753" />
-      <entry key="H1" value="29.867709282582968" />
-      <entry key="H2" value="53.8333860657166" />
-      <entry key="H4" value="91.27256235099271" />
-      <entry key="D1" value="370.41637589695654" />
-      <entry key="W1" value="808.229571646052" />
+      <entry key="MS100" value="1.0000000427351965" />
+      <entry key="MS500" value="1.0339049480419698" />
+      <entry key="S2" value="1.5683472351854895" />
+      <entry key="S5" value="2.2935701889974327" />
+      <entry key="S10" value="2.8789996347390403" />
+      <entry key="S30" value="3.535401477120718" />
+      <entry key="S60" value="3.7972529738514713" />
+      <entry key="M2" value="4.435121811537213" />
+      <entry key="M5" value="7.313184642859806" />
+      <entry key="M10" value="11.159169886163568" />
+      <entry key="M15" value="13.785147491599144" />
+      <entry key="M30" value="18.462264891415845" />
+      <entry key="H1" value="25.65500602268298" />
+      <entry key="H2" value="43.800741932025076" />
+      <entry key="H4" value="80.94052453112634" />
+      <entry key="D1" value="368.29297525942957" />
+      <entry key="W1" value="827.2436703409297" />
     </decayedSelected>
     <decayedShown>
-      <entry key="MS100" value="0.0045813865204370275" />
-      <entry key="MS500" value="0.3405645086644724" />
-      <entry key="S2" value="0.7653676725559736" />
-      <entry key="S5" value="0.9710150403976104" />
-      <entry key="S10" value="1.231495008651297" />
-      <entry key="S30" value="2.695221935558211" />
-      <entry key="S60" value="6.849513426481984" />
-      <entry key="M2" value="16.649365751163405" />
-      <entry key="M5" value="38.331531528199484" />
-      <entry key="M10" value="55.106076863951394" />
-      <entry key="M15" value="67.75082841998723" />
-      <entry key="M30" value="154.32305385196003" />
-      <entry key="H1" value="500.1126042090177" />
-      <entry key="H2" value="1254.8578612824197" />
-      <entry key="H4" value="2352.680620834416" />
-      <entry key="D1" value="7269.335036903773" />
-      <entry key="W1" value="11642.304160752858" />
+      <entry key="MS100" value="1.8527143633213644E-5" />
+      <entry key="MS500" value="0.11481844316695422" />
+      <entry key="S2" value="0.8967677637393706" />
+      <entry key="S5" value="2.2058852345947875" />
+      <entry key="S10" value="4.056942933542859" />
+      <entry key="S30" value="8.091281171639853" />
+      <entry key="S60" value="10.399447281657288" />
+      <entry key="M2" value="14.472576145494507" />
+      <entry key="M5" value="31.341242997140437" />
+      <entry key="M10" value="58.38989646616764" />
+      <entry key="M15" value="78.09912634125848" />
+      <entry key="M30" value="113.05242590376699" />
+      <entry key="H1" value="199.95182367610224" />
+      <entry key="H2" value="601.9432073997617" />
+      <entry key="H4" value="1571.5117248472282" />
+      <entry key="D1" value="6852.863985146112" />
+      <entry key="W1" value="11687.897217890275" />
     </decayedShown>
   </component>
   <component name="ProjectColorInfo">{
@@ -289,7 +290,7 @@
       <workItem from="1782075269009" duration="41587000" />
       <workItem from="1782213985790" duration="11852000" />
       <workItem from="1782245101982" duration="9733000" />
-      <workItem from="1782376314425" duration="1405000" />
+      <workItem from="1782376314425" duration="7644000" />
     </task>
     <task id="LOCAL-00001" summary="firts draft">
       <option name="closed" value="true" />
@@ -347,7 +348,15 @@
       <option name="project" value="LOCAL" />
       <updated>1782258389366</updated>
     </task>
-    <option name="localTasksCounter" value="8" />
+    <task id="LOCAL-00008" summary="created .env, gitignore and config file.&#10;posted everything on github">
+      <option name="closed" value="true" />
+      <created>1782378010330</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1782378010330</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -361,12 +370,13 @@
     <MESSAGE value="Tested in swagger, everything is working&#10;&#10;&#10;&#10;changed transfer_money in the crud/transactions. Not it also adds a transfer record after transferring the money." />
     <MESSAGE value="created conftest.py.&#10;it has everything needed to execute testing functions&#10;&#10;created test_users.py and test_accounts.py with 3 testing functions. everything works fine&#10;&#10;&#10;changed transfer_money in the crud/transactions. Not it also adds a transfer record after transferring the money." />
     <MESSAGE value="created tests for users, accounts and started working at transactions" />
-    <option name="LAST_COMMIT_MESSAGE" value="created tests for users, accounts and started working at transactions" />
+    <MESSAGE value="created .env, gitignore and config file.&#10;posted everything on github" />
+    <option name="LAST_COMMIT_MESSAGE" value="created .env, gitignore and config file.&#10;posted everything on github" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/Banking_APP$database.coverage" NAME="database Coverage Results" MODIFIED="1781814740217" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Banking_APP$users.coverage" NAME="users Coverage Results" MODIFIED="1781996707498" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/router" />
     <SUITE FILE_PATH="coverage/Banking_APP$conftest.coverage" NAME="conftest Coverage Results" MODIFIED="1782218364639" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
-    <SUITE FILE_PATH="coverage/Banking_APP$.coverage" NAME=" Coverage Results" MODIFIED="1782253052890" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/Banking_APP$.coverage" NAME=" Coverage Results" MODIFIED="1782378971859" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>
