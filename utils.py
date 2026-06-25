@@ -1,9 +1,6 @@
 import bcrypt
 import jwt
 from datetime import datetime, timedelta, timezone
-from fastapi import Depends
-from fastapi.security import OAuth2PasswordBearer
-import exceptions
 from config import settings
 
 secret_key = settings.secret_key
@@ -48,19 +45,3 @@ def create_token(user_id):
 
     return token
 
-
-# 1. Настройка "ищейки" токена
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/")
-
-# 2. Сама функция проверки
-def verify_existing_token(token: str = Depends(oauth2_scheme)) -> dict:
-    try:
-        # 3. Декодирование и проверка
-        payload = jwt.decode(token, secret_key, algorithms=[ALGORITHM])
-        return payload.get("user_id")
-    except jwt.ExpiredSignatureError:
-        # 4. Ошибка, если время вышло
-        raise exceptions.TokenException(detail="Token expired")
-    except jwt.InvalidTokenError:
-        # 5. Ошибка, если токен подделан или сломан
-        raise exceptions.TokenException(detail="Token invalid")

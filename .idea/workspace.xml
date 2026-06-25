@@ -4,13 +4,19 @@
     <option name="autoReloadType" value="ALL" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6af7364f-8d3a-40e7-86f0-b569c0c900f6" name="Changes" comment="created .env, gitignore and config file.&#10;posted everything on github">
+    <list default="true" id="6af7364f-8d3a-40e7-86f0-b569c0c900f6" name="Changes" comment="added proper check for recipient name during transactions routers/transactions">
+      <change afterPath="$PROJECT_DIR$/crud/admin.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dependencies.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/router/admin.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/config.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/crud/accounts.py" beforeDir="false" afterPath="$PROJECT_DIR$/crud/accounts.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/crud/users.py" beforeDir="false" afterPath="$PROJECT_DIR$/crud/users.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/exceptions.py" beforeDir="false" afterPath="$PROJECT_DIR$/exceptions.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/router/accounts.py" beforeDir="false" afterPath="$PROJECT_DIR$/router/accounts.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/router/transactions.py" beforeDir="false" afterPath="$PROJECT_DIR$/router/transactions.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/test_transactions.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/test_transactions.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/router/users.py" beforeDir="false" afterPath="$PROJECT_DIR$/router/users.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -18,7 +24,7 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="EmbeddingIndexingInfo">
-    <option name="cachedIndexableFilesCount" value="29" />
+    <option name="cachedIndexableFilesCount" value="33" />
     <option name="fileBasedEmbeddingIndicesEnabled" value="true" />
   </component>
   <component name="FileTemplateManagerImpl">
@@ -52,61 +58,61 @@
   </component>
   <component name="NextEditCompletionFeaturesState">
     <decayedCancelled>
-      <entry key="MS100" value="3.46685411975856E-33" />
-      <entry key="MS500" value="3.2228643924033237E-7" />
-      <entry key="S2" value="0.027798656656446027" />
-      <entry key="S5" value="0.42667060328723716" />
-      <entry key="S10" value="1.5732986517257286" />
-      <entry key="S30" value="4.778418002821142" />
-      <entry key="S60" value="6.737244263936738" />
-      <entry key="M2" value="10.124110858468718" />
-      <entry key="M5" value="24.097454471824395" />
-      <entry key="M10" value="47.29279402767316" />
-      <entry key="M15" value="64.36949027241126" />
-      <entry key="M30" value="94.6309210181817" />
-      <entry key="H1" value="174.32428110547585" />
-      <entry key="H2" value="558.1622606977267" />
-      <entry key="H4" value="1490.5868061467982" />
-      <entry key="D1" value="6484.58122250072" />
-      <entry key="W1" value="10860.656772829838" />
+      <entry key="MS100" value="1.0610960292701247E-34" />
+      <entry key="MS500" value="1.6038026911280457E-7" />
+      <entry key="S2" value="0.020011873336931392" />
+      <entry key="S5" value="0.20937398004320243" />
+      <entry key="S10" value="0.47418232198461807" />
+      <entry key="S30" value="1.2626609198987384" />
+      <entry key="S60" value="2.5247758864430923" />
+      <entry key="M2" value="8.895450002189008" />
+      <entry key="M5" value="64.6843749823296" />
+      <entry key="M10" value="152.49644041049245" />
+      <entry key="M15" value="208.58936676427578" />
+      <entry key="M30" value="298.9225911774637" />
+      <entry key="H1" value="401.30843357876665" />
+      <entry key="H2" value="681.1956301153032" />
+      <entry key="H4" value="1483.2604112548279" />
+      <entry key="D1" value="6576.335984201578" />
+      <entry key="W1" value="11232.438028067361" />
     </decayedCancelled>
     <decayedSelected>
-      <entry key="MS100" value="1.0000000427351965" />
-      <entry key="MS500" value="1.0339049480419698" />
-      <entry key="S2" value="1.5683472351854895" />
-      <entry key="S5" value="2.2935701889974327" />
-      <entry key="S10" value="2.8789996347390403" />
-      <entry key="S30" value="3.535401477120718" />
-      <entry key="S60" value="3.7972529738514713" />
-      <entry key="M2" value="4.435121811537213" />
-      <entry key="M5" value="7.313184642859806" />
-      <entry key="M10" value="11.159169886163568" />
-      <entry key="M15" value="13.785147491599144" />
-      <entry key="M30" value="18.462264891415845" />
-      <entry key="H1" value="25.65500602268298" />
-      <entry key="H2" value="43.800741932025076" />
-      <entry key="H4" value="80.94052453112634" />
-      <entry key="D1" value="368.29297525942957" />
-      <entry key="W1" value="827.2436703409297" />
+      <entry key="MS100" value="1.0" />
+      <entry key="MS500" value="1.0001310508674832" />
+      <entry key="S2" value="1.1344885173819514" />
+      <entry key="S5" value="1.6490860419031823" />
+      <entry key="S10" value="2.209200832811531" />
+      <entry key="S30" value="3.8532845513643883" />
+      <entry key="S60" value="5.881773068091052" />
+      <entry key="M2" value="8.951000314889086" />
+      <entry key="M5" value="14.11221413564527" />
+      <entry key="M10" value="19.56604131101927" />
+      <entry key="M15" value="24.27647986528763" />
+      <entry key="M30" value="35.81453824331706" />
+      <entry key="H1" value="53.121417112046664" />
+      <entry key="H2" value="79.20209643250477" />
+      <entry key="H4" value="121.88050658740141" />
+      <entry key="D1" value="419.87566407602645" />
+      <entry key="W1" value="894.1857276017136" />
     </decayedSelected>
     <decayedShown>
-      <entry key="MS100" value="1.8527143633213644E-5" />
-      <entry key="MS500" value="0.11481844316695422" />
-      <entry key="S2" value="0.8967677637393706" />
-      <entry key="S5" value="2.2058852345947875" />
-      <entry key="S10" value="4.056942933542859" />
-      <entry key="S30" value="8.091281171639853" />
-      <entry key="S60" value="10.399447281657288" />
-      <entry key="M2" value="14.472576145494507" />
-      <entry key="M5" value="31.341242997140437" />
-      <entry key="M10" value="58.38989646616764" />
-      <entry key="M15" value="78.09912634125848" />
-      <entry key="M30" value="113.05242590376699" />
-      <entry key="H1" value="199.95182367610224" />
-      <entry key="H2" value="601.9432073997617" />
-      <entry key="H4" value="1571.5117248472282" />
-      <entry key="D1" value="6852.863985146112" />
-      <entry key="W1" value="11687.897217890275" />
+      <entry key="MS100" value="0.00151129393900624" />
+      <entry key="MS500" value="0.27285944329119816" />
+      <entry key="S2" value="0.8372379516740497" />
+      <entry key="S5" value="1.6336188379329613" />
+      <entry key="S10" value="2.512178403212627" />
+      <entry key="S30" value="4.995039900423985" />
+      <entry key="S60" value="8.30418464284715" />
+      <entry key="M2" value="17.763206950781" />
+      <entry key="M5" value="78.74000569015628" />
+      <entry key="M10" value="172.01836668989387" />
+      <entry key="M15" value="232.82638394939542" />
+      <entry key="M30" value="334.70406292951355" />
+      <entry key="H1" value="454.40178220334457" />
+      <entry key="H2" value="760.3747209284687" />
+      <entry key="H4" value="1605.122477780878" />
+      <entry key="D1" value="6996.200629529568" />
+      <entry key="W1" value="12126.620355796633" />
     </decayedShown>
   </component>
   <component name="ProjectColorInfo">{
@@ -290,7 +296,7 @@
       <workItem from="1782075269009" duration="41587000" />
       <workItem from="1782213985790" duration="11852000" />
       <workItem from="1782245101982" duration="9733000" />
-      <workItem from="1782376314425" duration="7644000" />
+      <workItem from="1782376314425" duration="12803000" />
     </task>
     <task id="LOCAL-00001" summary="firts draft">
       <option name="closed" value="true" />
@@ -356,7 +362,15 @@
       <option name="project" value="LOCAL" />
       <updated>1782378010330</updated>
     </task>
-    <option name="localTasksCounter" value="9" />
+    <task id="LOCAL-00009" summary="added proper check for recipient name during transactions routers/transactions">
+      <option name="closed" value="true" />
+      <created>1782388575872</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1782388575872</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -371,7 +385,8 @@
     <MESSAGE value="created conftest.py.&#10;it has everything needed to execute testing functions&#10;&#10;created test_users.py and test_accounts.py with 3 testing functions. everything works fine&#10;&#10;&#10;changed transfer_money in the crud/transactions. Not it also adds a transfer record after transferring the money." />
     <MESSAGE value="created tests for users, accounts and started working at transactions" />
     <MESSAGE value="created .env, gitignore and config file.&#10;posted everything on github" />
-    <option name="LAST_COMMIT_MESSAGE" value="created .env, gitignore and config file.&#10;posted everything on github" />
+    <MESSAGE value="added proper check for recipient name during transactions routers/transactions" />
+    <option name="LAST_COMMIT_MESSAGE" value="added proper check for recipient name during transactions routers/transactions" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/Banking_APP$database.coverage" NAME="database Coverage Results" MODIFIED="1781814740217" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />

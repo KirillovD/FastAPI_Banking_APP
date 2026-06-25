@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
+import dependencies
 import exceptions
 from crud import users
 from database import get_db
@@ -30,7 +31,7 @@ def create_user(user: schemas.UserCreate, db : Session = Depends(get_db)):
 #we use safe response model that does not send password back
 #we use curvy braces because user_id is a variable that is entered in the app
 @router.get("/", response_model=schemas.UserResponse)
-def find_user(user_id: int = Depends(utils.verify_existing_token), db : Session = Depends(get_db)):
+def find_user(user_id: int = Depends(dependencies.verify_existing_token), db : Session = Depends(get_db)):
     db_user = users.find_user(user_id,db)
 
     if db_user is None:
@@ -38,3 +39,11 @@ def find_user(user_id: int = Depends(utils.verify_existing_token), db : Session 
         raise exceptions.UserNotFoundException()
 
     return db_user
+
+@router.get("/")
+def check_admin(user_id: int = Depends(dependencies.verify_existing_token), db : Session = Depends(get_db)):
+
+     if not dependencies.check_admin(user_id,db):
+         raise exceptions.NotAdmin()
+
+     return True

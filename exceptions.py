@@ -33,3 +33,11 @@ class TokenException(HTTPException):
             detail= detail
 
         )
+
+class NotAdmin(HTTPException):
+    def __init__(self, detail: str = "User does no have admin rights"):
+        super().__init__(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail= detail
+
+        )

@@ -19,6 +19,7 @@ class User(Base):
     last_name : Mapped[str] = mapped_column()
     credit_score : Mapped[int] = mapped_column(default=500)
     password : Mapped[str] = mapped_column()
+    is_admin : Mapped[bool] = mapped_column(default=False)
 
     #User and Account are Python Class Objects
     #the DB users tabel won't have accounts as a separate column,
