@@ -62,6 +62,7 @@ class TransferMoney(BaseModel):
 class TransactionResponse(BaseModel):
     transaction_id : int
     sender_account_id : int | None
+    sender_iban : str | None
     recipient_iban : str | None
     transfer_amount : float
     created_at : datetime
