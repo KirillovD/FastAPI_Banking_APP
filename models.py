@@ -46,10 +46,13 @@ class Transaction(Base):
     transaction_id : Mapped[int] = mapped_column(unique=True, primary_key=True)
     sender_account_id : Mapped[int | None] = mapped_column(ForeignKey("accounts.acc_id"),nullable=True)
     recipient_account_id : Mapped[int | None] = mapped_column(ForeignKey("accounts.acc_id"), nullable=True)
+    sender_iban : Mapped[str | None] = mapped_column(index=True)
+    recipient_iban : Mapped[str | None] = mapped_column(index=True)
     transfer_amount : Mapped[float] = mapped_column()
     created_at : Mapped[datetime] = mapped_column(DateTime(timezone=True),
-                                                     default= lambda : datetime.now(timezone.utc),
-                                                     nullable = False
+                                                  default= lambda : datetime.now(timezone.utc),
+                                                  nullable = False,
+                                                  index = True
                                                      )
     status : Mapped[str] = mapped_column()
     operation_type : Mapped[str] = mapped_column()

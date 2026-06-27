@@ -23,12 +23,15 @@ def transfer_money(source_account, recipient_account, transfer_amount,db : Sessi
     source_account.acc_balance -= transfer_amount
     recipient_account.acc_balance += transfer_amount
 
-    transfer = create_transaction_record( source_account.acc_id,
-                                recipient_account.acc_id,
-                                transfer_amount,
-                                "transfer",
-                                "transfer",
-                                db
+    transfer = create_transaction_record(
+                                sender_account_id = source_account.acc_id,
+                                recipient_account_id = recipient_account.acc_id,
+                                sender_iban = source_account.iban,
+                                recipient_iban = recipient_account.iban,
+                                amount = transfer_amount,
+                                operation_type = "transfer",
+                                category = "transfer",
+                                db = db
                                      )
 
     db.commit()
@@ -54,17 +57,22 @@ def get_transactions_history(user_id,db : Session):
 
 
 
-def create_transaction_record(sender_account_id : int | None,
-                                             recipient_account_id : int | None,
-                                             amount : float,
-                                             operation_type : str,
-                                             category : str,
-                                             db : Session,
-                                             description: str | None = None,
-                                             status : str = "successful"):
+def create_transaction_record(
+                                sender_account_id : int | None,
+                                recipient_account_id : int | None,
+                                sender_iban,
+                                recipient_iban,
+                                amount : float,
+                                operation_type : str,
+                                category : str,
+                                db : Session,
+                                description: str | None = None,
+                                status : str = "successful"):
 
     new_transaction_record = models.Transaction(sender_account_id = sender_account_id,
                                              recipient_account_id = recipient_account_id,
+                                             sender_iban = sender_iban,
+                                             recipient_iban=recipient_iban,
                                              transfer_amount = amount,
                                              status = status,
                                              operation_type = operation_type,
@@ -84,12 +92,14 @@ def deposit_cash(acc_id : int, deposit_amount : float, db : Session):
     account.acc_balance += deposit_amount
 
 
-    create_transaction_record( None,
-                                acc_id,
-                                deposit_amount,
-                                "deposit",
-                                "cash_deposit",
-                                db
+    create_transaction_record( sender_account_id=None,
+                               recipient_account_id=acc_id,
+                               sender_iban= None,
+                               recipient_iban= account.iban,
+                               amount = deposit_amount,
+                               operation_type="deposit",
+                               category="cash_deposit",
+                                db=db
                                              )
 
     db.commit()
@@ -105,13 +115,15 @@ def withdraw_cash(acc_id: int, withdraw_amount : float, db: Session):
 
 
 
-    create_transaction_record( acc_id,
-                                None,
-                                withdraw_amount,
-                                "withdrawal",
-                                "cash_withdrawal",
-                                db
-                                     )
+    create_transaction_record( sender_account_id = acc_id,
+                               recipient_account_id = None,
+                               sender_iban = account.iban,
+                               recipient_iban= None,
+                               amount = withdraw_amount,
+                               operation_type = "withdraw",
+                               category = "cash_withdraw",
+                                db=db
+                                             )
 
     db.commit()
     db.refresh(account)
