@@ -1,6 +1,6 @@
 #this file has the schemas for the tables in our database
 from datetime import datetime,timezone
-from sqlalchemy import DateTime
+from sqlalchemy import DateTime, String
 from sqlalchemy import Integer, ForeignKey
 from sqlalchemy.orm import relationship, declarative_base, Mapped, mapped_column
 from typing import List
@@ -35,7 +35,7 @@ class Account(Base):
     acc_balance : Mapped[float] = mapped_column()
     acc_type : Mapped[str] = mapped_column()
     overdraft_limit : Mapped[int] = mapped_column(default=0)
-
+    iban : Mapped[str] = mapped_column(String(34), unique=True, index=True, nullable=False)
 
     owner : Mapped["User"] = relationship(back_populates="accounts")
 

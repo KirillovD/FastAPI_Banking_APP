@@ -1,4 +1,3 @@
-from urllib import response
 
 from conftest import create_user_and_login,create_account
 
@@ -13,18 +12,17 @@ def test_transfer_money_success(client,auth_headers):
 
     recipient_user_account = create_account(client, recipient_headers,
                                             "Checking",1000)
-
     response = client.post("/transactions/",
                            json={
-                                 "recipient_acc_id": recipient_user_account["acc_id"],
-                                 "recipient_name":"Bob",
+                                 "recipient_iban": recipient_user_account["iban"],
+                                 "recipient_name":"Bob Test",
                                  "source_account_id":sender_user_account["acc_id"],
                                  "transfer_amount" : 200
                                 },
                                 headers=auth_headers
                            )
-    print(sender_headers,sender_user_account)
-    assert response.status_code == 200
+    print(recipient_headers.values())
+    assert response.status_code == 200, f"Ошибка! Сервер ответил {response.status_code}, тело ответа: {response.json()}"
     data = response.json()
     assert data == {"Message": "Transfer successful!", "Amount": 200}
 

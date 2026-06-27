@@ -2,6 +2,8 @@ from sqlalchemy.orm import Session
 import models,exceptions
 from fastapi import Depends
 from fastapi.security import OAuth2PasswordBearer
+
+from database import get_db
 from utils import secret_key, ALGORITHM
 import jwt
 
@@ -24,5 +26,5 @@ def verify_existing_token(token: str = Depends(oauth2_scheme)) -> dict:
 
 
 
-def check_admin(user_id,db : Session):
+def check_admin(user_id,db : Session=Depends(get_db)):
     return db.query(models.User.is_admin).filter(models.User.user_id == user_id).scalar()

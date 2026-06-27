@@ -19,7 +19,7 @@ def transfer_money(transfer_data  : schemas.TransferMoney,
                    db : Session = Depends(get_db)):
 
     source_account = accounts.get_acc_by_id_with_token(user_id, transfer_data.source_account_id, db)
-    recipient_account = accounts.get_acc_by_id(transfer_data.recipient_acc_id, db)
+    recipient_account = accounts.get_acc_by_iban(transfer_data.recipient_iban, db)
 
     if not source_account:
         raise exceptions.AccountNotFoundException(detail=

@@ -2,6 +2,8 @@ import bcrypt
 import jwt
 from datetime import datetime, timedelta, timezone
 from config import settings
+import random
+from schwifty import IBAN
 
 secret_key = settings.secret_key
 ALGORITHM = settings.algorithm
@@ -45,3 +47,10 @@ def create_token(user_id):
 
     return token
 
+def generate_iban():
+    bank_code = "10000000"
+    account_num = "".join(random.choices("123456789", k=10))
+
+    new_iban = IBAN.generate("DE",bank_code,account_num)
+
+    return str(new_iban)
