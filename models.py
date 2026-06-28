@@ -38,7 +38,7 @@ class Account(Base):
     overdraft_limit : Mapped[int] = mapped_column(default=0)
     iban : Mapped[str] = mapped_column(String(34), unique=True, index=True, nullable=False)
 
-    debit_cards : Mapped[list["DebitCard"]] = relationship(back_populates="linked_account")
+    debit_cards: Mapped[list["DebitCard"]] = relationship(back_populates="linked_account")
     owner : Mapped["User"] = relationship(back_populates="accounts")
 
 
@@ -69,21 +69,21 @@ class DebitCard(Base):
     linked_acc_id : Mapped[int] = mapped_column(ForeignKey("accounts.acc_id"))
     debit_card_number : Mapped[str] = mapped_column(unique=True, index=True)
     expiry_date : Mapped[datetime] = mapped_column(DateTime(timezone=True))
-    CVV_hashed : Mapped[str] = mapped_column()
+    CVV_encrypted : Mapped[str] = mapped_column()
     pin_code_hashed : Mapped[str] = mapped_column()
 
-    linked_account : Mapped["Account"] = relationship(back_populates="accounts")
+    linked_account: Mapped["Account"] = relationship(back_populates="debit_cards")
 
 class CreditCard(Base):
     __tablename__ = "credit_cards"
 
-    credit_card_id : Mapped[int] = mapped_column(ForeignKey("users.user_id"), primary_key=True)
+    credit_card_id : Mapped[int] = mapped_column( primary_key=True)
     owner_id : Mapped[int] = mapped_column(ForeignKey("users.user_id"))
     credit_card_number : Mapped[str] = mapped_column(unique=True, index=True)
     expiry_date : Mapped[datetime] = mapped_column(DateTime(timezone=True))
-    CVV_hashed : Mapped[str] = mapped_column()
+    CVV_encrypted : Mapped[bytes] = mapped_column()
     pin_code_hashed : Mapped[str] = mapped_column()
-    balance : Mapped[float] = mapped_column()
-    credit_limit : Mapped[int] = mapped_column()
+    balance : Mapped[float] = mapped_column(default=0.0)
+    credit_limit : Mapped[int] = mapped_column(default=500)
 
-    owner : Mapped["User"] = relationship(back_populates="users")
+    owner: Mapped["User"] = relationship(back_populates="credit_cards")

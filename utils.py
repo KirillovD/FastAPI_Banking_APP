@@ -1,14 +1,21 @@
 import bcrypt
+import faker.providers.credit_card
 import jwt
 from datetime import datetime, timedelta, timezone
-
+from dateutil.relativedelta import relativedelta
 import exceptions
 from config import settings
 import random
 from schwifty import IBAN
+from faker import Faker
+from cryptography.fernet import Fernet
 
 secret_key = settings.secret_key
 ALGORITHM = settings.algorithm
+encryption_key = settings.encryption_key
+
+faker = Faker()
+f = Fernet(encryption_key)
 
 
 def hash_password(password: str) -> str:
@@ -58,3 +65,23 @@ def generate_iban():
         raise
 
     return str(new_iban)
+
+
+def generate_card_info(card_type, pin_code: int):
+
+    card_number = faker.credit_card_number(card_type)
+    security_code = faker.credit_card_security_code(card_type).encode("utf-8")
+
+    hashed_pin_code = hash_password(str(pin_code))
+    encrypted_security_code = f.encrypt(security_code)
+
+    future_date = datetime.now() + relativedelta(years=4)
+
+    # 2. Делаем этот объект timezone-aware (добавляем UTC)
+    expiry_dt_tz = future_date.replace(tzinfo=timezone.utc)
+
+    return {"card_number": card_number,
+            "expiry_date" : expiry_dt_tz,
+            "hashed_pin_code" : hashed_pin_code,
+            "encrypted_security_code" : encrypted_security_code}
+

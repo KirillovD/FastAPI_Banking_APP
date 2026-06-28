@@ -2,7 +2,7 @@
 from datetime import datetime
 from schwifty import IBAN
 from typing import Literal
-from pydantic import BaseModel, Field, EmailStr, field_validator
+from pydantic import BaseModel, Field, EmailStr, field_validator, ConfigDict
 from schwifty.exceptions import SchwiftyException
 
 
@@ -77,4 +77,23 @@ class TransactionResponse(BaseModel):
 class CashOperation(BaseModel):
     acc_id : int
     amount : float= Field(gt=0)
-    
+
+
+class CreateCard(BaseModel):
+    pin_code : int
+    card_type : Literal["maestro", "mastercard"]
+
+class CreditCardResponse(BaseModel):
+    credit_card_id : int
+    credit_card_number : str
+    expiry_date : datetime
+    credit_limit: int
+
+    model_config = ConfigDict(from_attributes=True)
+
+class DebitCardResponse(BaseModel):
+    debit_card_id : int
+    debit_card_number : str
+    expiry_date : datetime
+
+    model_config = ConfigDict(from_attributes=True)
