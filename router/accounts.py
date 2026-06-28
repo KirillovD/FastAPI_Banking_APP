@@ -24,7 +24,10 @@ def create_account(account : schemas.AccCreate, user_id : int = Depends(dependen
     if not users.find_user(user_id,db):
         raise exceptions.UserNotFoundException()
 
-    return accounts.create_account(account,user_id,db)
+    new_acc = accounts.create_account(account,user_id,db)
+    if not new_acc:
+        raise exceptions.IbanGenError
+    return new_acc
 
 @router.get("/", response_model=list[schemas.AccResponse])
 def get_all_accounts(user_id : int = Depends(dependencies.verify_existing_token),

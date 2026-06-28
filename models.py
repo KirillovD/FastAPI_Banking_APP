@@ -3,7 +3,6 @@ from datetime import datetime,timezone
 from sqlalchemy import DateTime, String
 from sqlalchemy import Integer, ForeignKey
 from sqlalchemy.orm import relationship, declarative_base, Mapped, mapped_column
-from typing import List
 
 #create the Base variable. It will work as a parent class
 Base = declarative_base()
@@ -24,7 +23,9 @@ class User(Base):
     #User and Account are Python Class Objects
     #the DB users tabel won't have accounts as a separate column,
     #but the python object that will be used in our RAM will have accounts inside it
-    accounts : Mapped[List["Account"]] = relationship(back_populates="owner")
+    accounts : Mapped[list["Account"]] = relationship(back_populates="owner")
+    credit_cards : Mapped[list["CreditCard"]] = relationship(back_populates="owner")
+
 
 
 class Account(Base):
@@ -37,6 +38,7 @@ class Account(Base):
     overdraft_limit : Mapped[int] = mapped_column(default=0)
     iban : Mapped[str] = mapped_column(String(34), unique=True, index=True, nullable=False)
 
+    debit_cards : Mapped[list["DebitCard"]] = relationship(back_populates="linked_account")
     owner : Mapped["User"] = relationship(back_populates="accounts")
 
 
@@ -59,5 +61,29 @@ class Transaction(Base):
     description : Mapped[str | None] = mapped_column(nullable=True)
     category : Mapped[str] = mapped_column()
 
-    #    status : Literal["successful","failed"] = mapped_column()
-    #
+
+class DebitCard(Base):
+    __tablename__ = "debit_cards"
+
+    debit_card_id : Mapped[int] = mapped_column(primary_key=True)
+    linked_acc_id : Mapped[int] = mapped_column(ForeignKey("accounts.acc_id"))
+    debit_card_number : Mapped[str] = mapped_column(unique=True, index=True)
+    expiry_date : Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    CVV_hashed : Mapped[str] = mapped_column()
+    pin_code_hashed : Mapped[str] = mapped_column()
+
+    linked_account : Mapped["Account"] = relationship(back_populates="accounts")
+
+class CreditCard(Base):
+    __tablename__ = "credit_cards"
+
+    credit_card_id : Mapped[int] = mapped_column(ForeignKey("users.user_id"), primary_key=True)
+    owner_id : Mapped[int] = mapped_column(ForeignKey("users.user_id"))
+    credit_card_number : Mapped[str] = mapped_column(unique=True, index=True)
+    expiry_date : Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    CVV_hashed : Mapped[str] = mapped_column()
+    pin_code_hashed : Mapped[str] = mapped_column()
+    balance : Mapped[float] = mapped_column()
+    credit_limit : Mapped[int] = mapped_column()
+
+    owner : Mapped["User"] = relationship(back_populates="users")

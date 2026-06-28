@@ -1,19 +1,28 @@
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 import models,schemas
 import utils
 
 
 def create_account(account : schemas.AccCreate, user_id : int, db : Session):
+
+
     new_account: models.Account = models.Account(owner_id=user_id,
                                                  acc_type= account.acc_type,
                                                  iban=utils.generate_iban(),
                                                  acc_balance= account.acc_balance)
 
     db.add(new_account)
-    db.commit()
-    db.refresh(new_account)
 
-    return new_account
+    try:
+        db.commit()
+
+        db.refresh(new_account)
+        return new_account
+
+    except IntegrityError:
+        db.rollback()
+        return False
 
 
 def get_all_accounts(user_id : int, db : Session):

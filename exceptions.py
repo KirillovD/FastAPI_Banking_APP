@@ -41,3 +41,11 @@ class NotAdmin(HTTPException):
             detail= detail
 
         )
+
+class IbanGenError(HTTPException):
+    def __init__(self, detail: str = "Something went wrong, please refresh the page and try again"):
+        super().__init__(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail= detail
+
+        )
