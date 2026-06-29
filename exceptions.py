@@ -56,3 +56,19 @@ class NotYourAccountException(HTTPException):
             status_code=status.HTTP_403_FORBIDDEN,
             detail= detail
         )
+
+
+class NotYourCardException(HTTPException):
+    def __init__(self, detail: str = "You don't have access to this card"):
+        super().__init__(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail= detail
+        )
+
+class CardNotFoundException(HTTPException):
+    def __init__(self, detail: str = "Card not found"):
+        super().__init__(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail= detail
+
+        )

@@ -33,3 +33,37 @@ def create_debit_card(card_type_and_pin: schemas.CreateCard,
         raise exceptions.NotYourAccountException
 
     return cards.create_debit_card(acc_id, card_type_and_pin, db)
+
+
+@router.get("/debit/{card_id}", response_model=schemas.DebitCardResponse)
+def get_debit_card(card_id : int,
+                   user_id : int = Depends(dependencies.verify_existing_token),
+                   db : Session = Depends(get_db)):
+
+
+    card = cards.get_card_info("DebitCard",card_id,db)
+
+    if not card:
+        raise exceptions.CardNotFoundException()
+
+    linked_acc = accounts.get_acc_by_id(card.linked_acc_id,db)
+
+    if not linked_acc or not linked_acc.owner_id == user_id:
+        raise exceptions.NotYourCardException()
+
+    return card
+
+
+@router.get("/credit/{card_id}", response_model=schemas.CreditCardResponse)
+def get_credit_card(card_id : int,
+                   user_id : int = Depends(dependencies.verify_existing_token),
+                   db : Session = Depends(get_db)):
+
+    card = cards.get_card_info("CreditCard", card_id, db)
+    if not card:
+        raise exceptions.CardNotFoundException()
+
+    if not card.owner_id == user_id:
+        raise exceptions.NotYourCardException()
+
+    return card

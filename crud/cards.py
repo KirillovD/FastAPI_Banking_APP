@@ -1,6 +1,5 @@
 from typing import Literal
 
-from sqlalchemy import table
 from sqlalchemy.orm import Session
 import models,schemas
 import utils
