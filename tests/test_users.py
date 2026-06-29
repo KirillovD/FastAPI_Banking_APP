@@ -17,7 +17,7 @@ def test_create_user(client):
     data = response.json()
     assert data["email"] == "john@example.com"
     assert data["first_name"] == "John"
-    assert "user_id" in data
+    assert "id" in data
     #we do not want to return password in any instance
     assert "password" not in data
 

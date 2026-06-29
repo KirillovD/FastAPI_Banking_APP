@@ -52,16 +52,16 @@ def deposit_cash(acc_id_and_amount : schemas.CashOperation ,
                  user_id : int = Depends(dependencies.verify_existing_token),
                  db : Session = Depends(get_db)):
 
-    account = accounts.get_acc_by_id_with_token(user_id,acc_id_and_amount.acc_id,db)
+    account = accounts.get_acc_by_id_with_token(user_id,acc_id_and_amount.id,db)
 
     if not account:
         raise exceptions.AccountNotFoundException()
 
-    deposit  = transaction.deposit_cash(acc_id_and_amount.acc_id,
+    deposit  = transaction.deposit_cash(acc_id_and_amount.id,
                                         acc_id_and_amount.amount,
                                         db )
 
-    return {"Message": "Deposit successful!", "Account Balance:": deposit.acc_balance }
+    return {"Message": "Deposit successful!", "Account Balance:": deposit.balance}
 
 
 @router.post("/withdraw")
@@ -69,7 +69,7 @@ def withdraw_cash(acc_id_and_amount : schemas.CashOperation ,
                   user_id : int = Depends(dependencies.verify_existing_token),
                   db : Session = Depends(get_db)):
 
-    account = accounts.get_acc_by_id_with_token(user_id,acc_id_and_amount.acc_id,db)
+    account = accounts.get_acc_by_id_with_token(user_id,acc_id_and_amount.id,db)
 
     if not account:
         raise exceptions.AccountNotFoundException()
@@ -77,8 +77,8 @@ def withdraw_cash(acc_id_and_amount : schemas.CashOperation ,
     if not transaction.is_balance_sufficient(account,acc_id_and_amount.amount):
         raise exceptions.AccountInsufficientFundsException()
 
-    withdraw  = transaction.withdraw_cash(acc_id_and_amount.acc_id,
+    withdraw  = transaction.withdraw_cash(acc_id_and_amount.id,
                                         acc_id_and_amount.amount,
                                         db )
 
-    return {"Message": "Withdraw successful!", "Account Balance:": withdraw.acc_balance }
+    return {"Message": "Withdraw successful!", "Account Balance:": withdraw.balance}

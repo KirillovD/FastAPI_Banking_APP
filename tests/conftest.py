@@ -86,8 +86,8 @@ def create_account(client, headers, acc_type, balance):
 
     #create acc for authenticated user
     response = client.post("/accounts/",
-                           json={"acc_type"  : acc_type,
-                                 "acc_balance" : balance},
+                           json={"type"  : acc_type,
+                                 "balance" : balance},
                            headers=headers
                            )
 

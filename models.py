@@ -11,7 +11,7 @@ Base = declarative_base()
 class User(Base):
     __tablename__ = "users"
 
-    user_id : Mapped[int] = mapped_column(Integer, index=True, unique=True, primary_key=True)
+    id : Mapped[int] = mapped_column(Integer, index=True, unique=True, primary_key=True)
 
     email : Mapped[str] = mapped_column(unique=True)
     first_name : Mapped[str] = mapped_column()
@@ -31,10 +31,10 @@ class User(Base):
 class Account(Base):
     __tablename__ = "accounts"
 
-    acc_id : Mapped[int] = mapped_column(unique=True, primary_key=True)
-    owner_id : Mapped[int] = mapped_column(ForeignKey("users.user_id"))
-    acc_balance : Mapped[float] = mapped_column()
-    acc_type : Mapped[str] = mapped_column()
+    id : Mapped[int] = mapped_column(unique=True, primary_key=True)
+    owner_id : Mapped[int] = mapped_column(ForeignKey("users.id"))
+    balance : Mapped[float] = mapped_column()
+    type : Mapped[str] = mapped_column()
     overdraft_limit : Mapped[int] = mapped_column(default=0)
     iban : Mapped[str] = mapped_column(String(34), unique=True, index=True, nullable=False)
 
@@ -45,9 +45,9 @@ class Account(Base):
 class Transaction(Base):
     __tablename__ = "transactions"
 
-    transaction_id : Mapped[int] = mapped_column(unique=True, primary_key=True)
-    sender_account_id : Mapped[int | None] = mapped_column(ForeignKey("accounts.acc_id"),nullable=True)
-    recipient_account_id : Mapped[int | None] = mapped_column(ForeignKey("accounts.acc_id"), nullable=True)
+    id : Mapped[int] = mapped_column(unique=True, primary_key=True)
+    sender_account_id : Mapped[int | None] = mapped_column(ForeignKey("accounts.id"),nullable=True)
+    recipient_account_id : Mapped[int | None] = mapped_column(ForeignKey("accounts.id"), nullable=True)
     sender_iban : Mapped[str | None] = mapped_column(index=True)
     recipient_iban : Mapped[str | None] = mapped_column(index=True)
     transfer_amount : Mapped[float] = mapped_column()
@@ -65,9 +65,9 @@ class Transaction(Base):
 class DebitCard(Base):
     __tablename__ = "debit_cards"
 
-    debit_card_id : Mapped[int] = mapped_column(primary_key=True)
-    linked_acc_id : Mapped[int] = mapped_column(ForeignKey("accounts.acc_id"))
-    debit_card_number : Mapped[str] = mapped_column(unique=True, index=True)
+    id : Mapped[int] = mapped_column(primary_key=True)
+    linked_acc_id : Mapped[int] = mapped_column(ForeignKey("accounts.id"))
+    number : Mapped[str] = mapped_column(unique=True, index=True)
     expiry_date : Mapped[datetime] = mapped_column(DateTime(timezone=True))
     CVV_encrypted : Mapped[str] = mapped_column()
     pin_code_hashed : Mapped[str] = mapped_column()
@@ -77,9 +77,9 @@ class DebitCard(Base):
 class CreditCard(Base):
     __tablename__ = "credit_cards"
 
-    credit_card_id : Mapped[int] = mapped_column( primary_key=True)
-    owner_id : Mapped[int] = mapped_column(ForeignKey("users.user_id"))
-    credit_card_number : Mapped[str] = mapped_column(unique=True, index=True)
+    id : Mapped[int] = mapped_column(primary_key=True)
+    owner_id : Mapped[int] = mapped_column(ForeignKey("users.id"))
+    number : Mapped[str] = mapped_column(unique=True, index=True)
     expiry_date : Mapped[datetime] = mapped_column(DateTime(timezone=True))
     CVV_encrypted : Mapped[bytes] = mapped_column()
     pin_code_hashed : Mapped[str] = mapped_column()

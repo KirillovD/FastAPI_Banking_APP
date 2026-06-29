@@ -20,5 +20,5 @@ def create_user(user: schemas.UserCreate,hashed_pwd, db : Session):
 
 
 def find_user(user_id,db : Session):
-    return db.query(models.User).filter(models.User.user_id == user_id).first()
+    return db.query(models.User).filter(models.User.id == user_id).first()
 

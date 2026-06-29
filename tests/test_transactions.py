@@ -16,7 +16,7 @@ def test_transfer_money_success(client,auth_headers):
                            json={
                                  "recipient_iban": recipient_user_account["iban"],
                                  "recipient_name":"Bob Test",
-                                 "source_account_id":sender_user_account["acc_id"],
+                                 "source_account_id":sender_user_account["id"],
                                  "transfer_amount" : 200
                                 },
                                 headers=auth_headers

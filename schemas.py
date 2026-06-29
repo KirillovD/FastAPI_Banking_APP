@@ -13,12 +13,12 @@ class UserCreate(BaseModel):
     password : str = Field(min_length=8, max_length=20, pattern="^[a-zA-Z0-9_-]+$")
 
 class AccCreate(BaseModel):
-    acc_type : Literal["Savings", "Checking"]
-    acc_balance : float = Field(default=0.0)
+    type : Literal["Savings", "Checking"]
+    balance : float = Field(default=0.0)
 
 
 class UserResponse(BaseModel):
-    user_id : int
+    id : int
     first_name : str
     last_name : str
     email : str
@@ -29,11 +29,11 @@ class UserResponse(BaseModel):
 
 
 class AccResponse(BaseModel):
-    acc_id : int
+    id : int
     owner_id : int
     iban : str
-    acc_type : str
-    acc_balance : int
+    type : str
+    balance : int
     overdraft_limit : int = Field(default=0)
 
     class Config:
@@ -60,7 +60,7 @@ class TransferMoney(BaseModel):
 
 
 class TransactionResponse(BaseModel):
-    transaction_id : int
+    id : int
     sender_account_id : int | None
     sender_iban : str | None
     recipient_iban : str | None
@@ -75,7 +75,7 @@ class TransactionResponse(BaseModel):
         from_attributes = True
 
 class CashOperation(BaseModel):
-    acc_id : int
+    id : int
     amount : float= Field(gt=0)
 
 
@@ -84,16 +84,16 @@ class CreateCard(BaseModel):
     card_type : Literal["maestro", "mastercard"]
 
 class CreditCardResponse(BaseModel):
-    credit_card_id : int
-    credit_card_number : str
+    id : int
+    number : str
     expiry_date : datetime
     credit_limit: int
 
     model_config = ConfigDict(from_attributes=True)
 
 class DebitCardResponse(BaseModel):
-    debit_card_id : int
-    debit_card_number : str
+    id : int
+    number : str
     expiry_date : datetime
 
     model_config = ConfigDict(from_attributes=True)

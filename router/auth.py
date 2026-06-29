@@ -29,7 +29,7 @@ def user_login(login_data : OAuth2PasswordRequestForm = Depends(), db : Session 
     if not utils.verify_password(login_data.password, user.password):
         raise HTTPException(status_code=401, detail="Wrong password")
 
-    token = create_token(user.user_id)
+    token = create_token(user.id)
     return {"access_token": token, "token_type": "bearer"}
 
 

@@ -6,8 +6,8 @@ def test_create_account(client, auth_headers):
 
     #create savings account using token data from auth_headers
     response = client.post("/accounts/",
-                           json={"acc_type"  :"Savings",
-                                 "acc_balance" : 1000},
+                           json={"type"  :"Savings",
+                                 "balance" : 1000},
                            headers=auth_headers
                            )
 
@@ -16,10 +16,10 @@ def test_create_account(client, auth_headers):
     data = response.json()
 
     #see AccountResponse in schemas.py for details
-    assert data["acc_type"] == "Savings"
-    assert data["acc_balance"] == 1000
+    assert data["type"] == "Savings"
+    assert data["balance"] == 1000
     assert "owner_id" in data
-    assert "acc_id" in data
+    assert "id" in data
     assert  "overdraft_limit" in data
 
 
@@ -29,8 +29,8 @@ def test_get_all_accounts(client, auth_headers):
     #create the first one as savings
     #use auth_headers to create and login the user and get the token
     create_savings_account = client.post("/accounts/",
-                           json={"acc_type"  :"Savings",
-                                 "acc_balance" : 1000},
+                           json={"type"  :"Savings",
+                                 "balance" : 1000},
                            headers=auth_headers
                            )
 
@@ -38,8 +38,8 @@ def test_get_all_accounts(client, auth_headers):
 
     #Response should match AccountResponse in schemas.py
     create_checking_account = client.post("/accounts/",
-                           json={"acc_type"  :"Checking",
-                                 "acc_balance" : 50000},
+                           json={"type"  :"Checking",
+                                 "balance" : 50000},
                            headers=auth_headers
                            )
 
@@ -63,17 +63,17 @@ def test_get_all_accounts(client, auth_headers):
     assert len(data) == 2
 
     #Response should match AccountResponse in schemas.py
-    assert data[0]["acc_type"] == "Savings"
-    assert data[0]["acc_balance"] == 1000
+    assert data[0]["type"] == "Savings"
+    assert data[0]["balance"] == 1000
     assert "owner_id" in data[0]
-    assert "acc_id" in data[0]
+    assert "id" in data[0]
     assert  "overdraft_limit" in data[0]
 
     #Response should match AccountResponse in schemas.py
-    assert data[1]["acc_type"] == "Checking"
-    assert data[1]["acc_balance"] == 50000
+    assert data[1]["type"] == "Checking"
+    assert data[1]["balance"] == 50000
     assert "owner_id" in data[1]
-    assert "acc_id" in data[1]
+    assert "id" in data[1]
     assert  "overdraft_limit" in data[1]
 
 
@@ -95,8 +95,8 @@ def test_get_accounts_empty(client,auth_headers):
 def test_create_account_without_token(client):
 
     create_savings_account = client.post("/accounts/",
-                           json={"acc_type"  :"Savings",
-                                 "acc_balance" : 1000}
+                           json={"type"  :"Savings",
+                                 "balance" : 1000}
                            )
 
     #401 for not authorized, not logged in

@@ -13,19 +13,19 @@ from crud import accounts
 #use list[] in the response model for multiple accounts
 def is_balance_sufficient(source_account, transfer_amount):
 
-    money_limit = float(sum(attrgetter("acc_balance","overdraft_limit")(source_account)))
+    money_limit = float(sum(attrgetter("balance","overdraft_limit")(source_account)))
 
     return money_limit >= transfer_amount
 
 
 def transfer_money(source_account, recipient_account, transfer_amount,db : Session):
 
-    source_account.acc_balance -= transfer_amount
-    recipient_account.acc_balance += transfer_amount
+    source_account.balance -= transfer_amount
+    recipient_account.balance += transfer_amount
 
     transfer = create_transaction_record(
-                                sender_account_id = source_account.acc_id,
-                                recipient_account_id = recipient_account.acc_id,
+                                sender_account_id = source_account.id,
+                                recipient_account_id = recipient_account.id,
                                 sender_iban = source_account.iban,
                                 recipient_iban = recipient_account.iban,
                                 amount = transfer_amount,
@@ -42,7 +42,7 @@ def transfer_money(source_account, recipient_account, transfer_amount,db : Sessi
 
 def get_transactions_history(user_id,db : Session):
     user_accounts = accounts.get_all_accounts(user_id,db)
-    account_ids = [account.acc_id for account in user_accounts]
+    account_ids = [account.id for account in user_accounts]
 
     user_transactions_history = (db.query(models.Transaction).
                                  filter(
@@ -87,9 +87,9 @@ def create_transaction_record(
 
 def deposit_cash(acc_id : int, deposit_amount : float, db : Session):
 
-    account = db.query(models.Account).filter(models.Account.acc_id == acc_id).first()
+    account = db.query(models.Account).filter(models.Account.id == acc_id).first()
 
-    account.acc_balance += deposit_amount
+    account.balance += deposit_amount
 
 
     create_transaction_record( sender_account_id=None,
@@ -109,9 +109,9 @@ def deposit_cash(acc_id : int, deposit_amount : float, db : Session):
 
 
 def withdraw_cash(acc_id: int, withdraw_amount : float, db: Session):
-    account = db.query(models.Account).filter(models.Account.acc_id == acc_id).first()
+    account = db.query(models.Account).filter(models.Account.id == acc_id).first()
 
-    account.acc_balance -= withdraw_amount
+    account.balance -= withdraw_amount
 
 
 
