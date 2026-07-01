@@ -27,4 +27,4 @@ def verify_existing_token(token: str = Depends(oauth2_scheme)) -> dict:
 
 
 def check_admin(user_id,db : Session=Depends(get_db)):
-    return db.query(models.User.is_admin).filter(models.User.id == user_id).scalar()
+    return db.query(models.User.is_admin).filter(models.User.id == user_id  ).scalar()

@@ -2,38 +2,38 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
-import dependencies
+import models
+from dependecies import auth
 from crud import transaction,accounts
 import exceptions,schemas
 from database import get_db
+from dependecies.accounts import get_valid_acc
+from dependecies.users import get_current_user
 
 router = APIRouter(
     prefix="/transactions",
     tags=["Transactions"],
-    dependencies = [Depends(dependencies.verify_existing_token)]
+    dependencies = [Depends(auth.verify_existing_token)]
 )
 
-@router.post("/")
-def transfer_money(transfer_data  : schemas.TransferMoney,
-                   user_id : int = Depends(dependencies.verify_existing_token),
+@router.post("/{acc_id}")
+def transfer_money(acc_id : int,
+                   transfer_data  : schemas.TransferMoney,
+                   valid_source_acc: models.Account = Depends(get_valid_acc),
                    db : Session = Depends(get_db)):
 
-    source_account = accounts.get_acc_by_id_with_token(user_id, transfer_data.source_account_id, db)
     recipient_account = accounts.get_acc_by_iban(transfer_data.recipient_iban, db)
 
-    if not source_account:
-        raise exceptions.AccountNotFoundException(detail=
-                                                  "Source account not found or access denied")
     if not recipient_account:
         raise exceptions.AccountNotFoundException(detail="Recipient account not found")
 
     if transfer_data.recipient_name != f"{recipient_account.owner.first_name} {recipient_account.owner.last_name}":
         raise exceptions.UserNotFoundException(detail="Recipient name is wrong or doesn't exist")
 
-    if transaction.is_balance_sufficient(source_account,transfer_data.transfer_amount) is False:
+    if transaction.is_balance_sufficient(valid_source_acc,transfer_data.transfer_amount) is False:
         raise exceptions.AccountInsufficientFundsException()
 
-    transaction.transfer_money(source_account,
+    transaction.transfer_money(valid_source_acc,
                                       recipient_account,
                                       transfer_data.transfer_amount,
                                       db)
@@ -42,43 +42,36 @@ def transfer_money(transfer_data  : schemas.TransferMoney,
 
 
 @router.get("/", response_model = list[schemas.TransactionResponse])
-def get_transactions_history(user_id : int = Depends(dependencies.verify_existing_token),
+def get_transactions_history(user : models.User = Depends(get_current_user),
                              db : Session = Depends(get_db)):
 
-    return transaction.get_transactions_history(user_id,db)
+    return transaction.get_transactions_history(user.id,db)
 
-@router.post("/deposit")
-def deposit_cash(acc_id_and_amount : schemas.CashOperation ,
-                 user_id : int = Depends(dependencies.verify_existing_token),
+
+@router.post("/{acc_id}/deposit")
+def deposit_cash(acc_id : int,
+                 amount_data : schemas.CashOperation,
+                 valid_acc : models.Account = Depends(get_valid_acc),
                  db : Session = Depends(get_db)):
 
-    account = accounts.get_acc_by_id_with_token(user_id,acc_id_and_amount.id,db)
-
-    if not account:
-        raise exceptions.AccountNotFoundException()
-
-    deposit  = transaction.deposit_cash(acc_id_and_amount.id,
-                                        acc_id_and_amount.amount,
+    deposit  = transaction.deposit_cash(valid_acc.id,
+                                        amount_data.amount,
                                         db )
 
     return {"Message": "Deposit successful!", "Account Balance:": deposit.balance}
 
 
-@router.post("/withdraw")
-def withdraw_cash(acc_id_and_amount : schemas.CashOperation ,
-                  user_id : int = Depends(dependencies.verify_existing_token),
+@router.post("/{acc_id}/withdraw")
+def withdraw_cash(acc_id : int,
+                  amount_data : schemas.CashOperation,
+                  valid_acc: models.Account = Depends(get_valid_acc),
                   db : Session = Depends(get_db)):
 
-    account = accounts.get_acc_by_id_with_token(user_id,acc_id_and_amount.id,db)
-
-    if not account:
-        raise exceptions.AccountNotFoundException()
-
-    if not transaction.is_balance_sufficient(account,acc_id_and_amount.amount):
+    if not transaction.is_balance_sufficient(valid_acc,amount_data.amount):
         raise exceptions.AccountInsufficientFundsException()
 
-    withdraw  = transaction.withdraw_cash(acc_id_and_amount.id,
-                                        acc_id_and_amount.amount,
-                                        db )
+    withdraw  = transaction.withdraw_cash(valid_acc.id,
+                                          amount_data.amount,
+                                          db)
 
     return {"Message": "Withdraw successful!", "Account Balance:": withdraw.balance}

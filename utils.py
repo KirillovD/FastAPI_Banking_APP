@@ -85,3 +85,6 @@ def generate_card_info(card_type, pin_code: int):
             "hashed_pin_code" : hashed_pin_code,
             "encrypted_security_code" : encrypted_security_code}
 
+def decode_cvv(encrypted_cvv):
+
+    return f.decrypt(encrypted_cvv.encode()).decode()

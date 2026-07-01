@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-import dependencies
+from dependecies import auth
 from database import get_db
 from fastapi import Depends,APIRouter
 from crud import admin
@@ -7,7 +7,7 @@ from crud import admin
 router = APIRouter(
     prefix="/admin",
     tags=["Admin Operations"],
-    dependencies = [Depends(dependencies.verify_existing_token), Depends(dependencies.check_admin)]
+    dependencies = [Depends(auth.verify_existing_token), Depends(auth.check_admin)]
 )
 
 

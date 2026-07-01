@@ -47,3 +47,14 @@ def get_card_info(card_type : Literal["DebitCard","CreditCard"], card_id : int, 
     model_class = model_map[card_type]
 
     return db.query(model_class).get(card_id)
+
+def get_cvv(card_type : Literal["DebitCard","CreditCard"], card_id : int, db : Session):
+
+    model_map = {"DebitCard" : models.DebitCard,
+                 "CreditCard" : models.CreditCard}
+
+    model_class = model_map[card_type]
+
+    card = db.query(model_class).get(card_id)
+
+    return utils.decode_cvv(card.CVV_encrypted)

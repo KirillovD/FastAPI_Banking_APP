@@ -1,13 +1,13 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
-import dependencies
+import models
+from dependecies import auth
 import exceptions
 from crud import users
 from database import get_db
 import schemas, utils
-
-
+from dependecies.users import get_current_user
 
 router = APIRouter(
     prefix="/users",
@@ -15,11 +15,12 @@ router = APIRouter(
 
 #we use safe response model that does not send password back
 @router.post("/", response_model=schemas.UserResponse)
-def create_user(user: schemas.UserCreate, db : Session = Depends(get_db)):
+def create_user(user: schemas.UserCreate,
+                db : Session = Depends(get_db)):
 
     existing_user = users.get_user_by_email(user.email,db)
     if existing_user:
-        raise exceptions.UserNotFoundException()
+        raise exceptions.UserAlreadyExistsException()
 
     #we take the input password from user and hash it
     hashed_pwd = utils.hash_password(user.password)
@@ -31,10 +32,6 @@ def create_user(user: schemas.UserCreate, db : Session = Depends(get_db)):
 #we use safe response model that does not send password back
 #we use curvy braces because user_id is a variable that is entered in the app
 @router.get("/", response_model=schemas.UserResponse)
-def find_user(user_id: int = Depends(dependencies.verify_existing_token), db : Session = Depends(get_db)):
-    db_user = users.find_user(user_id,db)
+def find_user(user : models.User = Depends(get_current_user)):
 
-    if not db_user:
-        raise exceptions.UserNotFoundException()
-
-    return db_user
+    return user

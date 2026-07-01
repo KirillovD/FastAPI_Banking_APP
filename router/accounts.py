@@ -1,50 +1,46 @@
 #this file is for all operations with accounts
 
 from fastapi import APIRouter, Depends
-import dependencies
+
+import models
+from dependecies import auth
 from sqlalchemy.orm import Session
 import exceptions
 from database import get_db
 import schemas
-from crud import accounts,users
-
+from crud import accounts
+from dependecies.accounts import get_valid_acc
+from dependecies.users import get_current_user
 
 router = APIRouter(
     prefix="/accounts",
     tags=["Account Operations"],
-    dependencies = [Depends(dependencies.verify_existing_token)]
+    dependencies = [Depends(auth.verify_existing_token)]
 )
 
 #to create account we use: created token to extract user id, schemes to input and return info about account,
 #session with the database access
 @router.post("/", response_model=schemas.AccResponse)
-def create_account(account : schemas.AccCreate, user_id : int = Depends(dependencies.verify_existing_token), db : Session = Depends(get_db)):
+def create_account(account : schemas.AccCreate,
+                   user : models.User = Depends(get_current_user),
+                   db : Session = Depends(get_db)):
 
-
-    if not users.find_user(user_id,db):
-        raise exceptions.UserNotFoundException()
-
-    new_acc = accounts.create_account(account,user_id,db)
+    new_acc = accounts.create_account(account,user.id,db)
     if not new_acc:
         raise exceptions.IbanGenError
     return new_acc
 
+
 @router.get("/", response_model=list[schemas.AccResponse])
-def get_all_accounts(user_id : int = Depends(dependencies.verify_existing_token),
+def get_all_accounts(user : models.User = Depends(get_current_user),
                      db : Session = Depends(get_db)):
 
-    return accounts.get_all_accounts(user_id, db)
+    return accounts.get_all_accounts(user.id, db)
 
 
 @router.get("/{acc_id}", response_model=schemas.AccResponse)
 def get_acc_by_id(acc_id : int,
-                  user_id : str = Depends(dependencies.verify_existing_token),
-                  db : Session = Depends(get_db)):
+                  valid_acc : models.Account = Depends(get_valid_acc)):
 
-    account = accounts.get_acc_by_id_with_token(user_id,acc_id,db)
-
-    if not account:
-        raise exceptions.AccountNotFoundException
-
-    return account
+    return valid_acc
 

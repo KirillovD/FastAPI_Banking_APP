@@ -32,11 +32,6 @@ def get_all_accounts(user_id : int, db : Session):
 
     return  user_accounts
 
-#this function controls the token, so you can only get your own account
-def get_acc_by_id_with_token(user_id_token,acc_id, db:Session):
-
-      return db.query(models.Account).filter(models.Account.owner_id == user_id_token,
-                                             models.Account.id == acc_id).first()
 
 #thin function will be used only to find the recipient for transfer
 #we will check if recipient name matches the owner name in router/transfers

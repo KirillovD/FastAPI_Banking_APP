@@ -75,9 +75,7 @@ class TransactionResponse(BaseModel):
         from_attributes = True
 
 class CashOperation(BaseModel):
-    id : int
-    amount : float= Field(gt=0)
-
+    amount: float = Field(gt=0, description="Amount must be greater than zero")
 
 class CreateCard(BaseModel):
     pin_code : int
@@ -97,3 +95,7 @@ class DebitCardResponse(BaseModel):
     expiry_date : datetime
 
     model_config = ConfigDict(from_attributes=True)
+
+class CardSecretResponse(BaseModel):
+
+    CVV : str
