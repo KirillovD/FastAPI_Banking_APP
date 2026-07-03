@@ -86,6 +86,7 @@ class CreditCardResponse(BaseModel):
     number : str
     expiry_date : datetime
     credit_limit: int
+    owner_id : int
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -93,9 +94,14 @@ class DebitCardResponse(BaseModel):
     id : int
     number : str
     expiry_date : datetime
+    linked_acc_id : int
 
     model_config = ConfigDict(from_attributes=True)
 
 class CardSecretResponse(BaseModel):
+    cvv : str
 
-    CVV : str
+
+class AllCardsDashboard(BaseModel):
+    credit_cards : list[CreditCardResponse]
+    debit_cards : list[DebitCardResponse]

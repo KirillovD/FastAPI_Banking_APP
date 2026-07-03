@@ -60,6 +60,7 @@ class Transaction(Base):
     operation_type : Mapped[str] = mapped_column()
     description : Mapped[str | None] = mapped_column(nullable=True)
     category : Mapped[str] = mapped_column()
+    mcc_code : Mapped[str | None] = mapped_column(nullable=True)
 
 
 class DebitCard(Base):
@@ -69,7 +70,7 @@ class DebitCard(Base):
     linked_acc_id : Mapped[int] = mapped_column(ForeignKey("accounts.id"))
     number : Mapped[str] = mapped_column(unique=True, index=True)
     expiry_date : Mapped[datetime] = mapped_column(DateTime(timezone=True))
-    CVV_encrypted : Mapped[str] = mapped_column()
+    CVV_encrypted : Mapped[bytes] = mapped_column()
     pin_code_hashed : Mapped[str] = mapped_column()
 
     linked_account: Mapped["Account"] = relationship(back_populates="debit_cards")

@@ -5,11 +5,10 @@ from fastapi import APIRouter, Depends
 import models
 from dependecies import auth
 from sqlalchemy.orm import Session
-import exceptions
 import utils
 from database import get_db
 import schemas
-from crud import accounts, cards
+from crud import cards
 from dependecies.accounts import get_valid_acc
 from dependecies.cards import get_valid_debit_card, get_valid_credit_card
 from dependecies.users import get_current_user
@@ -61,3 +60,12 @@ def get_debit_card_cvv(card_id: int,
                         valid_debit_card: models.DebitCard = Depends(get_valid_debit_card)):
 
     return {"cvv": utils.decode_cvv(valid_debit_card.CVV_encrypted)}
+
+
+
+@router.get("/", response_model=schemas.AllCardsDashboard)
+def get_all_cards(user : models.User = Depends(get_current_user),
+                  db : Session = Depends(get_db)
+                  ):
+
+    return cards.get_all_cards(user.id, db)

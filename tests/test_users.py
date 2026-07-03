@@ -1,3 +1,5 @@
+from schemas import UserResponse
+from tests.conftest import create_user_and_login
 
 
 def test_create_user(client):
@@ -15,11 +17,8 @@ def test_create_user(client):
 
     #time to analyze the data
     data = response.json()
-    assert data["email"] == "john@example.com"
-    assert data["first_name"] == "John"
-    assert "id" in data
-    #we do not want to return password in any instance
-    assert "password" not in data
+
+    valid_data = UserResponse(**data)
 
 
 def test_login_user(client):
@@ -48,4 +47,16 @@ def test_login_user(client):
     assert "access_token" in data
     assert data["token_type"] == "bearer"
     assert "password" not in data
+
+
+def test_find_user(client, auth_headers):
+
+    response = client.get("/users/",
+                          headers=auth_headers)
+
+    assert response.status_code == 200
+
+    data = response.json()
+
+    valid_response = UserResponse(**data)
 

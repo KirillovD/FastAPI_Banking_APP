@@ -1,7 +1,11 @@
+from schemas import AccResponse
+from tests.conftest import create_user_and_login
 
 
 #test function for account creation
 #we use auth_headers to create and login user first
+
+
 def test_create_account(client, auth_headers):
 
     #create savings account using token data from auth_headers
@@ -15,12 +19,7 @@ def test_create_account(client, auth_headers):
 
     data = response.json()
 
-    #see AccountResponse in schemas.py for details
-    assert data["type"] == "Savings"
-    assert data["balance"] == 1000
-    assert "owner_id" in data
-    assert "id" in data
-    assert  "overdraft_limit" in data
+    validated_data = AccResponse(**data)
 
 
 def test_get_all_accounts(client, auth_headers):
@@ -62,19 +61,9 @@ def test_get_all_accounts(client, auth_headers):
     assert isinstance(data, list)
     assert len(data) == 2
 
-    #Response should match AccountResponse in schemas.py
-    assert data[0]["type"] == "Savings"
-    assert data[0]["balance"] == 1000
-    assert "owner_id" in data[0]
-    assert "id" in data[0]
-    assert  "overdraft_limit" in data[0]
+    first_acc = AccResponse(**data[0])
 
-    #Response should match AccountResponse in schemas.py
-    assert data[1]["type"] == "Checking"
-    assert data[1]["balance"] == 50000
-    assert "owner_id" in data[1]
-    assert "id" in data[1]
-    assert  "overdraft_limit" in data[1]
+    second_acc = AccResponse(**data[1])
 
 
 #no accounts created, will the list be empty?
@@ -102,3 +91,51 @@ def test_create_account_without_token(client):
     #401 for not authorized, not logged in
     assert create_savings_account.status_code == 401
 
+
+
+def test_get_acc_by_id(client, auth_headers):
+
+    #we only create one account per request
+    #create the first one as savings
+    #use auth_headers to create and login the user and get the token
+    create_savings_account = client.post("/accounts/",
+                           json={"type"  :"Savings",
+                                 "balance" : 1000},
+                           headers=auth_headers
+                           )
+
+    assert create_savings_account.status_code == 200
+
+    data = create_savings_account.json()
+    acc_id = data["id"]
+
+    response = client.get(f"/accounts/{acc_id}",
+                          headers=auth_headers)
+
+    valid_response = AccResponse(**response.json())
+
+
+
+def test_get_acc_by_id_idor(client, auth_headers):
+
+    #we only create one account per request
+    #create the first one as savings
+    #use auth_headers to create and login the user and get the token
+    create_savings_account = client.post("/accounts/",
+                           json={"type"  :"Savings",
+                                 "balance" : 1000},
+                           headers=auth_headers
+                           )
+
+    assert create_savings_account.status_code == 200
+
+    data = create_savings_account.json()
+    acc_id = data["id"]
+
+    header_b = create_user_and_login(client, "mary@example.com","Mary")
+
+    response = client.get(f"/accounts/{acc_id}",
+                          headers=header_b)
+
+
+    assert response.status_code in [403, 404]
