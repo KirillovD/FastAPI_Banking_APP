@@ -9,6 +9,8 @@ import exceptions,schemas
 from database import get_db
 from dependecies.accounts import get_valid_acc
 from dependecies.users import get_current_user
+from services.categorizer import categorizer
+
 
 router = APIRouter(
     prefix="/transactions",
@@ -16,7 +18,7 @@ router = APIRouter(
     dependencies = [Depends(auth.verify_existing_token)]
 )
 
-@router.post("/{acc_id}")
+@router.post("/{acc_id}",response_model = schemas.TransactionResponse)
 def transfer_money(acc_id : int,
                    transfer_data  : schemas.TransferMoney,
                    valid_source_acc: models.Account = Depends(get_valid_acc),
@@ -33,12 +35,18 @@ def transfer_money(acc_id : int,
     if transaction.is_balance_sufficient(valid_source_acc,transfer_data.transfer_amount) is False:
         raise exceptions.AccountInsufficientFundsException()
 
-    transaction.transfer_money(valid_source_acc,
-                                      recipient_account,
-                                      transfer_data.transfer_amount,
-                                      db)
 
-    return {"Message": "Transfer successful!", "Amount": transfer_data.transfer_amount}
+    categorizer_response = categorizer.categorize(transfer_data.description)
+
+
+    transaction_data = transaction.transfer_money(source_account = valid_source_acc,
+                               recipient_account = recipient_account,
+                               transfer_amount = transfer_data.transfer_amount,
+                               description = transfer_data.description,
+                               category = categorizer_response["category"],
+                               db = db)
+
+    return  transaction_data
 
 
 @router.get("/", response_model = list[schemas.TransactionResponse])

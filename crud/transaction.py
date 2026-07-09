@@ -18,10 +18,16 @@ def is_balance_sufficient(source_account, transfer_amount):
     return money_limit >= transfer_amount
 
 
-def transfer_money(source_account, recipient_account, transfer_amount,db : Session):
+def transfer_money(source_account : models.Account,
+                   recipient_account  : models.Account,
+                   transfer_amount : float,
+                   description : str,
+                   category : str,
+                   db : Session):
 
     source_account.balance -= transfer_amount
     recipient_account.balance += transfer_amount
+
 
     transfer = create_transaction_record(
                                 sender_account_id = source_account.id,
@@ -30,7 +36,8 @@ def transfer_money(source_account, recipient_account, transfer_amount,db : Sessi
                                 recipient_iban = recipient_account.iban,
                                 amount = transfer_amount,
                                 operation_type = "transfer",
-                                category = "transfer",
+                                description= description,
+                                category = category,
                                 db = db
                                      )
 
@@ -69,6 +76,8 @@ def create_transaction_record(
                                 description: str | None = None,
                                 status : str = "successful"):
 
+
+
     new_transaction_record = models.Transaction(sender_account_id = sender_account_id,
                                              recipient_account_id = recipient_account_id,
                                              sender_iban = sender_iban,
@@ -76,7 +85,7 @@ def create_transaction_record(
                                              transfer_amount = amount,
                                              status = status,
                                              operation_type = operation_type,
-                                             category= category,
+                                             category=category,
                                              description = description
                                              )
 
