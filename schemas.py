@@ -44,6 +44,7 @@ class TransferMoney(BaseModel):
     recipient_name : str
     source_account_id : int
     transfer_amount : float= Field(gt=0)
+    description : str
 
     @field_validator("recipient_iban")
     @classmethod

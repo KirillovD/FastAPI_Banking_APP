@@ -58,3 +58,11 @@ def get_cvv(card_type : Literal["DebitCard","CreditCard"], card_id : int, db : S
     card = db.query(model_class).get(card_id)
 
     return utils.decode_cvv(card.CVV_encrypted)
+
+def get_all_cards(user_id : int, db : Session):
+
+    credit_cards = db.query(models.CreditCard).filter(models.CreditCard.owner_id == user_id).all()
+    debit_cards = (db.query(models.DebitCard).join(models.Account)
+                   .filter(models.Account.owner_id == user_id).all())
+
+    return {"credit_cards" : credit_cards, "debit_cards" : debit_cards}
