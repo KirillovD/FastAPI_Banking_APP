@@ -94,3 +94,29 @@ def create_account(client, headers, acc_type, balance):
     assert response.status_code == 200
 
     return response.json()
+
+
+
+def create_credit_card(client, headers):
+
+    credit_card = client.post("/cards/credit",
+                              json = { "pin_code" : 1234,
+                                       "card_type" : "mastercard"},
+                              headers = headers)
+
+    assert credit_card.status_code == 200
+
+    return credit_card.json()
+
+
+
+def create_debit_card(client, headers, acc_id):
+
+    debit_card = client.post(f"/cards/debit/{acc_id}",
+                              json={"pin_code": 1234,
+                                    "card_type": "maestro"},
+                              headers=headers)
+
+    assert debit_card.status_code == 200
+
+    return debit_card.json()
