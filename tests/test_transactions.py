@@ -1,6 +1,6 @@
 
 from conftest import create_user_and_login,create_account
-from schemas import TransactionResponse
+from schemas import TransactionResponse, CashOperationsResponse
 
 
 def test_transfer_money_success(client,auth_headers):
@@ -82,5 +82,89 @@ def test_transfer_money_success_idor(client,auth_headers):
     assert response.status_code in [403, 404]
 
 
+def test_deposit_cash_success(client,auth_headers):
+
+    #create users with accounts
+    sender_headers = auth_headers
+    sender_user_account = create_account(client,sender_headers,
+                                        "Checking",500)
 
 
+    response = client.post(f"/transactions/{sender_user_account["id"]}/deposit",
+                           json={ "amount" : 100.0 },
+                                headers = sender_headers
+                           )
+
+    assert response.status_code == 200
+    data = response.json()
+    valid_response = CashOperationsResponse(**data)
+
+    sender_refreshed_acc = client.get(f"/accounts/{sender_user_account["id"]}",
+                                headers = sender_headers)
+
+    assert sender_refreshed_acc.status_code == 200
+    sender_acc_data = sender_refreshed_acc.json()
+    assert sender_acc_data["balance"] == 600
+
+
+def test_withdraw_cash_success(client, auth_headers):
+    # create users with accounts
+    sender_headers = auth_headers
+    sender_user_account = create_account(client, sender_headers,
+                                         "Checking", 500)
+
+    response = client.post(f"/transactions/{sender_user_account["id"]}/withdraw",
+                           json={"amount": 100.0},
+                           headers=sender_headers
+                           )
+
+    assert response.status_code == 200
+    data = response.json()
+    valid_response = CashOperationsResponse(**data)
+
+    sender_refreshed_acc = client.get(f"/accounts/{sender_user_account["id"]}",
+                                      headers=sender_headers)
+
+    assert sender_refreshed_acc.status_code == 200
+    sender_acc_data = sender_refreshed_acc.json()
+    assert sender_acc_data["balance"] == 400
+
+
+def test_deposit_cash_idor(client,auth_headers):
+
+    #create users with accounts
+    sender_headers = auth_headers
+    sender_user_account = create_account(client,sender_headers,
+                                        "Checking",500)
+
+    wrong_headers = create_user_and_login(client,"bob@example.com","Bob")
+
+    wrong_user_account = create_account(client, wrong_headers,
+                                            "Checking",1000)
+
+    response = client.post(f"/transactions/{wrong_user_account["id"]}/deposit",
+                           json={ "amount" : 100.0 },
+                                headers = sender_headers
+                           )
+
+    assert response.status_code in [403, 404]
+
+
+
+def test_withdraw_cash_idor(client, auth_headers):
+    # create users with accounts
+    sender_headers = auth_headers
+    sender_user_account = create_account(client, sender_headers,
+                                         "Checking", 500)
+
+    wrong_headers = create_user_and_login(client,"bob@example.com","Bob")
+
+    wrong_user_account = create_account(client, wrong_headers,
+                                            "Checking",1000)
+
+    response = client.post(f"/transactions/{wrong_user_account["id"]}/withdraw",
+                           json={"amount": 100.0},
+                           headers=sender_headers
+                           )
+
+    assert response.status_code in [403, 404]

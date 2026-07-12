@@ -1,5 +1,4 @@
 #file for
-from operator import attrgetter
 
 from sqlalchemy.orm import Session
 from sqlalchemy import or_
@@ -11,11 +10,6 @@ from crud import accounts
 #function to get all user accounts displayed
 #again get user id from the token and open the Session
 #use list[] in the response model for multiple accounts
-def is_balance_sufficient(source_account, transfer_amount):
-
-    money_limit = float(sum(attrgetter("balance","overdraft_limit")(source_account)))
-
-    return money_limit >= transfer_amount
 
 
 def transfer_money(source_account : models.Account,
@@ -94,7 +88,7 @@ def create_transaction_record(
     return new_transaction_record
 
 
-def deposit_cash(acc_id : int, deposit_amount : float, db : Session):
+def deposit_cash(acc_id : int, deposit_amount : float, db : Session) -> models.Account:
 
     account = db.query(models.Account).filter(models.Account.id == acc_id).first()
 
@@ -117,7 +111,7 @@ def deposit_cash(acc_id : int, deposit_amount : float, db : Session):
     return account
 
 
-def withdraw_cash(acc_id: int, withdraw_amount : float, db: Session):
+def withdraw_cash(acc_id: int, withdraw_amount : float, db: Session) -> models.Account:
     account = db.query(models.Account).filter(models.Account.id == acc_id).first()
 
     account.balance -= withdraw_amount

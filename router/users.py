@@ -20,7 +20,7 @@ def create_user(user: schemas.UserCreate,
 
     existing_user = users.get_user_by_email(user.email,db)
     if existing_user:
-        raise exceptions.UserAlreadyExistsException()
+        raise exceptions.UserAlreadyExists()
 
     #we take the input password from user and hash it
     hashed_pwd = utils.hash_password(user.password)

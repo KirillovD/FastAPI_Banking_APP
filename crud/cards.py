@@ -39,7 +39,7 @@ def create_debit_card(acc_id : int, card_type_and_pin : schemas.CreateCard, db :
     return new_debit_card
 
 
-def get_card_info(card_type : Literal["DebitCard","CreditCard"], card_id : int, db : Session):
+def get_card_by_id(card_type : Literal["DebitCard", "CreditCard"], card_id : str, db : Session):
 
     model_map = {"DebitCard" : models.DebitCard,
                  "CreditCard" : models.CreditCard}
@@ -48,7 +48,7 @@ def get_card_info(card_type : Literal["DebitCard","CreditCard"], card_id : int, 
 
     return db.query(model_class).get(card_id)
 
-def get_cvv(card_type : Literal["DebitCard","CreditCard"], card_id : int, db : Session):
+def get_cvv(card_type : Literal["DebitCard","CreditCard"], card_id : int, db : Session) -> str:
 
     model_map = {"DebitCard" : models.DebitCard,
                  "CreditCard" : models.CreditCard}
@@ -66,3 +66,23 @@ def get_all_cards(user_id : int, db : Session):
                    .filter(models.Account.owner_id == user_id).all())
 
     return {"credit_cards" : credit_cards, "debit_cards" : debit_cards}
+
+
+def get_card_by_number(card_type : Literal["DebitCard", "CreditCard"], card_number : str, db : Session):
+
+    model_map = {"DebitCard" : models.DebitCard,
+                 "CreditCard" : models.CreditCard}
+
+    model_class = model_map[card_type]
+
+    return db.query(model_class).filter(model_class.number==card_number).first()
+
+
+def process_payment(card, payment_amount, db: Session):
+
+    card.balance -= payment_amount
+
+    db.commit()
+    db.refresh(card)
+
+    return card

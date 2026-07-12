@@ -2,7 +2,7 @@
 
 from fastapi import HTTPException, status
 
-class AccountInsufficientFundsException(HTTPException):
+class InsufficientFunds(HTTPException):
     def __init__(self):
         super().__init__(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -10,7 +10,7 @@ class AccountInsufficientFundsException(HTTPException):
 
         )
 
-class AccountNotFoundException(HTTPException):
+class AccountNotFound(HTTPException):
     def __init__(self, detail: str = "Invalid transfer details"):
         super().__init__(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -18,7 +18,7 @@ class AccountNotFoundException(HTTPException):
 
         )
 
-class UserNotFoundException(HTTPException):
+class UserNotFound(HTTPException):
     def __init__(self, detail: str = "User not found"):
         super().__init__(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -27,7 +27,7 @@ class UserNotFoundException(HTTPException):
         )
 
 
-class UserAlreadyExistsException(HTTPException):
+class UserAlreadyExists(HTTPException):
     def __init__(self, detail: str = "User with this email already exists"):
         super().__init__(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -59,7 +59,7 @@ class IbanGenError(HTTPException):
 
         )
 
-class NotYourAccountException(HTTPException):
+class NotYourAccount(HTTPException):
     def __init__(self, detail: str = "You don't have access to this account"):
         super().__init__(
             status_code=status.HTTP_403_FORBIDDEN,
@@ -67,17 +67,48 @@ class NotYourAccountException(HTTPException):
         )
 
 
-class NotYourCardException(HTTPException):
+class NotYourCard(HTTPException):
     def __init__(self, detail: str = "You don't have access to this card"):
         super().__init__(
             status_code=status.HTTP_403_FORBIDDEN,
             detail= detail
         )
 
-class CardNotFoundException(HTTPException):
+class CardNotFound(HTTPException):
     def __init__(self, detail: str = "Card not found"):
         super().__init__(
             status_code=status.HTTP_404_NOT_FOUND,
             detail= detail
 
+        )
+
+
+class CvvMissing(HTTPException):
+    def __init__(self, detail: str = "There is no CVV send"):
+        super().__init__(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail= detail
+
+        )
+
+class PinMissing(HTTPException):
+    def __init__(self, detail: str = "There is no PIN send"):
+        super().__init__(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail= detail
+
+        )
+
+class PinCodeIncorrect(HTTPException):
+    def __init__(self, detail: str = "The pin code you entered is incorrect"):
+        super().__init__(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail= detail
+        )
+
+class CvvCodeIncorrect(HTTPException):
+    def __init__(self, detail: str = "The cvv code you entered is incorrect"):
+        super().__init__(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail= detail
         )

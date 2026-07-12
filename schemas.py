@@ -72,11 +72,18 @@ class TransactionResponse(BaseModel):
     description : str | None = None
     category : str | None
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
+
 
 class CashOperation(BaseModel):
     amount: float = Field(gt=0, description="Amount must be greater than zero")
+
+class CashOperationsResponse(BaseModel):
+    id : int
+    balance : float
+
+    model_config = ConfigDict(from_attributes=True)
+
 
 class CreateCard(BaseModel):
     pin_code : int
@@ -106,3 +113,22 @@ class CardSecretResponse(BaseModel):
 class AllCardsDashboard(BaseModel):
     credit_cards : list[CreditCardResponse]
     debit_cards : list[DebitCardResponse]
+
+class CardPaymentCreate(BaseModel):
+    transaction_id: str
+    payment_type: Literal["pos", "online"]
+    merchant_name : str
+
+    card_number: str
+    amount: float
+    card_type: Literal["CreditCard", "DebitCard"]
+
+    pin_block: str | None = None
+    cvv: str | None = None
+
+
+class CardPaymentResponse(BaseModel):
+    transaction_id: int
+    status: Literal["success", "declined"]
+    amount: float
+    message: str

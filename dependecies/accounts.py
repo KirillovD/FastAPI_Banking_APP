@@ -15,9 +15,9 @@ def get_valid_acc(acc_id : int,
     account = accounts.get_acc_by_id(acc_id,db)
 
     if not account:
-        raise exceptions.AccountNotFoundException()
+        raise exceptions.AccountNotFound()
 
     if not account.owner_id == user.id:
-        raise exceptions.NotYourAccountException()
+        raise exceptions.NotYourAccount()
 
     return account

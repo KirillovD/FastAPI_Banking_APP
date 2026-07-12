@@ -12,6 +12,6 @@ def get_current_user(user_id : int = Depends(verify_existing_token),
 
     current_user = users.find_user(user_id,db)
     if not current_user:
-        raise exceptions.UserNotFoundException()
+        raise exceptions.UserNotFound()
 
     return current_user
