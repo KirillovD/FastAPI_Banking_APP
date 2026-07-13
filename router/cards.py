@@ -1,5 +1,3 @@
-from typing import Literal
-
 from fastapi import APIRouter, Depends
 
 import models
@@ -7,63 +5,54 @@ from dependecies import auth
 from sqlalchemy.orm import Session
 import utils
 from database import get_db
-import schemas
-from crud import cards
+from crud import cards as cards_crud
 from dependecies.accounts import get_valid_acc
-from dependecies.cards import get_valid_debit_card, get_valid_credit_card
+from dependecies.cards import get_valid_card
 from dependecies.users import get_current_user
+from schemas import cards
+from services import cards as card_services
 
 router = APIRouter(prefix = "/cards",
                    tags = ["Card Operations"],
                    dependencies = [Depends(auth.verify_existing_token)])
 
 
-@router.post("/credit", response_model=schemas.CreditCardResponse)
-def create_credit_card(card_type_and_pin : schemas.CreateCard,
+@router.post("/credit", response_model=cards.CardResponse)
+def create_credit_card(card_type_and_pin : cards.CreateCard,
                        user : models.User = Depends(get_current_user),
                        db : Session = Depends(get_db)):
 
-    return cards.create_credit_card(user.id,card_type_and_pin,db)
+    return card_services.create_credit_card(card_type_and_pin,user,db)
 
 
-@router.post("/debit/{acc_id}", response_model=schemas.DebitCardResponse)
+
+@router.post("/debit/{acc_id}", response_model=cards.CardResponse)
 def create_debit_card(acc_id : int,
-                      card_type_and_pin : schemas.CreateCard,
+                      card_type_and_pin : cards.CreateCard,
                       account : models.Account = Depends(get_valid_acc),
                       db : Session = Depends(get_db)):
 
-    return cards.create_debit_card(account.id, card_type_and_pin, db)
+    return card_services.create_debit_card(card_type_and_pin,account, db)
 
 
-@router.get("/debit/{card_id}", response_model=schemas.DebitCardResponse)
-def get_debit_card(card_id : int,
-                   valid_card : models.DebitCard = Depends(get_valid_debit_card)):
+@router.get("/{card_id}", response_model=cards.CardResponse)
+def get_card(card_id : int,
+             valid_card : models.Card = Depends(get_valid_card),
+             db : Session = Depends(get_db)):
 
-    return valid_card
-
-
-@router.get("/credit/{card_id}", response_model=schemas.CreditCardResponse)
-def get_credit_card(card_id : int,
-                    valid_credit_card : models.CreditCard = Depends(get_valid_credit_card)):
-
-    return valid_credit_card
+    return cards_crud.get_card_by_id(card_id,db)
 
 
-@router.get("/credit/{card_id}/cvv", response_model=schemas.CardSecretResponse)
-def get_credit_card_cvv(card_id : int,
-                        valid_credit_card : models.CreditCard = Depends(get_valid_credit_card)):
 
-    return {"cvv": utils.decode_cvv(valid_credit_card.CVV_encrypted)}
-
-@router.get("/debit/{card_id}/cvv", response_model=schemas.CardSecretResponse)
+@router.get("/{card_id}/cvv", response_model=cards.CardSecretResponse)
 def get_debit_card_cvv(card_id: int,
-                        valid_debit_card: models.DebitCard = Depends(get_valid_debit_card)):
+                       valid_debit_card: models.Card = Depends(get_valid_card)):
 
     return {"cvv": utils.decode_cvv(valid_debit_card.CVV_encrypted)}
 
 
 
-@router.get("/", response_model=schemas.AllCardsDashboard)
+@router.get("/", response_model=cards.AllCardsDashboard)
 def get_all_cards(user : models.User = Depends(get_current_user),
                   db : Session = Depends(get_db)
                   ):

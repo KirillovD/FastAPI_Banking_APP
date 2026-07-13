@@ -1,4 +1,4 @@
-from schemas import UserResponse
+from schemas.users import UserResponse
 from tests.conftest import create_user_and_login
 
 

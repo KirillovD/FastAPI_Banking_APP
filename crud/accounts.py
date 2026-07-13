@@ -1,10 +1,11 @@
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
-import models,schemas
+import models
 import utils
+from schemas import accounts
 
 
-def create_account(account : schemas.AccCreate, user_id : int, db : Session):
+def create_account(account : accounts.AccCreate, user_id : int, db : Session):
 
 
     new_account: models.Account = models.Account(owner_id=user_id,

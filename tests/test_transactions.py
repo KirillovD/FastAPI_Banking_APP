@@ -1,6 +1,7 @@
+from decimal import Decimal
 
 from conftest import create_user_and_login,create_account
-from schemas import TransactionResponse, CashOperationsResponse
+from schemas.transactions import TransactionResponse, CashOperationsResponse
 
 
 def test_transfer_money_success(client,auth_headers):
@@ -8,25 +9,27 @@ def test_transfer_money_success(client,auth_headers):
     #create users with accounts
     sender_headers = auth_headers
     sender_user_account = create_account(client,sender_headers,
-                                        "Checking",500)
+                                        "checking",500)
 
     recipient_headers = create_user_and_login(client,"bob@example.com","Bob")
 
     recipient_user_account = create_account(client, recipient_headers,
-                                            "Checking",1000)
+                                            "checking",1000)
 
     #creating transaction
     response = client.post(f"/transactions/{sender_user_account["id"]}",
                            json={
                                  "recipient_iban": recipient_user_account["iban"],
-                                 "recipient_name":"Bob Test",
-                                 "source_account_id":sender_user_account["id"],
-                                 "transfer_amount" : 200,
+                                 "sender_iban" : sender_user_account["iban"],
+                                 "recipient_name": "Bob Test",
+                                 "sender_account_id":sender_user_account["id"],
+                                 "amount" : 200,
                                  "description" : "Rewe sagt danke"
 
                                 },
                                 headers = sender_headers
                            )
+    print(response.json())
     assert  response.status_code == 200
 
     #check if response matches the scheme
@@ -34,7 +37,7 @@ def test_transfer_money_success(client,auth_headers):
     print(data)
     correct_transaction = TransactionResponse(**data)
     #check the categorizer
-    assert  data["category"] == "Groceries"
+    assert  data["category"] == "groceries"
 
 
     #check refreshed balances for both users
@@ -60,12 +63,12 @@ def test_transfer_money_success_idor(client,auth_headers):
     #create users with accounts
     sender_headers = auth_headers
     sender_user_account = create_account(client,sender_headers,
-                                        "Checking",500)
+                                        "checking",500)
 
     recipient_headers = create_user_and_login(client,"bob@example.com","Bob")
 
     recipient_user_account = create_account(client, recipient_headers,
-                                            "Checking",1000)
+                                            "checking",1000)
 
     #creating transaction from NOT authorized acc
     response = client.post("/transactions/10",
@@ -73,7 +76,7 @@ def test_transfer_money_success_idor(client,auth_headers):
                                  "recipient_iban": recipient_user_account["iban"],
                                  "recipient_name":"Bob Test",
                                  "source_account_id":sender_user_account["id"],
-                                 "transfer_amount" : 200,
+                                 "amount" : 200,
                                  "description" : "Rewe sagt danke"
 
                                 },
@@ -87,7 +90,7 @@ def test_deposit_cash_success(client,auth_headers):
     #create users with accounts
     sender_headers = auth_headers
     sender_user_account = create_account(client,sender_headers,
-                                        "Checking",500)
+                                        "checking",500)
 
 
     response = client.post(f"/transactions/{sender_user_account["id"]}/deposit",
@@ -104,14 +107,14 @@ def test_deposit_cash_success(client,auth_headers):
 
     assert sender_refreshed_acc.status_code == 200
     sender_acc_data = sender_refreshed_acc.json()
-    assert sender_acc_data["balance"] == 600
+    assert Decimal(sender_acc_data["balance"]) == Decimal("600")
 
 
 def test_withdraw_cash_success(client, auth_headers):
     # create users with accounts
     sender_headers = auth_headers
     sender_user_account = create_account(client, sender_headers,
-                                         "Checking", 500)
+                                         "checking", 500)
 
     response = client.post(f"/transactions/{sender_user_account["id"]}/withdraw",
                            json={"amount": 100.0},
@@ -127,7 +130,8 @@ def test_withdraw_cash_success(client, auth_headers):
 
     assert sender_refreshed_acc.status_code == 200
     sender_acc_data = sender_refreshed_acc.json()
-    assert sender_acc_data["balance"] == 400
+    print(sender_acc_data)
+    assert Decimal(sender_acc_data["balance"]) == Decimal("400")
 
 
 def test_deposit_cash_idor(client,auth_headers):
@@ -135,12 +139,12 @@ def test_deposit_cash_idor(client,auth_headers):
     #create users with accounts
     sender_headers = auth_headers
     sender_user_account = create_account(client,sender_headers,
-                                        "Checking",500)
+                                        "checking",500)
 
     wrong_headers = create_user_and_login(client,"bob@example.com","Bob")
 
     wrong_user_account = create_account(client, wrong_headers,
-                                            "Checking",1000)
+                                            "checking",1000)
 
     response = client.post(f"/transactions/{wrong_user_account["id"]}/deposit",
                            json={ "amount" : 100.0 },
@@ -155,12 +159,12 @@ def test_withdraw_cash_idor(client, auth_headers):
     # create users with accounts
     sender_headers = auth_headers
     sender_user_account = create_account(client, sender_headers,
-                                         "Checking", 500)
+                                         "checking", 500)
 
     wrong_headers = create_user_and_login(client,"bob@example.com","Bob")
 
     wrong_user_account = create_account(client, wrong_headers,
-                                            "Checking",1000)
+                                            "checking",1000)
 
     response = client.post(f"/transactions/{wrong_user_account["id"]}/withdraw",
                            json={"amount": 100.0},

@@ -6,6 +6,8 @@ from models import Base
 from main import app
 from fastapi.testclient import TestClient
 from sqlalchemy.pool import StaticPool
+from enums import AccountType
+
 
 #create the testing DB in the RAM. It will be deleted after the tests
 SQLALCHEMY_DATABASE_URL = "sqlite:///:memory:"
@@ -114,7 +116,7 @@ def create_debit_card(client, headers, acc_id):
 
     debit_card = client.post(f"/cards/debit/{acc_id}",
                               json={"pin_code": 1234,
-                                    "card_type": "maestro"},
+                                    "card_type": "mastercard"},
                               headers=headers)
 
     assert debit_card.status_code == 200

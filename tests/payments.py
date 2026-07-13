@@ -60,10 +60,10 @@ def test_check_pin_code_wrong_input():
 
 def test_is_account_balance_sufficient():
 
-    fake_account = Mock(balance=1000.0, overdraft_limit=200.0)
+    fake_account = Mock(balance=1000.0, limit=200.0)
     assert is_account_balance_sufficient(fake_account,500)
 
 def test_is_account_balance_sufficient_wrong():
 
-    fake_account = Mock(balance=1000.0, overdraft_limit=200.0)
+    fake_account = Mock(balance=1000.0, limit=200.0)
     assert not is_account_balance_sufficient(fake_account,2000)

@@ -1,6 +1,6 @@
 # categorizer.py
 
-from ai_model.generate_data import TRANSACTION_PATTERNS
+from mock_data_generator.generate_data import TRANSACTION_PATTERNS
 
 
 class TransactionCategorizer:

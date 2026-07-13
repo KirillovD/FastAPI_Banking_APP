@@ -1,6 +1,6 @@
-from schemas import AccResponse
+from schemas.accounts import AccResponse
 from tests.conftest import create_user_and_login
-
+from enums import AccountType
 
 #test function for account creation
 #we use auth_headers to create and login user first
@@ -10,7 +10,7 @@ def test_create_account(client, auth_headers):
 
     #create savings account using token data from auth_headers
     response = client.post("/accounts/",
-                           json={"type"  :"Savings",
+                           json={"type"  :"savings",
                                  "balance" : 1000},
                            headers=auth_headers
                            )
@@ -28,7 +28,7 @@ def test_get_all_accounts(client, auth_headers):
     #create the first one as savings
     #use auth_headers to create and login the user and get the token
     create_savings_account = client.post("/accounts/",
-                           json={"type"  :"Savings",
+                           json={"type"  :"savings",
                                  "balance" : 1000},
                            headers=auth_headers
                            )
@@ -37,7 +37,7 @@ def test_get_all_accounts(client, auth_headers):
 
     #Response should match AccountResponse in schemas.py
     create_checking_account = client.post("/accounts/",
-                           json={"type"  :"Checking",
+                           json={"type"  :"checking",
                                  "balance" : 50000},
                            headers=auth_headers
                            )
@@ -84,7 +84,7 @@ def test_get_accounts_empty(client,auth_headers):
 def test_create_account_without_token(client):
 
     create_savings_account = client.post("/accounts/",
-                           json={"type"  :"Savings",
+                           json={"type"  :"savings",
                                  "balance" : 1000}
                            )
 
@@ -99,7 +99,7 @@ def test_get_acc_by_id(client, auth_headers):
     #create the first one as savings
     #use auth_headers to create and login the user and get the token
     create_savings_account = client.post("/accounts/",
-                           json={"type"  :"Savings",
+                           json={"type"  :"savings",
                                  "balance" : 1000},
                            headers=auth_headers
                            )
@@ -122,7 +122,7 @@ def test_get_acc_by_id_idor(client, auth_headers):
     #create the first one as savings
     #use auth_headers to create and login the user and get the token
     create_savings_account = client.post("/accounts/",
-                           json={"type"  :"Savings",
+                           json={"type"  :"savings",
                                  "balance" : 1000},
                            headers=auth_headers
                            )
