@@ -26,7 +26,7 @@ def create_account(account : accounts.AccCreate, user_id : int, db : Session):
         return False
 
 
-def get_all_accounts(user_id : int, db : Session):
+def get_all_user_accounts(user_id : int, db : Session):
 
     #find all the accounts for the user id from the token
     user_accounts = db.query(models.Account).filter(models.Account.owner_id == user_id).all()
@@ -41,3 +41,8 @@ def get_acc_by_id(acc_id:int, db:Session) :
 
 def get_acc_by_iban(iban, db:Session):
     return db.query(models.Account).filter(models.Account.iban == iban).first()
+
+
+def get_all_accounts(acc_type, db:Session):
+
+    return db.query(models.Account).filter(models.Account.type==acc_type)

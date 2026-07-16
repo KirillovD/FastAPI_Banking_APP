@@ -3,7 +3,6 @@ import faker.providers.credit_card
 import jwt
 from datetime import datetime, timedelta, timezone
 from dateutil.relativedelta import relativedelta
-import exceptions
 from config import settings
 import random
 from schwifty import IBAN

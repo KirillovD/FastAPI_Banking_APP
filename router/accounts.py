@@ -35,7 +35,7 @@ def create_account(account : accounts.AccCreate,
 def get_all_accounts(user : models.User = Depends(get_current_user),
                      db : Session = Depends(get_db)):
 
-    return accounts_crud.get_all_accounts(user.id, db)
+    return accounts_crud.get_all_user_accounts(user.id, db)
 
 
 @router.get("/{acc_id}", response_model=accounts.AccResponse)

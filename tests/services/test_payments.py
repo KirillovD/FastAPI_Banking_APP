@@ -5,8 +5,7 @@ import pytest
 
 import exceptions
 from services.payments import check_cvv, check_pin_code, is_account_balance_sufficient
-from utils import f, faker, hash_password
-from tests.conftest import create_user_and_login, create_account
+from utils import f, hash_password
 
 
 def test_check_cvv():

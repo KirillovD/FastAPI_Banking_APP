@@ -1,4 +1,4 @@
-# categorizer.py
+# test_categorizer.py
 
 from mock_data_generator.generate_data import TRANSACTION_PATTERNS
 

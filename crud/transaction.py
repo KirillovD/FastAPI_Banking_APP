@@ -23,7 +23,7 @@ def deposit_funds(account: models.Account, amount: Decimal):
 
 
 def get_transactions_history(user_id,db : Session):
-    user_accounts = accounts.get_all_accounts(user_id,db)
+    user_accounts = accounts.get_all_user_accounts(user_id, db)
     account_ids = [account.id for account in user_accounts]
 
     user_transactions_history = (db.query(models.Transaction).

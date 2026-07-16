@@ -45,6 +45,13 @@ class Account(Base):
     iban : Mapped[str] = mapped_column(String(34), unique=True, index=True, nullable=True)
     metadata_json: Mapped[dict | None] = mapped_column(JSON, nullable=True)
 
+    #needed to calculate the credit percentages
+    grace_period_active: Mapped[bool] = mapped_column(default=True)
+    acquired_interest: Mapped[Decimal] = mapped_column(
+        Numeric(12, 2),
+        default=Decimal("0.00")
+    )
+
     cards: Mapped[list["Card"]] = relationship(back_populates="linked_account")
     owner : Mapped["User"] = relationship(back_populates="accounts")
     transactions_as_sender: Mapped[list["Transaction"]] = relationship(

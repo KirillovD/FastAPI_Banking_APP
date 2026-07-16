@@ -81,7 +81,13 @@ class CardNotFound(HTTPException):
             detail= detail
 
         )
+class MinPaymentNotReached(HTTPException):
+    def __init__(self, detail: str = "Your payment is smaller than the minimal amount"):
+        super().__init__(
+            status_code=status.HTTP_400_NOT_FOUND,
+            detail= detail
 
+        )
 
 class CvvMissing(HTTPException):
     def __init__(self, detail: str = "There is no CVV send"):
@@ -110,5 +116,15 @@ class CvvCodeIncorrect(HTTPException):
     def __init__(self, detail: str = "The cvv code you entered is incorrect"):
         super().__init__(
             status_code=status.HTTP_403_FORBIDDEN,
+            detail= detail
+        )
+
+
+
+
+class GraceNoInterest(HTTPException):
+    def __init__(self, detail: str = "Can't add aquired interest to the balance: Grace period is active"):
+        super().__init__(
+            status_code=status.HTTP_400_BAD_REQUEST,
             detail= detail
         )

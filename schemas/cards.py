@@ -24,3 +24,8 @@ class CardSecretResponse(BaseModel):
 
 class AllCardsDashboard(BaseModel):
     cards : list[CardResponse]
+
+
+class PayDownBalanceInput(BaseModel):
+    card_id : int
+    amount : Decimal
