@@ -1,7 +1,6 @@
 from decimal import Decimal
 
 from sqlalchemy.orm import Session
-from datetime import datetime
 
 import exceptions
 import models
@@ -14,7 +13,6 @@ from schemas import cards as card_schemas
 from schemas.accounts import AccCreate
 from schemas.cards import PayDownBalanceInput
 from config import settings
-from datetime import date
 
 
 import logging
@@ -82,6 +80,7 @@ def pay_down_the_balance(valid_credit_card : models.Card,
 
 def calculate_min_credit_account_payment(account : models.Account):
 
+
     if account.balance >= Decimal("0.0"):
         return Decimal("0.0")
 
@@ -100,31 +99,48 @@ def credit_account_deadline_check(account:models.Account):
 
     return account.balance >= Decimal("0.0")
 
+def credit_account_on_time_payment_counter(account, new_grace_status):
+    # if true increase "on time payment" counter
+    if new_grace_status:
+        account.credit_account_metrics.on_time_payments_count += 1
 
-def all_credit_cards_deadline_check(db : Session):
+    # we also counte how many times user missed the deadline
+    if not new_grace_status:
+        account.credit_account_metrics.total_missed_payments_count += 1
+
+
+def all_credit_accounts_deadline_check(db : Session):
     credit_accounts = crud_accounts.get_all_accounts(AccountType.CREDIT, db)
+
     lost_grace_count = 0
     error_counter = 0
 
     for account in credit_accounts:
         try:
-            new_grace_status = credit_account_deadline_check(account)
+            with db.begin_nested():
+                #check the current grace status
+                new_grace_status = credit_account_deadline_check(account)
 
-            if account.grace_period_active and not new_grace_status:
-                lost_grace_count += 1
-                logging.info(f"Account id {account.id}: The balance isn't paid off. The Grace Period has ended.")
+                #update our counters for the credit metrics table
+                credit_account_on_time_payment_counter(account,new_grace_status)
 
-            account.grace_period_active = new_grace_status
+                #get info for logs
+                #if it had a grace period before and just lost it
+                if account.grace_period_active and not new_grace_status:
+                    lost_grace_count += 1
+                    logging.info(f"Account id {account.id}: The balance isn't paid off. The Grace Period has ended.")
 
-            db.commit()
+                #change the status and commit
+                account.grace_period_active = new_grace_status
+
+
 
         except Exception as e:
-            error_counter = 0
-            db.rollback()
+            error_counter += 1
             logging.error(f"Error while checking grace period for account {account.id}:{e}")
 
     logging.info(f"The deadline check is finished. Grace period ended for {lost_grace_count} accounts. Error counter: {error_counter}")
-
+    db.commit()
 
 
 
@@ -136,6 +152,21 @@ def calculate_credit_account_acquired_interest( account: models.Account):
     return account
 
 
+def update_days_past_due_counter(account : models.Account):
+    credit_data = account.credit_account_metrics
+
+    #the balance is not paid off yet
+    if not account.grace_period_active:
+        credit_data.current_days_past_due += 1
+
+        #update the max day counter
+        if credit_data.current_days_past_due > credit_data.max_days_past_due:
+            credit_data.max_days_past_due = credit_data.current_days_past_due
+
+    #the balance is paid off and the grace period is back
+    else:
+        account.credit_account_metrics.current_days_past_due = 0
+
 
 def calculate_acquired_interest_all_credit_accounts(db : Session):
 
@@ -145,20 +176,22 @@ def calculate_acquired_interest_all_credit_accounts(db : Session):
 
     for account in credit_accounts:
         try:
+            with db.begin_nested():
+                #update the credit metrics data
+                update_days_past_due_counter(account)
 
-            calculate_credit_account_acquired_interest(account)
-            account_success_counter += 1
+                calculate_credit_account_acquired_interest(account)
 
-            db.commit()
-            logging.info(f"Interest calculated for account id: {account.id}. Total interest acquired: {account.acquired_interest} ")
+                #collect te data for logs
+                account_success_counter += 1
+                logging.info(f"Interest calculated for account id: {account.id}. Total interest acquired: {account.acquired_interest} ")
 
         except Exception as e:
             account_fail_counter += 1
-            db.rollback()
             logging.error(f"Failed to  calculate interest  account id: {account.id}. Error: {e}")
 
     logging.info(f"Daily interest calculated successfully for: {account_success_counter} accounts. Error count: {account_fail_counter}")
-
+    db.commit()
 
 
 #if after the grace period the balance is not paid off we add the accumulated interest to it
@@ -182,12 +215,13 @@ def add_acquired_interest_all_credit_accounts( db : Session):
 
     for account in credit_accounts:
         try:
-         add_acquired_interest_to_balance(account)
-         acc_success_counter += 1
-         db.commit()
+            with db.begin_nested():
+                 add_acquired_interest_to_balance(account)
+                 acc_success_counter += 1
 
-         logging.info(
-             f"Acquired interest added to balance account id: {account.id}")
+
+                 logging.info(
+                     f"Acquired interest added to balance account id: {account.id}")
 
         except exceptions.GraceNoInterest as e:
             logging.info(f"Grace period is still active account id: {account.id}. Exception: {e}")
@@ -195,7 +229,7 @@ def add_acquired_interest_all_credit_accounts( db : Session):
 
         except Exception as e:
             acc_fail_counter += 1
-            db.rollback()
             logging.error(f"Failed to  calculate interest  account id: {account.id}. Error: {e}")
 
     logging.info(f"Monthly addition of acquired interest successful for: {acc_success_counter} accounts. Error count: {acc_fail_counter}")
+    db.commit()

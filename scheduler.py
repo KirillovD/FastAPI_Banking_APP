@@ -7,7 +7,7 @@ scheduler = BlockingScheduler()
 @scheduler.scheduled_job("cron", day = 15, hour= 12, minute= 0)
 def credit_card_payment_deadline_check():
     with SessionLocal() as db:
-        cards.all_credit_cards_deadline_check(db)
+        cards.all_credit_accounts_deadline_check(db)
 
 
 @scheduler.scheduled_job("cron", day = "last", hour= 12, minute= 0)

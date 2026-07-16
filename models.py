@@ -51,6 +51,9 @@ class Account(Base):
         Numeric(12, 2),
         default=Decimal("0.00")
     )
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True),
+                                                 default=lambda: datetime.now(timezone.utc),
+                                                 nullable=False )
 
     cards: Mapped[list["Card"]] = relationship(back_populates="linked_account")
     owner : Mapped["User"] = relationship(back_populates="accounts")
@@ -60,7 +63,7 @@ class Account(Base):
     transactions_as_recipient: Mapped[list["Transaction"]] = relationship(
                                                         foreign_keys="[Transaction.recipient_account_id]",
                                                         back_populates="recipient_account")
-
+    credit_account_metrics : Mapped["CreditAccountMetrics"] = relationship(back_populates= "linked_account")
 
 class Card(Base):
     __tablename__ = "cards"
@@ -73,12 +76,25 @@ class Card(Base):
     CVV_encrypted : Mapped[bytes] = mapped_column()
     pin_code_hashed : Mapped[str] = mapped_column()
     metadata_json: Mapped[dict | None] = mapped_column(JSON, nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True),
+                                                 default=lambda: datetime.now(timezone.utc),
+                                                 nullable=False)
 
     linked_account: Mapped["Account"] = relationship(back_populates="cards")
     owner: Mapped["User"] = relationship(back_populates="cards")
 
 
+class CreditAccountMetrics(Base):
+    __tablename__ = "credit_account_metrics"
 
+    account_id : Mapped[int] = mapped_column(ForeignKey("accounts.id"))
+    on_time_payments_count : Mapped[int] = mapped_column(default= 0)
+    total_missed_payments_count : Mapped[int] = mapped_column(default= 0)
+    current_days_past_due  : Mapped[int] = mapped_column(default= 0)
+    max_days_past_due : Mapped[int] = mapped_column(default= 0)
+    rapid_limit_depletion_count  : Mapped[int] = mapped_column(default= 0)
+
+    linked_account: Mapped["Account"] = relationship(back_populates="credit_account_metrics")
 
 
 class Transaction(Base):
