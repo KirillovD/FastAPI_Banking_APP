@@ -1,11 +1,14 @@
+from datetime import datetime, timezone
 from decimal import Decimal
+
 from sqlalchemy.orm import Session
 
 import exceptions
-from crud import cards, transaction, accounts
-from enums import TransactionStatus, OperationType
-from services.categorizer import categorizer
+import models
+from crud import cards, transaction
+from enums import OperationType, PaymentType, TransactionCategory, TransactionStatus
 from schemas import transactions
+from services.categorizer import categorizer
 from utils import decode_cvv, verify_password
 
 
@@ -14,67 +17,122 @@ def check_cvv(send_cvv: str | None, db_cvv_encrypted):
         raise exceptions.CvvMissing()
 
     db_cvv = decode_cvv(db_cvv_encrypted)
-    if not send_cvv == db_cvv:
-        raise exceptions.CvvCodeIncorrect
-    else:
-        return True
+    if send_cvv != db_cvv:
+        raise exceptions.CvvCodeIncorrect()
+
+    return True
 
 
 def check_pin_code(send_pin: str | None, db_pin_hashed):
     if not send_pin:
         raise exceptions.PinMissing()
+
     if not verify_password(send_pin, db_pin_hashed):
         raise exceptions.PinCodeIncorrect()
-    else:
-        return True
+
+    return True
 
 
 def is_account_balance_sufficient(source_account, transfer_amount):
-    available_funds = Decimal(str(source_account.balance)) + Decimal(str(source_account.limit))
+    available_funds = (
+        Decimal(str(source_account.balance))
+        + Decimal(str(source_account.limit))
+    )
+
     return available_funds >= Decimal(str(transfer_amount))
 
 
-def check_card_for_payment(payment_info: transactions.CardPaymentCreate, db: Session):
-    card = cards.get_card_by_number(card_number=payment_info.card_number, db=db)
-    if card:
-        return card
-    else:
-        raise exceptions.CardNotFound
+def _is_card_expired(card: models.Card) -> bool:
+    expiry = card.expiry_date
+    now = datetime.now(timezone.utc)
+
+    if expiry.tzinfo is None:
+        now = now.replace(tzinfo=None)
+
+    return expiry <= now
 
 
-def process_payment(payment_info: transactions.CardPaymentCreate, db: Session):
-    card = check_card_for_payment(payment_info, db)
-    card_cvv = cards.get_cvv(card.id, db)
+def _category_from_categorizer(raw_category: str) -> TransactionCategory:
+    try:
+        return TransactionCategory(raw_category)
+    except ValueError:
+        return TransactionCategory.OTHER
 
-    if payment_info.terminal_data.payment_type == "online":
-        check_cvv(payment_info.cvv, card_cvv)
 
-    elif payment_info.terminal_data.payment_type == "pos":
+def check_card_for_payment(
+    payment_info: transactions.CardPaymentCreate,
+    user: models.User,
+    db: Session,
+):
+    card = cards.get_card_by_number(
+        card_number=payment_info.terminal_data.card_number,
+        db=db,
+    )
+
+    if not card:
+        raise exceptions.CardNotFound()
+
+    if card.user_id != user.id:
+        raise exceptions.NotYourCard()
+
+    if _is_card_expired(card):
+        raise exceptions.CardExpired()
+
+    return card
+
+
+def process_payment(
+    payment_info: transactions.CardPaymentCreate,
+    user: models.User,
+    db: Session,
+):
+    card = check_card_for_payment(payment_info, user, db)
+
+    if payment_info.terminal_data.payment_type == PaymentType.ONLINE:
+        check_cvv(payment_info.cvv, card.CVV_encrypted)
+
+    elif payment_info.terminal_data.payment_type == PaymentType.POS:
         check_pin_code(payment_info.pin_block, card.pin_code_hashed)
 
-    if not is_account_balance_sufficient(card.linked_account, payment_info.amount):
+    account = card.linked_account
+
+    if not is_account_balance_sufficient(account, payment_info.amount):
         raise exceptions.InsufficientFunds()
 
-    categorizer_response = categorizer.categorize(payment_info.description)
+    categorizer_response = categorizer.categorize(
+        payment_info.terminal_data.merchant_name
+    )
 
-    account = accounts.get_acc_by_id(card.linked_acc_id, db)
     transaction.withdraw_funds(account, payment_info.amount)
 
     transaction_data = transactions.TransactionCreateRecord(
         amount=payment_info.amount,
         status=TransactionStatus.SUCCESSFUL,
-        created_at=payment_info.created_at,
+        created_at=datetime.now(timezone.utc),
         operation_type=OperationType.PAYMENT,
         sender_account_id=account.id,
         sender_iban=account.iban,
-        description=payment_info.description,
-        category=categorizer_response["category"],
-        mcc_code=categorizer_response.get("mcc_code") or categorizer_response.get("mcc"),
+        description=payment_info.terminal_data.merchant_name,
+        category=_category_from_categorizer(
+            categorizer_response["category"]
+        ),
+        mcc_code=(
+            categorizer_response.get("mcc_code")
+            or categorizer_response.get("mcc")
+        ),
     )
 
-    new_transaction = transaction.create_transaction_record(transaction_data, db)
+    new_transaction = transaction.create_transaction_record(
+        transaction_data,
+        db,
+    )
 
     db.commit()
     db.refresh(new_transaction)
 
-    return new_transaction
+    return transactions.CardPaymentResponse(
+        transaction_id=new_transaction.id,
+        status=new_transaction.status,
+        amount=new_transaction.amount,
+        message="Payment approved",
+    )
