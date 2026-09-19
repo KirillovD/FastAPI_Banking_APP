@@ -1,20 +1,28 @@
+from datetime import datetime
 from decimal import Decimal
-from pydantic import BaseModel, Field
+from typing import Literal
+
+from pydantic import BaseModel, ConfigDict, Field
+
 from enums import AccountType
 
 
 class AccCreate(BaseModel):
-    type : AccountType
-    balance : Decimal = Field(default=0.0)
+    type: Literal[AccountType.CHECKING, AccountType.SAVINGS]
+    balance: Decimal = Field(default=Decimal("0.00"))
+
+
+class CreditAccCreate(BaseModel):
+    type: Literal[AccountType.CREDIT] = AccountType.CREDIT
+    balance: Decimal = Field(default=Decimal("0.00"))
 
 
 class AccResponse(BaseModel):
-    id : int
-    owner_id : int
-    iban : str
-    type : str
-    balance : Decimal
-    overdraft_limit : int = Field(default=0)
+    id: int
+    owner_id: int
+    iban: str
+    type: AccountType
+    balance: Decimal
+    created_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
