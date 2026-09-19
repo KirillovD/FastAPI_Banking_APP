@@ -77,7 +77,7 @@ def transfer_money(
         operation_type=OperationType.TRANSFER,
         description=transfer_data.description,
         category=_category_from_categorizer(categorizer_response["category"]),
-        mcc_code=categorizer_response.get("mcc_code"),
+        mcc_code=categorizer_response.get("mcc_code") or categorizer_response.get("mcc"),
     )
 
     new_record = transaction.create_transaction_record(
