@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 import models
 import utils
 from schemas import accounts
+from enums import AccountType
 
 
 def _generate_unique_iban(db: Session, max_attempts: int = 5) -> str | None:
