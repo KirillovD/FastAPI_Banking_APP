@@ -101,10 +101,11 @@ def create_account(client, headers, acc_type, balance):
 
 def create_credit_card(client, headers):
 
-    credit_card = client.post("/cards/credit",
-                              json = { "pin_code" : 1234,
-                                       "card_type" : "mastercard"},
-                              headers = headers)
+    credit_card = client.post(
+        "/cards/credit",
+        json={"pin_code": "1234", "type": "mastercard"},
+        headers=headers,
+    )
 
     assert credit_card.status_code == 200
 
@@ -114,10 +115,11 @@ def create_credit_card(client, headers):
 
 def create_debit_card(client, headers, acc_id):
 
-    debit_card = client.post(f"/cards/debit/{acc_id}",
-                              json={"pin_code": 1234,
-                                    "card_type": "mastercard"},
-                              headers=headers)
+    debit_card = client.post(
+        f"/cards/debit/{acc_id}",
+        json={"pin_code": "1234", "type": "mastercard"},
+        headers=headers,
+    )
 
     assert debit_card.status_code == 200
 
