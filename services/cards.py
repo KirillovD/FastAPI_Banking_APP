@@ -10,7 +10,7 @@ from crud import transaction as crud_transaction
 
 from enums import AccountType
 from schemas import cards as card_schemas
-from schemas.accounts import AccCreate
+from schemas.accounts import CreditAccCreate
 from schemas.cards import PayDownBalanceInput
 from config import settings
 
@@ -29,7 +29,7 @@ def create_credit_card(card_type_and_pin : card_schemas.CreateCard,
                        user : models.User,
                        db : Session):
 
-    new_credit_acc_data = AccCreate(type=AccountType.CREDIT)
+    new_credit_acc_data = CreditAccCreate()
 
     account = crud_accounts.create_account(new_credit_acc_data,user.id,db)
     credit_card = crud_cards.create_card(account.id, user.id, card_type_and_pin, db)
