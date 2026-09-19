@@ -69,7 +69,7 @@ def create_user_and_login(client, email, first_name):
                          }
                          )
 
-    assert create.status_code == 200
+    assert create.status_code == 201
 
     # now try to log in with the data from created user
     login = client.post("/auth/",
