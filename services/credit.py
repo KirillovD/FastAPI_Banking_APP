@@ -342,13 +342,14 @@ def repay_credit_account(
     # statement obligation is fully paid, pending conditional interest
     # is waived. New purchases can begin accruing again the next day.
     if account.grace_period_active:
-        statement_paid_in_full = (
+        statement_paid_in_full_on_time = (
             repayment_statement is not None
             and repayment_statement.amount_paid
             >= repayment_statement.statement_balance
+            and now.date() <= repayment_statement.due_date
         )
 
-        if statement_paid_in_full or (
+        if statement_paid_in_full_on_time or (
             repayment_statement is None
             and account.balance >= Decimal("0.00")
         ):
