@@ -561,3 +561,33 @@ After PostgreSQL / async DB work:
 7. **Defer row locking until PostgreSQL/concurrency infrastructure:** yes, while preserving one-commit transfer behavior now.
 
 No Slice 3 application changes should be made until these decisions are accepted.
+
+
+---
+
+## 13. Decision record
+
+Approved for Portfolio V2 implementation:
+
+- the frontend/client selects one of the user's accounts as the source resource;
+- the source account ID may identify that selected resource in the route, but sender account metadata is derived from the validated Account object;
+- sender IBAN and sender account ID are not accepted as duplicate trusted request fields;
+- generic transfers are limited to checking/savings accounts;
+- generic cash deposit/withdraw is limited to checking/savings accounts;
+- credit balances are changed through dedicated credit/card repayment behavior, not generic money-movement endpoints;
+- cash operations remain in the MVP and create transaction-history records;
+- self-transfers are rejected;
+- recipient-name confirmation remains, with case/whitespace normalization;
+- transfer amounts must be strictly positive;
+- Decimal arithmetic is preserved;
+- concurrency row locking is deferred to PostgreSQL/database infrastructure;
+- idempotency and AccountMovement ledger remain optional later enhancements.
+
+Implementation tickets:
+
+- #7 — repair transfer contracts and money-flow validation
+- #8 — restore cash-operation transaction history
+
+Implementation branch:
+
+- `fix/slice-03-transfers`
