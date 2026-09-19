@@ -725,3 +725,11 @@ Implementation tickets:
 - due-date / interest / delinquency scheduler refactor
 
 No generic rewrite of the original credit business logic is approved.
+
+
+### Implementation tracking
+
+- #16 — add credit statements and credit account API
+- #17 — implement statement-aware credit repayments
+- #18 — refactor credit due-date interest and delinquency jobs
+- implementation branch: `feat/slice-06-credit-lifecycle`
