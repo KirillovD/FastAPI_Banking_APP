@@ -1,5 +1,6 @@
 from datetime import date, datetime, timedelta, timezone
 from decimal import Decimal
+import logging
 
 from sqlalchemy.orm import Session
 
@@ -13,6 +14,7 @@ from schemas import credit as credit_schemas
 
 
 MONEY_QUANTUM = Decimal("0.01")
+logger = logging.getLogger(__name__)
 
 
 def _money(value: Decimal) -> Decimal:
@@ -151,10 +153,18 @@ def create_monthly_statements(
                 if statement is not None and before is None:
                     created_count += 1
 
-        except Exception:
-            continue
+        except Exception as exc:
+            logger.exception(
+                "Failed to create credit statement for account %s: %s",
+                account.id,
+                exc,
+            )
 
     db.commit()
+    logger.info(
+        "Credit statement creation finished: %s statements created",
+        created_count,
+    )
     return created_count
 
 
@@ -450,12 +460,24 @@ def evaluate_due_statement(
         _post_pending_interest(account, statement)
 
     else:
-        statement.status = CreditStatementStatus.PAST_DUE
         metrics.total_missed_payments_count += 1
         metrics.current_days_past_due = 0
 
         account.grace_period_active = False
         _post_pending_interest(account, statement)
+
+        # The obligation was missed by the due date, but a scheduler
+        # that runs after a late payment should still reflect the
+        # statement's current cured/settled state.
+        if statement.amount_paid >= statement.statement_balance:
+            statement.status = CreditStatementStatus.PAID_IN_FULL
+
+            if account.balance >= Decimal("0.00"):
+                account.grace_period_active = True
+        elif statement.amount_paid >= statement.minimum_payment:
+            statement.status = CreditStatementStatus.MINIMUM_PAID
+        else:
+            statement.status = CreditStatementStatus.PAST_DUE
 
     statement.evaluated_at = evaluated_at
     return statement
@@ -478,10 +500,18 @@ def evaluate_due_statements(
             with db.begin_nested():
                 evaluate_due_statement(statement, db)
                 evaluated_count += 1
-        except Exception:
-            continue
+        except Exception as exc:
+            logger.exception(
+                "Failed to evaluate credit statement %s: %s",
+                statement.id,
+                exc,
+            )
 
     db.commit()
+    logger.info(
+        "Credit due-date evaluation finished: %s statements evaluated",
+        evaluated_count,
+    )
     return evaluated_count
 
 
@@ -554,8 +584,16 @@ def calculate_acquired_interest_all_credit_accounts(
                     account
                 )
                 success_count += 1
-        except Exception:
-            continue
+        except Exception as exc:
+            logger.exception(
+                "Failed daily credit processing for account %s: %s",
+                account.id,
+                exc,
+            )
 
     db.commit()
+    logger.info(
+        "Daily credit processing finished: %s accounts processed",
+        success_count,
+    )
     return success_count
