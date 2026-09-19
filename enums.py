@@ -56,3 +56,10 @@ class TransactionCategory(str, enum.Enum):
     SALARY = "salary"
 
     OTHER = "other"
+
+
+class CreditStatementStatus(str, enum.Enum):
+    OPEN = "open"
+    MINIMUM_PAID = "minimum_paid"
+    PAID_IN_FULL = "paid_in_full"
+    PAST_DUE = "past_due"

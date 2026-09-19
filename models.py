@@ -1,13 +1,18 @@
-#this file has the schemas for the tables in our database
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 from decimal import Decimal
 
-from sqlalchemy import DateTime, String, JSON, Numeric
-from sqlalchemy import Integer, ForeignKey
-from sqlalchemy.orm import relationship, declarative_base, Mapped, mapped_column
+from sqlalchemy import Date, DateTime, ForeignKey, Integer, JSON, Numeric, String
 from sqlalchemy import Enum as SQLEnum
+from sqlalchemy.orm import Mapped, declarative_base, mapped_column, relationship
 
-from enums import AccountType, TransactionStatus, OperationType, TransactionCategory
+from enums import (
+    AccountType,
+    CreditStatementStatus,
+    OperationType,
+    TransactionCategory,
+    TransactionStatus,
+)
+
 
 Base = declarative_base()
 
@@ -64,6 +69,10 @@ class Account(Base):
         uselist=False,
         cascade="all, delete-orphan",
     )
+    credit_statements: Mapped[list["CreditStatement"]] = relationship(
+        back_populates="linked_account",
+        cascade="all, delete-orphan",
+    )
 
 
 class Card(Base):
@@ -102,6 +111,58 @@ class CreditAccountMetrics(Base):
 
     linked_account: Mapped["Account"] = relationship(
         back_populates="credit_account_metrics",
+    )
+
+
+class CreditStatement(Base):
+    __tablename__ = "credit_statements"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    account_id: Mapped[int] = mapped_column(
+        ForeignKey("accounts.id"),
+        index=True,
+        nullable=False,
+    )
+    period_start: Mapped[date] = mapped_column(Date, nullable=False)
+    period_end: Mapped[date] = mapped_column(Date, nullable=False)
+    due_date: Mapped[date] = mapped_column(Date, index=True, nullable=False)
+    statement_balance: Mapped[Decimal] = mapped_column(Numeric(12, 2), nullable=False)
+    minimum_payment: Mapped[Decimal] = mapped_column(Numeric(12, 2), nullable=False)
+    amount_paid: Mapped[Decimal] = mapped_column(
+        Numeric(12, 2),
+        default=Decimal("0.00"),
+        nullable=False,
+    )
+    status: Mapped[CreditStatementStatus] = mapped_column(
+        SQLEnum(CreditStatementStatus),
+        default=CreditStatementStatus.OPEN,
+        nullable=False,
+    )
+    minimum_paid_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True),
+        nullable=True,
+    )
+    paid_in_full_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True),
+        nullable=True,
+    )
+    evaluated_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True),
+        nullable=True,
+    )
+    interest_charged: Mapped[Decimal] = mapped_column(
+        Numeric(12, 2),
+        default=Decimal("0.00"),
+        nullable=False,
+    )
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        default=lambda: datetime.now(timezone.utc),
+        nullable=False,
+    )
+
+    linked_account: Mapped["Account"] = relationship(
+        back_populates="credit_statements",
     )
 
 
