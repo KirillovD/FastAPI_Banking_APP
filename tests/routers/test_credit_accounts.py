@@ -422,3 +422,41 @@ def test_late_full_payment_does_not_waive_pending_interest(
             card["linked_acc_id"],
         )
         assert account.acquired_interest == Decimal("20.00")
+
+
+
+def test_minimum_paid_statement_never_accumulates_dpd(
+    client,
+    auth_headers,
+):
+    card = create_credit_card(client, auth_headers)
+    due = date(2026, 10, 15)
+    paid_at = datetime(2026, 10, 10, tzinfo=timezone.utc)
+
+    with TestingSessionLocal() as db:
+        account = db.get(
+            models.Account,
+            card["linked_acc_id"],
+        )
+        account.balance = Decimal("-270.00")
+
+        statement = _statement(
+            account.id,
+            amount_paid="30.00",
+            status=CreditStatementStatus.MINIMUM_PAID,
+            due_date=due,
+            minimum_paid_at=paid_at,
+        )
+        db.add(statement)
+        db.commit()
+
+        credit_services.evaluate_due_statements(db, due)
+        credit_services.calculate_acquired_interest_all_credit_accounts(db)
+        credit_services.calculate_acquired_interest_all_credit_accounts(db)
+
+        db.refresh(account)
+        metrics = account.credit_account_metrics
+
+        assert metrics.current_days_past_due == 0
+        assert metrics.max_days_past_due == 0
+        assert metrics.total_missed_payments_count == 0
