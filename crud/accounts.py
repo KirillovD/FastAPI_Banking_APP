@@ -2,8 +2,8 @@ from sqlalchemy.orm import Session
 
 import models
 import utils
-from schemas import accounts
 from enums import AccountType
+from schemas import accounts
 
 
 def _generate_unique_iban(db: Session, max_attempts: int = 5) -> str | None:
@@ -15,7 +15,7 @@ def _generate_unique_iban(db: Session, max_attempts: int = 5) -> str | None:
     return None
 
 
-def create_account(
+def add_account(
     account: accounts.AccCreate | accounts.CreditAccCreate,
     user_id: int,
     db: Session,
@@ -32,9 +32,20 @@ def create_account(
     )
 
     db.add(new_account)
+    return new_account
+
+
+def create_account(
+    account: accounts.AccCreate | accounts.CreditAccCreate,
+    user_id: int,
+    db: Session,
+):
+    new_account = add_account(account, user_id, db)
+    if not new_account:
+        return False
+
     db.commit()
     db.refresh(new_account)
-
     return new_account
 
 
