@@ -77,20 +77,20 @@ class CashOperationsResponse(BaseModel):
 
 
 class PaymentTerminalData(BaseModel):
-    transaction_id: str
-    merchant_name: str
-    card_number: str
+    merchant_name: str = Field(min_length=1, max_length=120)
+    card_number: str = Field(min_length=12, max_length=19)
     payment_type: PaymentType
+
+    model_config = ConfigDict(extra="forbid")
 
 
 class CardPaymentCreate(BaseModel):
-    description: str
-    amount: Decimal
+    amount: Decimal = Field(gt=0)
     terminal_data: PaymentTerminalData
-    created_at: datetime
+    pin_block: str | None = Field(default=None, pattern=r"^\d{4}$")
+    cvv: str | None = Field(default=None, pattern=r"^\d{3,4}$")
 
-    pin_block: str | None = None
-    cvv: str | None = None
+    model_config = ConfigDict(extra="forbid")
 
 
 class CardPaymentResponse(BaseModel):
