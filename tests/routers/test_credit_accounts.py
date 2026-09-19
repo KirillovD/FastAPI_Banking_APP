@@ -383,3 +383,42 @@ def test_full_payment_on_time_waives_pending_interest_at_due_date(
         assert account.grace_period_active is True
         assert metrics.on_time_payments_count == 1
         assert metrics.total_missed_payments_count == 0
+
+
+
+def test_late_full_payment_does_not_waive_pending_interest(
+    client,
+    auth_headers,
+    monkeypatch,
+):
+    card = create_credit_card(client, auth_headers)
+
+    with TestingSessionLocal() as db:
+        account = db.get(
+            models.Account,
+            card["linked_acc_id"],
+        )
+        account.balance = Decimal("-300.00")
+        account.acquired_interest = Decimal("20.00")
+
+        late_statement = _statement(
+            account.id,
+            due_date=date(2026, 1, 15),
+        )
+        db.add(late_statement)
+        db.commit()
+
+    response = client.post(
+        f"/credit-accounts/{card['linked_acc_id']}/payments",
+        json={"amount": 300},
+        headers=auth_headers,
+    )
+
+    assert response.status_code == 200
+
+    with TestingSessionLocal() as db:
+        account = db.get(
+            models.Account,
+            card["linked_acc_id"],
+        )
+        assert account.acquired_interest == Decimal("20.00")
