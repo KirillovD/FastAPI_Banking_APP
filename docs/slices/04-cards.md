@@ -532,3 +532,33 @@ Scope:
 9. **Do not redesign CVV/PIN strategy further in this slice:** yes.
 
 No Slice 4 application changes should be made until these decisions are accepted.
+
+
+---
+
+## 12. Decision record
+
+Approved for Portfolio V2 implementation:
+
+- keep the unified Card model linked to Account;
+- keep encrypted/revealable CVV for this synthetic issuer-side demo;
+- keep bcrypt-hashed PIN storage;
+- default credit limit is restored to `500.00`;
+- credit-card issuance creates the credit Account, CreditAccountMetrics and Card in one transaction;
+- low-level account creation gains a non-committing primitive so composite services can control the transaction;
+- debit-card issuance is allowed for checking/savings accounts and rejected for credit accounts;
+- card PIN input is an exactly four-digit string;
+- supported card type input is constrained to `mastercard` / `maestro`;
+- canonical card request field name is `type`;
+- `GET /cards/` returns a simple list of CardResponse objects;
+- card detail returns the already-authorized dependency object;
+- payment processing and deeper credit lifecycle behavior remain separate slices.
+
+Implementation tickets:
+
+- #10 — repair card API contracts and ownership flow
+- #11 — make credit and debit card issuance preserve account invariants
+
+Implementation branch:
+
+- `fix/slice-04-cards`
