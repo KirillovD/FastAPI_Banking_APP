@@ -503,3 +503,36 @@ Scope:
 12. **Keep real merchant auth/idempotency as optional later work:** yes.
 
 No Slice 5 application changes should be made until these decisions are accepted.
+
+
+---
+
+## 15. Decision record
+
+Approved for Portfolio V2 implementation:
+
+- card payments remain an authenticated Payment Simulator rather than a production merchant API;
+- payment processing moves to a dedicated `POST /payments/` router;
+- only the current authenticated user's cards may be used in the simulator;
+- online payments require CVV verification;
+- POS payments require PIN verification;
+- stored CVV is decrypted exactly once for comparison;
+- card expiry is checked before authorization;
+- payment amount must be strictly positive;
+- merchant name is used as the Transaction description/categorization input;
+- payment Transaction timestamps are generated server-side;
+- debit/credit behavior is derived from the Card's linked Account;
+- successful account mutation + PAYMENT Transaction are committed together;
+- rejected authorizations create no successful financial Transaction and mutate no balance;
+- response uses the compact CardPaymentResponse;
+- unused terminal transaction ID/client timestamp are removed from the MVP request;
+- real merchant authentication, settlement, idempotency and declined-attempt logging remain deferred.
+
+Implementation tickets:
+
+- #13 — repair payment simulator API and card authorization
+- #14 — repair payment persistence and response
+
+Implementation branch:
+
+- `fix/slice-05-payments`
