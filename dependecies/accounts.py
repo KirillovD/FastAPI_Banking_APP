@@ -21,3 +21,16 @@ def get_valid_acc(acc_id : int,
         raise exceptions.NotYourAccount()
 
     return account
+
+
+
+def get_valid_credit_acc(
+    acc_id: int,
+    account: models.Account = Depends(get_valid_acc),
+):
+    if account.type != models.Account.type.property.columns[0].type.enum_class.CREDIT:
+        raise exceptions.AccountOperationNotAllowed(
+            detail="This endpoint requires a credit account"
+        )
+
+    return account
