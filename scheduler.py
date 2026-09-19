@@ -1,8 +1,16 @@
+import logging
+
 from apscheduler.schedulers.blocking import BlockingScheduler
 
 from database import SessionLocal
 from services import credit
 
+
+logging.basicConfig(
+    filename="credit_operations.log",
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s",
+)
 
 scheduler = BlockingScheduler()
 
