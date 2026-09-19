@@ -689,3 +689,39 @@ Scope:
 14. **Expose a dedicated credit-account dashboard/repayment/statements API:** yes.
 
 No Slice 6 application changes should be made until these decisions are accepted.
+
+
+---
+
+## 16. Decision record
+
+Approved for Portfolio V2 implementation:
+
+- preserve the original daily changing-balance interest accrual design;
+- preserve grace-based interest waiver;
+- preserve retroactive interest charging when grace fails;
+- add explicit CreditStatement records to separate statement obligation from current account balance;
+- statement closes at month-end and is due on the 15th of the following month;
+- any positive repayment is allowed;
+- minimum payment is a due-date obligation, not a minimum transaction size;
+- minimum-payment formula is capped by total statement debt;
+- full statement payment by due date preserves grace and waives pending interest;
+- minimum paid but not full is not delinquency, but grace is lost and pending interest becomes owed;
+- minimum missed creates true delinquency, missed-payment metrics and days-past-due;
+- on-time payment metrics are tied to statement obligations, not zero-balance accounts with no statement;
+- interest accrues only while the credit account has debt;
+- pending interest must never become stranded or silently disappear after grace is lost;
+- retroactive interest is posted when due-date evaluation determines grace has been lost;
+- after grace has already been lost, later repayment does not erase already-earned interest;
+- APR is the configured source of truth and daily rate is derived in code;
+- add a dedicated credit-account API for dashboard, repayments and statement history;
+- CreditAccountMetrics produced by this slice are explicitly the trusted inputs for the later synthetic Credit Score slice;
+- no synthetic score formula/weights are implemented in this slice.
+
+Implementation tickets:
+
+- CreditStatement + credit account API
+- statement-aware repayments
+- due-date / interest / delinquency scheduler refactor
+
+No generic rewrite of the original credit business logic is approved.
