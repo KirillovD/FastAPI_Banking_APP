@@ -1,141 +1,164 @@
+from sqlalchemy import inspect
+
+import models
 from schemas.accounts import AccResponse
 from tests.conftest import create_user_and_login
-from enums import AccountType
 
-#test function for account creation
-#we use auth_headers to create and login user first
+
+def test_credit_account_metrics_has_primary_key():
+    mapper = inspect(models.CreditAccountMetrics)
+    assert [column.name for column in mapper.primary_key] == ["account_id"]
 
 
 def test_create_account(client, auth_headers):
-
-    #create savings account using token data from auth_headers
-    response = client.post("/accounts/",
-                           json={"type"  :"savings",
-                                 "balance" : 1000},
-                           headers=auth_headers
-                           )
+    response = client.post(
+        "/accounts/",
+        json={"type": "savings", "balance": 1000},
+        headers=auth_headers,
+    )
 
     assert response.status_code == 200
 
     data = response.json()
+    AccResponse(**data)
 
-    validated_data = AccResponse(**data)
+    assert data["type"] == "savings"
+    assert data["balance"] == "1000.00" or data["balance"] == 1000
+    assert data["iban"].startswith("DE")
+    assert "created_at" in data
+    assert "overdraft_limit" not in data
+
+
+def test_create_checking_account(client, auth_headers):
+    response = client.post(
+        "/accounts/",
+        json={"type": "checking", "balance": 500},
+        headers=auth_headers,
+    )
+
+    assert response.status_code == 200
+    assert response.json()["type"] == "checking"
+
+
+def test_generic_account_endpoint_rejects_credit_account(client, auth_headers):
+    response = client.post(
+        "/accounts/",
+        json={"type": "credit", "balance": 0},
+        headers=auth_headers,
+    )
+
+    assert response.status_code == 422
 
 
 def test_get_all_accounts(client, auth_headers):
+    savings = client.post(
+        "/accounts/",
+        json={"type": "savings", "balance": 1000},
+        headers=auth_headers,
+    )
+    checking = client.post(
+        "/accounts/",
+        json={"type": "checking", "balance": 50000},
+        headers=auth_headers,
+    )
 
-    #we only create one account per request
-    #create the first one as savings
-    #use auth_headers to create and login the user and get the token
-    create_savings_account = client.post("/accounts/",
-                           json={"type"  :"savings",
-                                 "balance" : 1000},
-                           headers=auth_headers
-                           )
+    assert savings.status_code == 200
+    assert checking.status_code == 200
 
-    assert create_savings_account.status_code == 200
+    response = client.get("/accounts/", headers=auth_headers)
 
-    #Response should match AccountResponse in schemas.py
-    create_checking_account = client.post("/accounts/",
-                           json={"type"  :"checking",
-                                 "balance" : 50000},
-                           headers=auth_headers
-                           )
+    assert response.status_code == 200
 
-    assert create_checking_account.status_code == 200
-
-
-    #now we can make get request for all accounts
-    #we use user_id from the token from auth_header login to find them
-    get_accounts = client.get("/accounts/",
-                           headers=auth_headers
-                          )
-
-    assert get_accounts.status_code == 200
-
-    data = get_accounts.json()
-
-    #we get returned a list of accounts
-    #as stated in the response_model in router/accounts/get
-    #check the type and length
+    data = response.json()
     assert isinstance(data, list)
     assert len(data) == 2
 
-    first_acc = AccResponse(**data[0])
+    AccResponse(**data[0])
+    AccResponse(**data[1])
 
-    second_acc = AccResponse(**data[1])
 
+def test_get_accounts_empty(client, auth_headers):
+    response = client.get("/accounts/", headers=auth_headers)
 
-#no accounts created, will the list be empty?
-def test_get_accounts_empty(client,auth_headers):
-    get_accounts = client.get("/accounts/",
-                              headers=auth_headers
-                              )
-
-    assert get_accounts.status_code == 200
-
-    data = get_accounts.json()
-
-    #we should get an empty list, no accounts created
-    assert isinstance(data, list)
-    assert len(data) == 0
+    assert response.status_code == 200
+    assert response.json() == []
 
 
 def test_create_account_without_token(client):
+    response = client.post(
+        "/accounts/",
+        json={"type": "savings", "balance": 1000},
+    )
 
-    create_savings_account = client.post("/accounts/",
-                           json={"type"  :"savings",
-                                 "balance" : 1000}
-                           )
-
-    #401 for not authorized, not logged in
-    assert create_savings_account.status_code == 401
-
+    assert response.status_code == 401
 
 
 def test_get_acc_by_id(client, auth_headers):
+    created = client.post(
+        "/accounts/",
+        json={"type": "savings", "balance": 1000},
+        headers=auth_headers,
+    )
 
-    #we only create one account per request
-    #create the first one as savings
-    #use auth_headers to create and login the user and get the token
-    create_savings_account = client.post("/accounts/",
-                           json={"type"  :"savings",
-                                 "balance" : 1000},
-                           headers=auth_headers
-                           )
+    assert created.status_code == 200
+    account_id = created.json()["id"]
 
-    assert create_savings_account.status_code == 200
+    response = client.get(
+        f"/accounts/{account_id}",
+        headers=auth_headers,
+    )
 
-    data = create_savings_account.json()
-    acc_id = data["id"]
-
-    response = client.get(f"/accounts/{acc_id}",
-                          headers=auth_headers)
-
-    valid_response = AccResponse(**response.json())
-
+    assert response.status_code == 200
+    AccResponse(**response.json())
 
 
 def test_get_acc_by_id_idor(client, auth_headers):
+    created = client.post(
+        "/accounts/",
+        json={"type": "savings", "balance": 1000},
+        headers=auth_headers,
+    )
 
-    #we only create one account per request
-    #create the first one as savings
-    #use auth_headers to create and login the user and get the token
-    create_savings_account = client.post("/accounts/",
-                           json={"type"  :"savings",
-                                 "balance" : 1000},
-                           headers=auth_headers
-                           )
+    assert created.status_code == 200
+    account_id = created.json()["id"]
 
-    assert create_savings_account.status_code == 200
+    other_user_headers = create_user_and_login(
+        client,
+        "mary@example.com",
+        "Mary",
+    )
 
-    data = create_savings_account.json()
-    acc_id = data["id"]
+    response = client.get(
+        f"/accounts/{account_id}",
+        headers=other_user_headers,
+    )
 
-    header_b = create_user_and_login(client, "mary@example.com","Mary")
-
-    response = client.get(f"/accounts/{acc_id}",
-                          headers=header_b)
+    assert response.status_code == 403
 
 
-    assert response.status_code in [403, 404]
+def test_list_accounts_only_returns_current_users_accounts(client, auth_headers):
+    own_account = client.post(
+        "/accounts/",
+        json={"type": "checking", "balance": 250},
+        headers=auth_headers,
+    )
+    assert own_account.status_code == 200
+
+    other_headers = create_user_and_login(
+        client,
+        "other@example.com",
+        "Other",
+    )
+    other_account = client.post(
+        "/accounts/",
+        json={"type": "savings", "balance": 900},
+        headers=other_headers,
+    )
+    assert other_account.status_code == 200
+
+    response = client.get("/accounts/", headers=auth_headers)
+
+    assert response.status_code == 200
+    data = response.json()
+    assert len(data) == 1
+    assert data[0]["id"] == own_account.json()["id"]
