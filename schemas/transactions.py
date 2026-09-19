@@ -1,26 +1,29 @@
 from datetime import datetime
 from decimal import Decimal
-from typing import Literal
 
-from pydantic import BaseModel, Field, field_validator, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 from schwifty import IBAN
 from schwifty.exceptions import SchwiftyException
-from enums import TransactionCategory, TransactionStatus, OperationType, PaymentType
+
+from enums import (
+    OperationType,
+    PaymentType,
+    TransactionCategory,
+    TransactionStatus,
+)
 
 
-class TransactionBase(BaseModel):
-    sender_account_id : int | None
-    sender_iban : str | None
-    recipient_iban : str | None
-    recipient_name : str
-    amount : Decimal
-    description : str | None = None
+class TransferDataInput(BaseModel):
+    recipient_iban: str
+    recipient_name: str = Field(min_length=1, max_length=100)
+    amount: Decimal = Field(gt=0)
+    description: str | None = Field(default=None, max_length=255)
 
-class TransferDataInput(TransactionBase):
+    model_config = ConfigDict(extra="forbid")
 
     @field_validator("recipient_iban")
     @classmethod
-    def validate_iban(cls, value : str):
+    def validate_iban(cls, value: str):
         clean_value = value.replace(" ", "").upper()
 
         try:
@@ -31,20 +34,33 @@ class TransferDataInput(TransactionBase):
         return clean_value
 
 
-class TransactionResponse(TransactionBase):
-    id : int
+class TransactionCreateRecord(BaseModel):
+    sender_account_id: int | None = None
+    recipient_account_id: int | None = None
+    sender_iban: str | None = None
+    recipient_iban: str | None = None
+    amount: Decimal
     created_at: datetime
-
-    model_config = ConfigDict(from_attributes=True)
-
-
-class TransactionCreateRecord(TransactionBase):
-    recipient_account_id : int | None
     status: TransactionStatus
-    created_at: datetime
     operation_type: OperationType
-    category : TransactionCategory
-    transaction_metadata: dict | None = None
+    description: str | None = None
+    category: TransactionCategory = TransactionCategory.OTHER
+    mcc_code: str | None = None
+
+
+class TransactionResponse(BaseModel):
+    id: int
+    sender_account_id: int | None
+    recipient_account_id: int | None
+    sender_iban: str | None
+    recipient_iban: str | None
+    amount: Decimal
+    created_at: datetime
+    status: TransactionStatus
+    operation_type: OperationType
+    description: str | None
+    category: TransactionCategory
+    mcc_code: str | None
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -54,11 +70,10 @@ class CashOperation(BaseModel):
 
 
 class CashOperationsResponse(BaseModel):
-    id : int
-    balance : Decimal
+    id: int
+    balance: Decimal
 
     model_config = ConfigDict(from_attributes=True)
-
 
 
 class PaymentTerminalData(BaseModel):
@@ -71,7 +86,7 @@ class PaymentTerminalData(BaseModel):
 class CardPaymentCreate(BaseModel):
     description: str
     amount: Decimal
-    terminal_data : PaymentTerminalData
+    terminal_data: PaymentTerminalData
     created_at: datetime
 
     pin_block: str | None = None
