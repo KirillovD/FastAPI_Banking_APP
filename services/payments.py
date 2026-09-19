@@ -68,6 +68,8 @@ def process_payment(payment_info: transactions.CardPaymentCreate, db: Session):
         sender_account_id=account.id,
         sender_iban=account.iban,
         description=payment_info.description,
+        category=categorizer_response["category"],
+        mcc_code=categorizer_response.get("mcc_code") or categorizer_response.get("mcc"),
     )
 
     new_transaction = transaction.create_transaction_record(transaction_data, db)
