@@ -104,11 +104,21 @@ def _record_rapid_limit_depletion(
         and after >= Decimal("0.80")
     ):
         if account.credit_account_metrics is None:
-            account.credit_account_metrics = (
-                models.CreditAccountMetrics()
+            account.credit_account_metrics = models.CreditAccountMetrics(
+                on_time_payments_count=0,
+                total_missed_payments_count=0,
+                current_days_past_due=0,
+                max_days_past_due=0,
+                rapid_limit_depletion_count=0,
             )
 
-        account.credit_account_metrics.rapid_limit_depletion_count += 1
+        current_count = (
+            account.credit_account_metrics.rapid_limit_depletion_count
+            or 0
+        )
+        account.credit_account_metrics.rapid_limit_depletion_count = (
+            current_count + 1
+        )
 
 
 def check_card_for_payment(
