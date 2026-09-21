@@ -12,7 +12,7 @@ from enums import (
     TransactionStatus,
 )
 from schemas import transactions
-from services import payments
+from services import credit_score, payments
 from services.categorizer import categorizer
 
 
@@ -113,6 +113,13 @@ def transfer_money(
     new_record = transaction.create_transaction_record(
         transaction_record_data,
         db,
+    )
+
+    db.flush()
+    credit_score.recalculate_user_credit_score(
+        valid_source_acc.owner_id,
+        db,
+        commit=False,
     )
 
     db.commit()
