@@ -98,3 +98,16 @@ def test_credit_age_is_modest_and_bounded():
 def test_rapid_depletion_penalty_is_capped():
     assert credit_score._rapid_depletion_factor(2).impact == -20
     assert credit_score._rapid_depletion_factor(20).impact == -60
+
+
+
+def test_single_missed_obligation_is_immediate_penalty():
+    factor = credit_score._payment_history_factor(0, 1)
+
+    assert factor.impact == -50
+
+
+def test_score_clamp_respects_declared_range():
+    assert credit_score._clamp(100, 300, 850) == 300
+    assert credit_score._clamp(900, 300, 850) == 850
+    assert credit_score._clamp(600, 300, 850) == 600
