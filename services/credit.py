@@ -11,6 +11,7 @@ from crud import credit as crud_credit
 from crud import transaction as crud_transaction
 from enums import AccountType, CreditStatementStatus
 from schemas import credit as credit_schemas
+from services import credit_score
 
 
 MONEY_QUANTUM = Decimal("0.01")
@@ -372,6 +373,13 @@ def repay_credit_account(
         ):
             account.grace_period_active = True
 
+    db.flush()
+    credit_score.recalculate_user_credit_score(
+        account.owner_id,
+        db,
+        commit=False,
+    )
+
     db.commit()
     db.refresh(account)
 
@@ -500,6 +508,12 @@ def evaluate_due_statements(
         try:
             with db.begin_nested():
                 evaluate_due_statement(statement, db)
+                db.flush()
+                credit_score.recalculate_user_credit_score(
+                    statement.linked_account.owner_id,
+                    db,
+                    commit=False,
+                )
                 evaluated_count += 1
         except Exception as exc:
             logger.exception(
@@ -583,6 +597,12 @@ def calculate_acquired_interest_all_credit_accounts(
                 update_days_past_due_counter(account, db)
                 calculate_credit_account_acquired_interest(
                     account
+                )
+                db.flush()
+                credit_score.recalculate_user_credit_score(
+                    account.owner_id,
+                    db,
+                    commit=False,
                 )
                 success_count += 1
         except Exception as exc:
