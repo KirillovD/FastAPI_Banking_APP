@@ -6,7 +6,12 @@ from sqlalchemy.orm import Session
 import exceptions
 import models
 from crud import cards, transaction
-from enums import OperationType, PaymentType, TransactionCategory, TransactionStatus
+from enums import (
+    OperationType,
+    PaymentType,
+    TransactionClassificationSource,
+    TransactionStatus,
+)
 from schemas import transactions
 from services.categorizer import categorizer
 from utils import decode_cvv, verify_password
@@ -52,13 +57,6 @@ def _is_card_expired(card: models.Card) -> bool:
     return expiry <= now
 
 
-def _category_from_categorizer(raw_category: str) -> TransactionCategory:
-    try:
-        return TransactionCategory(raw_category)
-    except ValueError:
-        return TransactionCategory.OTHER
-
-
 def check_card_for_payment(
     payment_info: transactions.CardPaymentCreate,
     user: models.User,
@@ -100,7 +98,9 @@ def process_payment(
         raise exceptions.InsufficientFunds()
 
     categorizer_response = categorizer.categorize(
-        payment_info.terminal_data.merchant_name
+        payment_info.terminal_data.merchant_name,
+        mcc_code=payment_info.terminal_data.mcc_code,
+        rule_source=TransactionClassificationSource.MERCHANT_RULE,
     )
 
     transaction.withdraw_funds(account, payment_info.amount)
@@ -113,12 +113,10 @@ def process_payment(
         sender_account_id=account.id,
         sender_iban=account.iban,
         description=payment_info.terminal_data.merchant_name,
-        category=_category_from_categorizer(
-            categorizer_response["category"]
-        ),
-        mcc_code=(
-            categorizer_response.get("mcc_code")
-            or categorizer_response.get("mcc")
+        category=categorizer_response["category"],
+        mcc_code=categorizer_response["mcc_code"],
+        classification_source=(
+            categorizer_response["classification_source"]
         ),
     )
 
