@@ -69,6 +69,8 @@ def test_transfer_money_success(client, auth_headers):
     assert data["operation_type"] == "transfer"
     assert data["status"] == "successful"
     assert data["category"] == "Groceries"
+    assert data["mcc_code"] is None
+    assert data["classification_source"] == "description_rule"
 
     assert _get_balance(client, auth_headers, sender["id"]) == Decimal("300")
     assert _get_balance(client, recipient_headers, recipient["id"]) == Decimal("1200")
