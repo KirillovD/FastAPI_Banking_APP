@@ -576,3 +576,11 @@ Implementation tickets:
 - score API + lifecycle recalculation
 
 Customer-facing charts and fictional-bank offer recommendations remain consumers of this data and will be implemented in the analytics/insights slice rather than inside the score engine.
+
+
+### Implementation tracking
+
+- #20 — MCC-first transaction enrichment
+- #21 — deterministic explainable synthetic credit score
+- #22 — score API and credit-lifecycle recalculation
+- implementation branch: `feat/slice-07-credit-score`
