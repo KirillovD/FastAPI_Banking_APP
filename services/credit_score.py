@@ -399,18 +399,18 @@ def calculate_user_credit_score(
         if metrics is None:
             continue
 
-        on_time += metrics.on_time_payments_count
-        missed += metrics.total_missed_payments_count
+        on_time += metrics.on_time_payments_count or 0
+        missed += metrics.total_missed_payments_count or 0
         current_dpd = max(
             current_dpd,
-            metrics.current_days_past_due,
+            metrics.current_days_past_due or 0,
         )
         max_dpd = max(
             max_dpd,
-            metrics.max_days_past_due,
+            metrics.max_days_past_due or 0,
         )
         rapid_depletion += (
-            metrics.rapid_limit_depletion_count
+            metrics.rapid_limit_depletion_count or 0
         )
 
     factors = [
