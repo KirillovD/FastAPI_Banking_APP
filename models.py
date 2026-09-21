@@ -10,6 +10,7 @@ from enums import (
     CreditStatementStatus,
     OperationType,
     TransactionCategory,
+    TransactionClassificationSource,
     TransactionStatus,
 )
 
@@ -195,6 +196,11 @@ class Transaction(Base):
         default=TransactionCategory.OTHER,
     )
     mcc_code: Mapped[str | None] = mapped_column(nullable=True)
+    classification_source: Mapped[TransactionClassificationSource] = mapped_column(
+        SQLEnum(TransactionClassificationSource),
+        default=TransactionClassificationSource.SYSTEM,
+        nullable=False,
+    )
 
     sender_account: Mapped["Account | None"] = relationship(
         foreign_keys=[sender_account_id],
