@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta, timezone
 from decimal import Decimal
 
+from sqlalchemy import or_
 from sqlalchemy.orm import Session
 
 import exceptions
@@ -245,6 +246,14 @@ def _behavioral_factor(
                     OperationType.PAYMENT,
                     OperationType.TRANSFER,
                 ]
+            ),
+            or_(
+                models.Transaction.operation_type
+                != OperationType.TRANSFER,
+                models.Transaction.recipient_account_id.is_(None),
+                ~models.Transaction.recipient_account_id.in_(
+                    user_account_ids
+                ),
             ),
         )
         .all()
