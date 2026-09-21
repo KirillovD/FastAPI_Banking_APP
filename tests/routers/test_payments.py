@@ -52,6 +52,7 @@ def test_online_debit_payment_success(client, auth_headers):
                 "merchant_name": "REWE Berlin",
                 "card_number": card["number"],
                 "payment_type": "online",
+                "mcc_code": "5411",
             },
             "cvv": cvv,
         },
@@ -80,6 +81,8 @@ def test_online_debit_payment_success(client, auth_headers):
     assert transactions[0]["operation_type"] == "payment"
     assert transactions[0]["description"] == "REWE Berlin"
     assert transactions[0]["category"] == "Groceries"
+    assert transactions[0]["mcc_code"] == "5411"
+    assert transactions[0]["classification_source"] == "mcc"
 
 
 def test_pos_credit_payment_uses_credit_limit(client, auth_headers):
@@ -93,6 +96,7 @@ def test_pos_credit_payment_uses_credit_limit(client, auth_headers):
                 "merchant_name": "Local Store",
                 "card_number": card["number"],
                 "payment_type": "pos",
+                "mcc_code": "5399",
             },
             "pin_block": "1234",
         },
@@ -147,6 +151,7 @@ def test_payment_rejects_other_users_card(client, auth_headers):
                 "merchant_name": "REWE Berlin",
                 "card_number": other_card["number"],
                 "payment_type": "online",
+                "mcc_code": "5411",
             },
             "cvv": other_cvv,
         },
@@ -185,6 +190,7 @@ def test_online_payment_rejects_wrong_cvv_without_mutation(
                 "merchant_name": "REWE Berlin",
                 "card_number": card["number"],
                 "payment_type": "online",
+                "mcc_code": "5411",
             },
             "cvv": "999",
         },
@@ -223,6 +229,7 @@ def test_online_payment_requires_cvv(client, auth_headers):
                 "merchant_name": "REWE Berlin",
                 "card_number": card["number"],
                 "payment_type": "online",
+                "mcc_code": "5411",
             },
         },
         headers=auth_headers,
@@ -255,6 +262,7 @@ def test_pos_payment_rejects_wrong_pin_without_mutation(
                 "merchant_name": "Local Store",
                 "card_number": card["number"],
                 "payment_type": "pos",
+                "mcc_code": "5399",
             },
             "pin_block": "4321",
         },
@@ -300,6 +308,7 @@ def test_payment_rejects_expired_card(client, auth_headers):
                 "merchant_name": "Local Store",
                 "card_number": card["number"],
                 "payment_type": "pos",
+                "mcc_code": "5399",
             },
             "pin_block": "1234",
         },
@@ -335,6 +344,7 @@ def test_payment_amount_must_be_positive(client, auth_headers):
                 "merchant_name": "Local Store",
                 "card_number": card["number"],
                 "payment_type": "pos",
+                "mcc_code": "5399",
             },
             "pin_block": "1234",
         },
@@ -373,6 +383,7 @@ def test_payment_rejects_insufficient_funds_without_transaction(
                 "merchant_name": "Local Store",
                 "card_number": card["number"],
                 "payment_type": "pos",
+                "mcc_code": "5399",
             },
             "pin_block": "1234",
         },
@@ -399,6 +410,7 @@ def test_payment_requires_authentication(client):
                 "merchant_name": "Local Store",
                 "card_number": "5555555555554444",
                 "payment_type": "pos",
+                "mcc_code": "5399",
             },
             "pin_block": "1234",
         },
