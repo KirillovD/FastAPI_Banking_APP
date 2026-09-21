@@ -7,12 +7,14 @@ import exceptions
 import models
 from crud import cards, transaction
 from enums import (
+    AccountType,
     OperationType,
     PaymentType,
     TransactionClassificationSource,
     TransactionStatus,
 )
 from schemas import transactions
+from services import credit_score
 from services.categorizer import categorizer
 from utils import decode_cvv, verify_password
 
@@ -55,6 +57,58 @@ def _is_card_expired(card: models.Card) -> bool:
         now = now.replace(tzinfo=None)
 
     return expiry <= now
+
+
+def _credit_utilization(
+    account: models.Account,
+    *,
+    balance: Decimal | None = None,
+) -> Decimal:
+    if (
+        account.type != AccountType.CREDIT
+        or account.limit <= Decimal("0")
+    ):
+        return Decimal("0")
+
+    effective_balance = (
+        Decimal(account.balance)
+        if balance is None
+        else Decimal(balance)
+    )
+    debt = max(
+        -effective_balance,
+        Decimal("0"),
+    )
+
+    return debt / Decimal(account.limit)
+
+
+def _record_rapid_limit_depletion(
+    account: models.Account,
+    payment_amount: Decimal,
+):
+    if account.type != AccountType.CREDIT:
+        return
+
+    before = _credit_utilization(account)
+    after = _credit_utilization(
+        account,
+        balance=(
+            Decimal(account.balance)
+            - Decimal(payment_amount)
+        ),
+    )
+
+    if (
+        before < Decimal("0.50")
+        and after >= Decimal("0.80")
+    ):
+        if account.credit_account_metrics is None:
+            account.credit_account_metrics = (
+                models.CreditAccountMetrics()
+            )
+
+        account.credit_account_metrics.rapid_limit_depletion_count += 1
 
 
 def check_card_for_payment(
@@ -103,6 +157,10 @@ def process_payment(
         rule_source=TransactionClassificationSource.MERCHANT_RULE,
     )
 
+    _record_rapid_limit_depletion(
+        account,
+        payment_info.amount,
+    )
     transaction.withdraw_funds(account, payment_info.amount)
 
     transaction_data = transactions.TransactionCreateRecord(
@@ -123,6 +181,15 @@ def process_payment(
     new_transaction = transaction.create_transaction_record(
         transaction_data,
         db,
+    )
+
+    # Session autoflush is disabled in this project, so flush the
+    # transaction and metric state before deterministic score queries.
+    db.flush()
+    credit_score.recalculate_user_credit_score(
+        user.id,
+        db,
+        commit=False,
     )
 
     db.commit()
