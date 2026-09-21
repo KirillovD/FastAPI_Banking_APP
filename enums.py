@@ -58,6 +58,14 @@ class TransactionCategory(str, enum.Enum):
     OTHER = "other"
 
 
+class TransactionClassificationSource(str, enum.Enum):
+    MCC = "mcc"
+    MERCHANT_RULE = "merchant_rule"
+    DESCRIPTION_RULE = "description_rule"
+    SYSTEM = "system"
+    FALLBACK = "fallback"
+
+
 class CreditStatementStatus(str, enum.Enum):
     OPEN = "open"
     MINIMUM_PAID = "minimum_paid"

@@ -6,8 +6,15 @@ from sqlalchemy.orm import Session
 import exceptions
 import models
 from crud import cards, transaction
-from enums import OperationType, PaymentType, TransactionCategory, TransactionStatus
+from enums import (
+    AccountType,
+    OperationType,
+    PaymentType,
+    TransactionClassificationSource,
+    TransactionStatus,
+)
 from schemas import transactions
+from services import credit_score
 from services.categorizer import categorizer
 from utils import decode_cvv, verify_password
 
@@ -52,11 +59,66 @@ def _is_card_expired(card: models.Card) -> bool:
     return expiry <= now
 
 
-def _category_from_categorizer(raw_category: str) -> TransactionCategory:
-    try:
-        return TransactionCategory(raw_category)
-    except ValueError:
-        return TransactionCategory.OTHER
+def _credit_utilization(
+    account: models.Account,
+    *,
+    balance: Decimal | None = None,
+) -> Decimal:
+    if (
+        account.type != AccountType.CREDIT
+        or account.limit <= Decimal("0")
+    ):
+        return Decimal("0")
+
+    effective_balance = (
+        Decimal(account.balance)
+        if balance is None
+        else Decimal(balance)
+    )
+    debt = max(
+        -effective_balance,
+        Decimal("0"),
+    )
+
+    return debt / Decimal(account.limit)
+
+
+def _record_rapid_limit_depletion(
+    account: models.Account,
+    payment_amount: Decimal,
+):
+    if account.type != AccountType.CREDIT:
+        return
+
+    before = _credit_utilization(account)
+    after = _credit_utilization(
+        account,
+        balance=(
+            Decimal(account.balance)
+            - Decimal(payment_amount)
+        ),
+    )
+
+    if (
+        before < Decimal("0.50")
+        and after >= Decimal("0.80")
+    ):
+        if account.credit_account_metrics is None:
+            account.credit_account_metrics = models.CreditAccountMetrics(
+                on_time_payments_count=0,
+                total_missed_payments_count=0,
+                current_days_past_due=0,
+                max_days_past_due=0,
+                rapid_limit_depletion_count=0,
+            )
+
+        current_count = (
+            account.credit_account_metrics.rapid_limit_depletion_count
+            or 0
+        )
+        account.credit_account_metrics.rapid_limit_depletion_count = (
+            current_count + 1
+        )
 
 
 def check_card_for_payment(
@@ -100,9 +162,15 @@ def process_payment(
         raise exceptions.InsufficientFunds()
 
     categorizer_response = categorizer.categorize(
-        payment_info.terminal_data.merchant_name
+        payment_info.terminal_data.merchant_name,
+        mcc_code=payment_info.terminal_data.mcc_code,
+        rule_source=TransactionClassificationSource.MERCHANT_RULE,
     )
 
+    _record_rapid_limit_depletion(
+        account,
+        payment_info.amount,
+    )
     transaction.withdraw_funds(account, payment_info.amount)
 
     transaction_data = transactions.TransactionCreateRecord(
@@ -113,18 +181,25 @@ def process_payment(
         sender_account_id=account.id,
         sender_iban=account.iban,
         description=payment_info.terminal_data.merchant_name,
-        category=_category_from_categorizer(
-            categorizer_response["category"]
-        ),
-        mcc_code=(
-            categorizer_response.get("mcc_code")
-            or categorizer_response.get("mcc")
+        category=categorizer_response["category"],
+        mcc_code=categorizer_response["mcc_code"],
+        classification_source=(
+            categorizer_response["classification_source"]
         ),
     )
 
     new_transaction = transaction.create_transaction_record(
         transaction_data,
         db,
+    )
+
+    # Session autoflush is disabled in this project, so flush the
+    # transaction and metric state before deterministic score queries.
+    db.flush()
+    credit_score.recalculate_user_credit_score(
+        user.id,
+        db,
+        commit=False,
     )
 
     db.commit()
