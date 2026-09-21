@@ -542,3 +542,37 @@ Recommended defaults:
 9. Return factor impacts/explanations with the score: **yes**.
 10. Score history: **optional/stretch**.
 11. No ML/AI scoring: **yes**.
+
+
+---
+
+## 16. Decision record
+
+Approved for Portfolio V2 implementation:
+
+- keep transaction categorization as a core product capability;
+- for merchant/card payments, MCC is the primary classification signal;
+- the payment simulator should carry merchant MCC as part of terminal data;
+- for bank transfers, do not fabricate an MCC; classify from remittance/description rules instead;
+- persist one canonical transaction category plus the classification source;
+- preserve the existing Germany-oriented merchant/description rules as a fallback/enrichment layer;
+- customer spending analytics and bank-side segmentation/offers will consume the same enriched transaction data in the later analytics slice;
+- the synthetic credit score is primarily driven by actual credit behavior: payment history, delinquency, utilization and account age;
+- categorized spending contributes a smaller bounded behavioral factor rather than dominating the score;
+- gambling/microloan patterns may contribute bounded negative behavioral risk;
+- investment/insurance patterns may contribute a modest positive/stability signal;
+- behavioral scoring is based on recent spending patterns, not one-off merchant events;
+- rapid credit-limit depletion gets a simple deterministic event rule based on utilization crossing from below 50% to at least 80%;
+- score calculation is deterministic and explainable, not scattered incremental mutations;
+- score remains explicitly labelled synthetic/demo and is not a real lending model;
+- current score is stored in User.credit_score and recalculated from persisted source data;
+- no ML/AI underwriting;
+- score history remains optional after the core implementation.
+
+Implementation tickets:
+
+- MCC-first transaction enrichment
+- deterministic explainable synthetic score engine
+- score API + lifecycle recalculation
+
+Customer-facing charts and fictional-bank offer recommendations remain consumers of this data and will be implemented in the analytics/insights slice rather than inside the score engine.
