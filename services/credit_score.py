@@ -1,7 +1,6 @@
 from datetime import datetime, timedelta, timezone
 from decimal import Decimal
 
-from sqlalchemy import or_
 from sqlalchemy.orm import Session
 
 import exceptions
@@ -52,10 +51,15 @@ def _payment_history_factor(
             ),
         )
 
-    ratio = on_time / total
     confidence = min(total, 6) / 6
-    impact = round(
-        ((ratio * 2) - 1) * 120 * confidence
+    positive = round(
+        (on_time / total) * 120 * confidence
+    )
+    missed_penalty = min(missed * 50, 120)
+    impact = _clamp(
+        positive - missed_penalty,
+        -120,
+        120,
     )
 
     return CreditScoreFactor(
@@ -63,8 +67,9 @@ def _payment_history_factor(
         impact=impact,
         value=f"{on_time} on-time / {missed} missed",
         explanation=(
-            "Statement minimum-payment history is the strongest "
-            "positive/negative factor in this synthetic model."
+            "On-time statement history builds score gradually, "
+            "while missed minimum obligations carry a stronger "
+            "immediate penalty."
         ),
     )
 
