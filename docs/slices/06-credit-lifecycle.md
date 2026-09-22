@@ -1,6 +1,8 @@
 # Slice 6 — Credit Account Lifecycle
 
-Status: **analysis / design proposal — not yet implemented**
+Status: **implemented and merged into `portfolio-v2` (PR #19); post-review credit-state stabilization merged in PR #29.**
+
+The sections below preserve the pre-implementation design archaeology and rationale. The Decision record plus the current code are authoritative for implemented behavior.
 
 ## 1. Original design intent
 
