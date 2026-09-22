@@ -1,0 +1,45 @@
+name: Container CI
+
+on:
+  pull_request:
+    branches:
+      - portfolio-v2
+    paths:
+      - "Dockerfile"
+      - ".dockerignore"
+      - "frontend/**"
+      - "pyproject.toml"
+      - "main.py"
+      - "config.py"
+      - "mock_data_generator/**"
+      - "render.yaml"
+      - ".github/workflows/container-ci.yml"
+  push:
+    branches:
+      - portfolio-v2
+    paths:
+      - "Dockerfile"
+      - ".dockerignore"
+      - "frontend/**"
+      - "pyproject.toml"
+      - "main.py"
+      - "config.py"
+      - "mock_data_generator/**"
+      - "render.yaml"
+      - ".github/workflows/container-ci.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Docker build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Build production image
+        run: docker build --tag aurelia-banking-lab:test .
