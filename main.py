@@ -7,6 +7,7 @@ from database import init_db
 from router import (
     accounts,
     admin,
+    analytics,
     auth,
     cards,
     credit_accounts,
@@ -36,6 +37,7 @@ app = FastAPI(
 
 app.include_router(users.router)
 app.include_router(accounts.router)
+app.include_router(analytics.router)
 app.include_router(auth.router)
 app.include_router(transactions.router)
 app.include_router(payments.router)
