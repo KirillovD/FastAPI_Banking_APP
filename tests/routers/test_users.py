@@ -163,3 +163,69 @@ def test_admin_user_can_access_admin(client):
     response = client.get("/admin/", headers=headers)
 
     assert response.status_code == 200
+
+
+
+def test_login_uses_same_email_canonicalization_as_registration(client):
+    create = client.post(
+        "/users/",
+        json={
+            "first_name": "Case",
+            "last_name": "User",
+            "email": "case@EXAMPLE.COM",
+            "password": "securepassword123",
+        },
+    )
+
+    assert create.status_code == 201
+    assert create.json()["email"] == "case@example.com"
+
+    login = client.post(
+        "/auth/",
+        data={
+            "username": "case@EXAMPLE.COM",
+            "password": "securepassword123",
+        },
+    )
+
+    assert login.status_code == 200
+
+
+def test_registration_rejects_password_over_bcrypt_byte_limit(client):
+    response = client.post(
+        "/users/",
+        json={
+            "first_name": "Byte",
+            "last_name": "Limit",
+            "email": "bytes@example.com",
+            "password": "é" * 40,
+        },
+    )
+
+    assert response.status_code == 422
+
+
+def test_login_rejects_password_over_bcrypt_byte_limit_as_invalid_credentials(
+    client,
+):
+    create = client.post(
+        "/users/",
+        json={
+            "first_name": "Byte",
+            "last_name": "Login",
+            "email": "login-bytes@example.com",
+            "password": "securepassword123",
+        },
+    )
+    assert create.status_code == 201
+
+    response = client.post(
+        "/auth/",
+        data={
+            "username": "login-bytes@example.com",
+            "password": "é" * 40,
+        },
+    )
+
+    assert response.status_code == 401
+    assert response.json()["detail"] == "Invalid email or password"
