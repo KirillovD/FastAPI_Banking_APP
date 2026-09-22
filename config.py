@@ -50,8 +50,24 @@ class Settings(BaseSettings):
     @field_validator("database_url")
     @classmethod
     def validate_database_url(cls, value: str):
-        if not value.strip():
+        value = value.strip()
+
+        if not value:
             raise ValueError("database_url cannot be empty")
+
+        sqlite_prefix = "sqlite:///"
+        if (
+            value.startswith(sqlite_prefix)
+            and value != "sqlite:///:memory:"
+        ):
+            sqlite_path = value[len(sqlite_prefix):]
+
+            if not sqlite_path.startswith("/"):
+                resolved = (
+                    BASE_DIR / sqlite_path
+                ).resolve()
+                return f"sqlite:///{resolved}"
+
         return value
 
     @field_validator("bank_business_timezone")
