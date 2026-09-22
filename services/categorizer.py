@@ -137,8 +137,10 @@ class TransactionCategorizer:
             raw_description or ""
         )
 
+        padded_description = f" {clean_description} "
+
         for phrase, category in self.description_rules:
-            if phrase in clean_description:
+            if f" {phrase} " in padded_description:
                 return {
                     "category": category,
                     "mcc_code": normalized_mcc,
