@@ -11,6 +11,7 @@ from crud import accounts as accounts_crud
 from dependecies.accounts import get_valid_acc
 from dependecies.users import get_current_user
 from schemas import accounts
+from schemas.common import ResourceId
 
 router = APIRouter(
     prefix="/accounts",
@@ -39,7 +40,7 @@ def get_all_accounts(user : models.User = Depends(get_current_user),
 
 
 @router.get("/{acc_id}", response_model=accounts.AccResponse)
-def get_acc_by_id(acc_id : int,
+def get_acc_by_id(acc_id: ResourceId,
                   valid_acc : models.Account = Depends(get_valid_acc)):
 
     return valid_acc
