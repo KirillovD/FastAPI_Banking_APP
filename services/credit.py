@@ -223,6 +223,7 @@ def get_credit_dashboard(
 
 def _post_pending_interest(
     account: models.Account,
+    db: Session | None = None,
     statement: models.CreditStatement | None = None,
 ) -> Decimal:
     amount = _money(account.acquired_interest)
@@ -231,7 +232,11 @@ def _post_pending_interest(
         account.acquired_interest = Decimal("0.00")
         return Decimal("0.00")
 
-    crud_transaction.withdraw_funds(account, amount)
+    crud_transaction.withdraw_funds(
+        account,
+        amount,
+        db,
+    )
     account.acquired_interest = Decimal("0.00")
 
     if statement is not None:
@@ -244,13 +249,14 @@ def _post_pending_interest(
 
 def add_acquired_interest_to_balance(
     account: models.Account,
+    db: Session | None = None,
 ):
     if account.grace_period_active:
         import exceptions
 
         raise exceptions.GraceNoInterest()
 
-    _post_pending_interest(account)
+    _post_pending_interest(account, db)
     return account
 
 
@@ -272,6 +278,7 @@ def repay_credit_account(
     if not account.grace_period_active:
         _post_pending_interest(
             account,
+            db,
             latest_statement,
         )
 
@@ -283,6 +290,7 @@ def repay_credit_account(
     crud_transaction.deposit_funds(
         account,
         payment_amount,
+        db,
     )
 
     if repayment_statement is not None:
@@ -452,7 +460,7 @@ def evaluate_due_statement(
         if account.grace_period_active:
             account.acquired_interest = Decimal("0.00")
         else:
-            _post_pending_interest(account, statement)
+            _post_pending_interest(account, db, statement)
 
             if (
                 account.balance >= Decimal("0.00")
@@ -466,7 +474,7 @@ def evaluate_due_statement(
         metrics.current_days_past_due = 0
 
         account.grace_period_active = False
-        _post_pending_interest(account, statement)
+        _post_pending_interest(account, db, statement)
 
     else:
         metrics.total_missed_payments_count += 1
