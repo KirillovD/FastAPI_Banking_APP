@@ -9,6 +9,17 @@ class InsufficientFunds(HTTPException):
         )
 
 
+class MoneyLimitExceeded(HTTPException):
+    def __init__(
+        self,
+        detail: str = "Operation exceeds the supported monetary range",
+    ):
+        super().__init__(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=detail,
+        )
+
+
 class AccountNotFound(HTTPException):
     def __init__(self, detail: str = "Invalid transfer details"):
         super().__init__(
