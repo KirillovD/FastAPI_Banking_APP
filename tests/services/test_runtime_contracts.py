@@ -1,7 +1,7 @@
 import os
 import subprocess
 import sys
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from decimal import Decimal
 from pathlib import Path
 
@@ -11,6 +11,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import sessionmaker
 
+import exceptions
 import models
 import services.users as user_services
 import tests.conftest as packaged_conftest
@@ -100,7 +101,7 @@ def test_sqlite_datetime_round_trip_restores_utc(tmp_path):
         loaded = db.get(models.Account, account_id)
 
         assert loaded.created_at.tzinfo is not None
-        assert loaded.created_at.utcoffset() == Decimal("0")
+        assert loaded.created_at.utcoffset() == timedelta(0)
         assert loaded.created_at == original
 
     engine.dispose()
@@ -152,13 +153,11 @@ def test_duplicate_registration_race_maps_to_domain_error(
 
     db = FakeDb()
 
-    with pytest.raises(Exception) as exc_info:
+    with pytest.raises(exceptions.UserAlreadyExists):
         user_services.create_user(
             user,
             db,
         )
-
-    assert exc_info.value.__class__.__name__ == "UserAlreadyExists"
     assert db.rolled_back is True
 
 
