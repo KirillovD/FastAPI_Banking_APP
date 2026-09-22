@@ -481,7 +481,7 @@ def evaluate_due_statement(
         metrics.current_days_past_due = 0
 
         account.grace_period_active = False
-        _post_pending_interest(account, statement)
+        _post_pending_interest(account, db, statement)
 
         # The obligation was missed by the due date, but a scheduler
         # that runs after a late payment should still reflect the
