@@ -10,6 +10,7 @@ from dependecies.cards import get_valid_card
 from dependecies.users import get_current_user
 from crud import cards as cards_crud
 from schemas import cards
+from schemas.common import ResourceId
 from services import cards as card_services
 
 
@@ -31,7 +32,7 @@ def create_credit_card(
 
 @router.post("/debit/{acc_id}", response_model=cards.CardResponse)
 def create_debit_card(
-    acc_id: int,
+    acc_id: ResourceId,
     card_type_and_pin: cards.CreateCard,
     account: models.Account = Depends(get_valid_acc),
     db: Session = Depends(get_db),
@@ -41,7 +42,7 @@ def create_debit_card(
 
 @router.get("/{card_id}", response_model=cards.CardResponse)
 def get_card(
-    card_id: int,
+    card_id: ResourceId,
     valid_card: models.Card = Depends(get_valid_card),
 ):
     return valid_card
@@ -49,7 +50,7 @@ def get_card(
 
 @router.get("/{card_id}/cvv", response_model=cards.CardSecretResponse)
 def get_card_cvv(
-    card_id: int,
+    card_id: ResourceId,
     valid_card: models.Card = Depends(get_valid_card),
 ):
     return {"cvv": utils.decode_cvv(valid_card.CVV_encrypted)}
