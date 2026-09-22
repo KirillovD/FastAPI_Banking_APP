@@ -1,24 +1,43 @@
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 import exceptions
 import utils
-from schemas import users
-from crud import users
+from crud import users as user_crud
+from schemas import users as user_schemas
 
 
-def create_user(user: users.UserCreate,
-                db : Session):
-
-    existing_user = users.get_user_by_email(user.email,db)
+def create_user(
+    user: user_schemas.UserCreate,
+    db: Session,
+):
+    existing_user = user_crud.get_user_by_email(
+        str(user.email),
+        db,
+    )
     if existing_user:
         raise exceptions.UserAlreadyExists()
 
-    #we take the input password from user and hash it
     hashed_pwd = utils.hash_password(user.password)
 
-    new_user = users.create_user(user,hashed_pwd,db)
+    new_user = user_crud.create_user(
+        user,
+        hashed_pwd,
+        db,
+    )
 
-    db.commit()
-    db.refresh(new_user)
+    try:
+        db.commit()
+        db.refresh(new_user)
+        return new_user
 
-    return new_user
+    except IntegrityError:
+        db.rollback()
+
+        if user_crud.get_user_by_email(
+            str(user.email),
+            db,
+        ):
+            raise exceptions.UserAlreadyExists()
+
+        raise
