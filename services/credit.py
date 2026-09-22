@@ -1,4 +1,4 @@
-from datetime import date, datetime, timedelta, timezone
+from datetime import date, datetime, time, timedelta, timezone
 from decimal import Decimal
 import logging
 from zoneinfo import ZoneInfo
@@ -687,6 +687,11 @@ def evaluate_due_statements(
 
     evaluated_count = 0
     touched_accounts: set[int] = set()
+    evaluation_time = datetime.combine(
+        as_of_date,
+        time(hour=0, minute=5),
+        tzinfo=_business_timezone(),
+    )
 
     for statement in due_statements:
         evaluated = False
@@ -696,6 +701,7 @@ def evaluate_due_statements(
                 evaluate_due_statement(
                     statement,
                     db,
+                    evaluated_at=evaluation_time,
                     recalculate_metrics=False,
                 )
                 db.flush()
