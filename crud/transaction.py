@@ -36,11 +36,32 @@ def _current_balance_and_limit(
 def withdraw_funds(
     account: models.Account,
     amount: Decimal,
-    db: Session,
+    db: Session | None = None,
     *,
     enforce_available_funds: bool = False,
 ):
     amount = normalize_money(amount, positive=True)
+
+    if db is None:
+        balance = Decimal(account.balance)
+        limit = Decimal(account.limit)
+
+        if (
+            enforce_available_funds
+            and balance + limit < amount
+        ):
+            raise exceptions.InsufficientFunds()
+
+        new_balance = balance - amount
+        if (
+            not new_balance.is_finite()
+            or new_balance < MIN_MONEY
+            or new_balance > MAX_MONEY
+        ):
+            raise exceptions.MoneyLimitExceeded()
+
+        account.balance = new_balance
+        return account
 
     conditions = [
         models.Account.id == account.id,
@@ -92,9 +113,22 @@ def withdraw_funds(
 def deposit_funds(
     account: models.Account,
     amount: Decimal,
-    db: Session,
+    db: Session | None = None,
 ):
     amount = normalize_money(amount, positive=True)
+
+    if db is None:
+        new_balance = Decimal(account.balance) + amount
+
+        if (
+            not new_balance.is_finite()
+            or new_balance < MIN_MONEY
+            or new_balance > MAX_MONEY
+        ):
+            raise exceptions.MoneyLimitExceeded()
+
+        account.balance = new_balance
+        return account
 
     result = db.execute(
         update(models.Account)
