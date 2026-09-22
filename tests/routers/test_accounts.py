@@ -4,7 +4,7 @@ from sqlalchemy import inspect
 
 import models
 from schemas.accounts import AccResponse
-from tests.conftest import create_user_and_login
+from tests.conftest import create_account, create_user_and_login
 
 
 def test_credit_account_metrics_has_primary_key():

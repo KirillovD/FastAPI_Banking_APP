@@ -1,5 +1,3 @@
-from typing import Literal
-
 from sqlalchemy.orm import Session
 from models import Card
 import utils

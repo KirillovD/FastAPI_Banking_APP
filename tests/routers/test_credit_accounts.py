@@ -3,7 +3,7 @@ from decimal import Decimal
 
 import models
 import services.credit as credit_services
-from enums import AccountType, CreditStatementStatus
+from enums import CreditStatementStatus
 from tests.conftest import (
     TestingSessionLocal,
     create_account,
@@ -143,7 +143,7 @@ def test_no_statement_is_created_without_credit_debt(
     client,
     auth_headers,
 ):
-    card = create_credit_card(client, auth_headers)
+    create_credit_card(client, auth_headers)
 
     with TestingSessionLocal() as db:
         created = credit_services.create_monthly_statements(
@@ -235,6 +235,7 @@ def test_repayment_after_grace_loss_posts_pending_interest_first(
     auth_headers,
 ):
     card = create_credit_card(client, auth_headers)
+    due_date = datetime.now(timezone.utc).date() - timedelta(days=1)
 
     with TestingSessionLocal() as db:
         account = db.get(
@@ -243,7 +244,13 @@ def test_repayment_after_grace_loss_posts_pending_interest_first(
         )
         account.balance = Decimal("-100.00")
         account.acquired_interest = Decimal("10.00")
-        account.grace_period_active = False
+
+        statement = _statement(
+            account.id,
+            balance="100.00",
+            due_date=due_date,
+        )
+        db.add(statement)
         db.commit()
 
     response = client.post(
@@ -259,9 +266,18 @@ def test_repayment_after_grace_loss_posts_pending_interest_first(
             models.Account,
             card["linked_acc_id"],
         )
+        statement = (
+            db.query(models.CreditStatement)
+            .filter_by(account_id=account.id)
+            .one()
+        )
+
         assert account.balance == Decimal("0.00")
         assert account.acquired_interest == Decimal("0.00")
         assert account.grace_period_active is True
+        assert statement.interest_charged == Decimal("10.00")
+        assert statement.status == CreditStatementStatus.PAID_IN_FULL
+        assert account.credit_account_metrics.total_missed_payments_count == 1
 
 
 def test_minimum_paid_on_time_loses_grace_without_delinquency(
@@ -334,7 +350,8 @@ def test_missed_minimum_creates_true_delinquency_and_dpd(
             due + timedelta(days=1),
         )
         credit_services.calculate_acquired_interest_all_credit_accounts(
-            db
+            db,
+            as_of_date=due + timedelta(days=1),
         )
 
         db.refresh(account)
@@ -427,7 +444,17 @@ def test_late_full_payment_does_not_waive_pending_interest(
             models.Account,
             card["linked_acc_id"],
         )
-        assert account.acquired_interest == Decimal("20.00")
+        statement = (
+            db.query(models.CreditStatement)
+            .filter_by(account_id=account.id)
+            .one()
+        )
+
+        assert account.balance == Decimal("-20.00")
+        assert account.acquired_interest == Decimal("0.00")
+        assert account.grace_period_active is False
+        assert statement.interest_charged == Decimal("20.00")
+        assert account.credit_account_metrics.total_missed_payments_count == 1
 
 
 
