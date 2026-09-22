@@ -12,7 +12,7 @@ from enums import (
     TransactionStatus,
 )
 from schemas import transactions
-from services import credit_score, payments
+from services import credit_score
 from services.categorizer import categorizer
 
 
@@ -70,12 +70,6 @@ def transfer_money(
             detail="Recipient name is wrong or doesn't exist"
         )
 
-    if not payments.is_account_balance_sufficient(
-        valid_source_acc,
-        transfer_data.amount,
-    ):
-        raise exceptions.InsufficientFunds()
-
     categorizer_response = categorizer.categorize(
         transfer_data.description,
         rule_source=(
@@ -83,16 +77,20 @@ def transfer_money(
         ),
     )
 
-    transaction.withdraw_funds(
-        valid_source_acc,
-        transfer_data.amount,
-    )
-    transaction.deposit_funds(
-        recipient_account,
-        transfer_data.amount,
-    )
+    try:
+        transaction.withdraw_funds(
+            valid_source_acc,
+            transfer_data.amount,
+            db,
+            enforce_available_funds=True,
+        )
+        transaction.deposit_funds(
+            recipient_account,
+            transfer_data.amount,
+            db,
+        )
 
-    transaction_record_data = transactions.TransactionCreateRecord(
+        transaction_record_data = transactions.TransactionCreateRecord(
         sender_account_id=valid_source_acc.id,
         recipient_account_id=recipient_account.id,
         sender_iban=valid_source_acc.iban,
@@ -110,19 +108,23 @@ def transfer_money(
         ),
     )
 
-    new_record = transaction.create_transaction_record(
-        transaction_record_data,
-        db,
-    )
+        new_record = transaction.create_transaction_record(
+            transaction_record_data,
+            db,
+        )
 
-    db.flush()
-    credit_score.recalculate_user_credit_score(
-        valid_source_acc.owner_id,
-        db,
-        commit=False,
-    )
+        db.flush()
+        credit_score.recalculate_user_credit_score(
+            valid_source_acc.owner_id,
+            db,
+            commit=False,
+        )
 
-    db.commit()
-    db.refresh(new_record)
+        db.commit()
+        db.refresh(new_record)
 
-    return new_record
+        return new_record
+
+    except Exception:
+        db.rollback()
+        raise
