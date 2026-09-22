@@ -5,7 +5,7 @@ from zoneinfo import ZoneInfo
 from apscheduler.schedulers.blocking import BlockingScheduler
 
 from config import settings
-from database import SessionLocal
+from database import SessionLocal, init_db
 from services import credit
 
 
@@ -80,6 +80,9 @@ def calculate_daily_credit_interest():
 
 
 if __name__ == "__main__":
+    if settings.auto_create_schema:
+        init_db()
+
     print(
         "Credit scheduler started "
         f"({settings.bank_business_timezone})"
