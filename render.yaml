@@ -1,0 +1,29 @@
+services:
+  - type: web
+    name: aurelia-banking-lab
+    runtime: docker
+    plan: free
+    region: frankfurt
+    branch: portfolio-v2
+    healthCheckPath: /health
+    envVars:
+      - key: SECRET_KEY
+        generateValue: true
+      - key: ENCRYPTION_KEY
+        sync: false
+      - key: DATABASE_URL
+        sync: false
+      - key: CREDIT_CARD_MIN_PAYMENT_AMOUNT
+        value: "30.00"
+      - key: CREDIT_CARD_MIN_PAYMENT_PERCENT
+        value: "0.03"
+      - key: CREDIT_CARD_DEFAULT_APR
+        value: "0.20"
+      - key: BANK_BUSINESS_TIMEZONE
+        value: Europe/Berlin
+      - key: AUTO_CREATE_SCHEMA
+        value: "true"
+      - key: SEED_DEMO_DATA
+        value: "true"
+      - key: DEMO_USER_PASSWORD
+        sync: false
