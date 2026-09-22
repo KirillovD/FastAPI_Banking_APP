@@ -17,6 +17,7 @@ from enums import (
     TransactionClassificationSource,
     TransactionStatus,
 )
+from services import credit_score
 from services.categorizer import categorizer
 
 
@@ -286,3 +287,75 @@ def seed_demo_data(
         ]
     )
     db.flush()
+
+
+    specs = [
+        (2, "REWE München", "5411", "142.80"),
+        (5, "EDEKA München", "5411", "84.25"),
+        (8, "DB Vertrieb GmbH", "4111", "49.90"),
+        (11, "Spotify AB", "5815", "10.99"),
+        (13, "Trade Republic", "6211", "180.00"),
+        (16, "L'Osteria", "5812", "68.40"),
+        (20, "REWE München", "5411", "116.70"),
+        (24, "MVG Automaten", "4111", "58.00"),
+        (27, "Allianz SE", "6300", "92.00"),
+        (31, "Amazon.de", "5399", "74.99"),
+        (35, "Lidl", "5411", "92.35"),
+        (39, "Netflix", "5815", "17.99"),
+        (44, "REWE München", "5411", "128.50"),
+        (49, "Zalando SE", "5651", "89.95"),
+        (53, "DB Vertrieb GmbH", "4111", "29.90"),
+        (58, "Scalable Capital", "6211", "120.00"),
+        (63, "EDEKA München", "5411", "97.10"),
+        (69, "McFIT", "7997", "29.90"),
+        (74, "REWE München", "5411", "134.15"),
+    ]
+
+    transactions = [
+        _card_payment(
+            checking,
+            merchant,
+            mcc,
+            amount,
+            now - timedelta(days=days_ago),
+        )
+        for days_ago, merchant, mcc, amount in specs
+    ]
+    transactions.extend(
+        [
+            _salary(
+                checking,
+                "3650.00",
+                now - timedelta(days=7),
+                "Gehalt September",
+            ),
+            _salary(
+                checking,
+                "3650.00",
+                now - timedelta(days=38),
+                "Gehalt August",
+            ),
+            _external_transfer(
+                checking,
+                "1200.00",
+                now - timedelta(days=4),
+                "Miete WG München",
+            ),
+            _external_transfer(
+                checking,
+                "56.00",
+                now - timedelta(days=12),
+                "Vattenfall Europe",
+            ),
+        ]
+    )
+    db.add_all(transactions)
+    db.flush()
+
+    credit_score.recalculate_user_credit_score(
+        user.id,
+        db,
+        commit=False,
+    )
+    db.commit()
+    return True
