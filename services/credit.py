@@ -577,9 +577,11 @@ def repay_credit_account(
     account: models.Account,
     payment: credit_schemas.CreditRepaymentInput,
     db: Session,
+    *,
+    now: datetime | None = None,
 ):
     payment_amount = _money(payment.amount)
-    now = datetime.now(timezone.utc)
+    now = now or datetime.now(timezone.utc)
     as_of_date = _business_date(now)
 
     try:
