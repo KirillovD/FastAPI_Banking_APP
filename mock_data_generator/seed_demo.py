@@ -69,3 +69,63 @@ def _card_payment(
             "classification_source"
         ],
     )
+
+
+def _salary(
+    account: models.Account,
+    amount: str,
+    created_at: datetime,
+    label: str,
+) -> models.Transaction:
+    classified = categorizer.categorize(
+        label,
+        rule_source=(
+            TransactionClassificationSource.DESCRIPTION_RULE
+        ),
+    )
+
+    return models.Transaction(
+        recipient_account=account,
+        sender_iban=_iban("9000000001"),
+        recipient_iban=account.iban,
+        amount=Decimal(amount),
+        created_at=created_at,
+        status=TransactionStatus.SUCCESSFUL,
+        operation_type=OperationType.TRANSFER,
+        description=label,
+        category=classified["category"],
+        mcc_code=None,
+        classification_source=classified[
+            "classification_source"
+        ],
+    )
+
+
+def _external_transfer(
+    account: models.Account,
+    amount: str,
+    created_at: datetime,
+    description: str,
+) -> models.Transaction:
+    classified = categorizer.categorize(
+        description,
+        rule_source=(
+            TransactionClassificationSource.DESCRIPTION_RULE
+        ),
+    )
+
+    return models.Transaction(
+        sender_account=account,
+        sender_iban=account.iban,
+        recipient_iban=_iban("9000000002"),
+        amount=Decimal(amount),
+        created_at=created_at,
+        status=TransactionStatus.SUCCESSFUL,
+        operation_type=OperationType.TRANSFER,
+        description=description,
+        category=classified["category"],
+        mcc_code=None,
+        classification_source=classified[
+            "classification_source"
+        ],
+    )
