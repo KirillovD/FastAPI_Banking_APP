@@ -1,13 +1,17 @@
+import random
+from datetime import datetime, timedelta, timezone
+
 import bcrypt
 import faker.providers.credit_card
 import jwt
-from datetime import datetime, timedelta, timezone
-from dateutil.relativedelta import relativedelta
-from config import settings
-import random
-from schwifty import IBAN
-from faker import Faker
 from cryptography.fernet import Fernet
+from dateutil.relativedelta import relativedelta
+from faker import Faker
+from schwifty import IBAN
+
+from config import settings
+from identity import validate_password_bytes
+
 
 secret_key = settings.secret_key
 ALGORITHM = settings.algorithm
@@ -18,74 +22,98 @@ f = Fernet(encryption_key)
 
 
 def hash_password(password: str) -> str:
-    #convert into bytes
-    pwd_bytes = password.encode('utf-8')
+    validate_password_bytes(password)
 
-    #creating the salt
+    pwd_bytes = password.encode("utf-8")
     salt = bcrypt.gensalt()
+    hashed_password = bcrypt.hashpw(
+        password=pwd_bytes,
+        salt=salt,
+    )
 
-    #hashing the pass
-    hashed_password = bcrypt.hashpw(password=pwd_bytes, salt=salt)
-
-    # returned after decoding
-    return hashed_password.decode('utf-8')
+    return hashed_password.decode("utf-8")
 
 
-def verify_password(plain_password: str, hashed_password: str) -> bool:
-    #convert them both into bytes
-    password_byte_enc = plain_password.encode('utf-8')
-    hashed_password_byte_enc = hashed_password.encode('utf-8')
+def verify_password(
+    plain_password: str,
+    hashed_password: str,
+) -> bool:
+    try:
+        validate_password_bytes(plain_password)
+    except ValueError:
+        return False
 
-    # compare
-    return bcrypt.checkpw(password_byte_enc, hashed_password_byte_enc)
+    password_byte_enc = plain_password.encode("utf-8")
+    hashed_password_byte_enc = hashed_password.encode("utf-8")
 
-#function creates token for every user when they log in
-#it will be used as a 15 min vip pass for them to access the database
+    return bcrypt.checkpw(
+        password_byte_enc,
+        hashed_password_byte_enc,
+    )
+
+
 def create_token(user_id):
+    expire_time = (
+        datetime.now(timezone.utc)
+        + timedelta(minutes=15)
+    )
 
-    #set timer for 15 min
-    expire_time = datetime.now(timezone.utc)+timedelta(minutes=15)
+    payload = {
+        "user_id": user_id,
+        "exp": expire_time,
+    }
 
-    #using payload to also put the exp info in the token
-    payload = { "user_id" : user_id,
-                "exp" : expire_time}
+    return jwt.encode(
+        payload,
+        secret_key,
+        algorithm=ALGORITHM,
+    )
 
-    #create token with user id, our own unique secret key using this algo
-    token = jwt.encode(payload, secret_key, algorithm=ALGORITHM)
-
-    return token
 
 def generate_iban():
     bank_code = "10000000"
-    account_num = "".join(random.choices("123456789", k=10))
-    try:
-        new_iban = IBAN.generate("DE",bank_code,account_num)
-    except ValueError:
-        raise
+    account_num = "".join(
+        random.choices(
+            "123456789",
+            k=10,
+        )
+    )
+    new_iban = IBAN.generate(
+        "DE",
+        bank_code,
+        account_num,
+    )
 
     return str(new_iban)
 
 
-def generate_card_info(card_type, pin_code: int):
-
+def generate_card_info(
+    card_type,
+    pin_code: str,
+):
     card_number = faker.credit_card_number(card_type)
-    security_code = faker.credit_card_security_code(card_type).encode("utf-8")
+    security_code = (
+        faker.credit_card_security_code(card_type)
+        .encode("utf-8")
+    )
 
     hashed_pin_code = hash_password(str(pin_code))
-    encrypted_security_code = f.encrypt(security_code)
+    encrypted_security_code = f.encrypt(
+        security_code
+    )
 
-    future_date = datetime.now() + relativedelta(years=4)
+    expiry_date = (
+        datetime.now(timezone.utc)
+        + relativedelta(years=4)
+    )
 
-    # 2. Делаем этот объект timezone-aware (добавляем UTC)
-    expiry_dt_tz = future_date.replace(tzinfo=timezone.utc)
-
-    return {"card_number": card_number,
-            "expiry_date" : expiry_dt_tz,
-            "hashed_pin_code" : hashed_pin_code,
-            "encrypted_security_code" : encrypted_security_code}
+    return {
+        "card_number": card_number,
+        "expiry_date": expiry_date,
+        "hashed_pin_code": hashed_pin_code,
+        "encrypted_security_code": encrypted_security_code,
+    }
 
 
 def decode_cvv(encrypted_cvv) -> str:
-
     return f.decrypt(encrypted_cvv).decode()
-
