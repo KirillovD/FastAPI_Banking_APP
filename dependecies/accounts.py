@@ -5,12 +5,13 @@ import exceptions
 import models
 from crud import accounts
 from database import get_db
+from schemas.common import ResourceId
 from dependecies.users import get_current_user
 from enums import AccountType
 
 
 def get_valid_acc(
-    acc_id: int,
+    acc_id: ResourceId,
     user: models.User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
@@ -26,7 +27,7 @@ def get_valid_acc(
 
 
 def get_valid_credit_acc(
-    acc_id: int,
+    acc_id: ResourceId,
     account: models.Account = Depends(get_valid_acc),
 ):
     if account.type != AccountType.CREDIT:
