@@ -7,6 +7,7 @@ from dependecies import auth
 from dependecies.accounts import get_valid_credit_acc
 from crud import credit as crud_credit
 from schemas import credit
+from schemas.common import ResourceId
 from services import credit as credit_services
 
 
@@ -22,7 +23,7 @@ router = APIRouter(
     response_model=credit.CreditAccountDashboardResponse,
 )
 def get_credit_account_dashboard(
-    acc_id: int,
+    acc_id: ResourceId,
     account: models.Account = Depends(get_valid_credit_acc),
     db: Session = Depends(get_db),
 ):
@@ -34,7 +35,7 @@ def get_credit_account_dashboard(
     response_model=credit.CreditRepaymentResponse,
 )
 def repay_credit_account(
-    acc_id: int,
+    acc_id: ResourceId,
     payment: credit.CreditRepaymentInput,
     account: models.Account = Depends(get_valid_credit_acc),
     db: Session = Depends(get_db),
@@ -51,7 +52,7 @@ def repay_credit_account(
     response_model=list[credit.CreditStatementResponse],
 )
 def get_credit_statements(
-    acc_id: int,
+    acc_id: ResourceId,
     account: models.Account = Depends(get_valid_credit_acc),
     db: Session = Depends(get_db),
 ):
