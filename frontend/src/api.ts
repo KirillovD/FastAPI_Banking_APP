@@ -12,7 +12,7 @@ import type {
   User,
 } from "./types";
 
-const API_BASE = import.meta.env.VITE_API_BASE_URL ?? "/api";
+const API_BASE = import.meta.env.VITE_API_BASE_URL ?? (import.meta.env.DEV ? "/api" : "");
 const TOKEN_KEY = "aurelia_access_token";
 
 export class ApiError extends Error {
