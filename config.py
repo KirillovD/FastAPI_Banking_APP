@@ -2,7 +2,7 @@ from decimal import Decimal
 from pathlib import Path
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
-from pydantic import Field, field_validator
+from pydantic import Field, field_validator, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from money import MAX_MONEY
@@ -21,6 +21,8 @@ class Settings(BaseSettings):
 
     database_url: str = DEFAULT_DATABASE_URL
     auto_create_schema: bool = True
+    seed_demo_data: bool = False
+    demo_user_password: str | None = None
 
     credit_card_min_payment_amount: Decimal = Field(
         ge=Decimal("0.00"),
@@ -80,6 +82,17 @@ class Settings(BaseSettings):
                 "bank_business_timezone must be a valid IANA timezone"
             ) from exc
         return value
+
+    @model_validator(mode="after")
+    def validate_demo_seed(self):
+        if (
+            self.seed_demo_data
+            and not self.demo_user_password
+        ):
+            raise ValueError(
+                "demo_user_password is required when seed_demo_data is enabled"
+            )
+        return self
 
     model_config = SettingsConfigDict(
         env_file=BASE_DIR / ".env",
