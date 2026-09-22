@@ -9,6 +9,7 @@ from crud import cards as crud_cards
 from enums import AccountType
 from schemas import cards as card_schemas
 from schemas.accounts import CreditAccCreate
+from services import credit_score
 
 
 DEFAULT_CREDIT_LIMIT = Decimal("500.00")
@@ -44,6 +45,13 @@ def create_credit_card(
             user.id,
             card_type_and_pin,
             db,
+        )
+
+        db.flush()
+        credit_score.recalculate_user_credit_score(
+            user.id,
+            db,
+            commit=False,
         )
 
         db.commit()

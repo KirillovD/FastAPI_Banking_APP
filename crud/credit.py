@@ -3,7 +3,6 @@ from datetime import date
 from sqlalchemy.orm import Session
 
 import models
-from enums import CreditStatementStatus
 
 
 def get_statements(account_id: int, db: Session):
@@ -45,36 +44,34 @@ def get_statement_for_period(
     )
 
 
-def get_repayment_statement(account_id: int, db: Session):
-    past_due = (
-        db.query(models.CreditStatement)
-        .filter(
-            models.CreditStatement.account_id == account_id,
-            models.CreditStatement.status == CreditStatementStatus.PAST_DUE,
-            models.CreditStatement.amount_paid
-            < models.CreditStatement.minimum_payment,
-        )
-        .order_by(
-            models.CreditStatement.due_date.asc(),
-            models.CreditStatement.id.asc(),
-        )
-        .first()
-    )
-    if past_due:
-        return past_due
-
-    latest = get_latest_statement(account_id, db)
-    if latest and latest.amount_paid < latest.statement_balance:
-        return latest
-
-    return None
-
-
-def get_due_unevaluated_statements(as_of_date: date, db: Session):
+def get_unsettled_statements(
+    account_id: int,
+    db: Session,
+):
     return (
         db.query(models.CreditStatement)
         .filter(
-            models.CreditStatement.due_date <= as_of_date,
+            models.CreditStatement.account_id == account_id,
+            models.CreditStatement.amount_paid
+            < models.CreditStatement.statement_balance,
+        )
+        .order_by(
+            models.CreditStatement.due_date.asc(),
+            models.CreditStatement.period_end.asc(),
+            models.CreditStatement.id.asc(),
+        )
+        .all()
+    )
+
+
+def get_due_unevaluated_statements(
+    as_of_date: date,
+    db: Session,
+):
+    return (
+        db.query(models.CreditStatement)
+        .filter(
+            models.CreditStatement.due_date < as_of_date,
             models.CreditStatement.evaluated_at.is_(None),
         )
         .order_by(
@@ -85,12 +82,36 @@ def get_due_unevaluated_statements(as_of_date: date, db: Session):
     )
 
 
-def get_current_past_due_statement(account_id: int, db: Session):
+def get_due_unevaluated_statements_for_account(
+    account_id: int,
+    as_of_date: date,
+    db: Session,
+):
     return (
         db.query(models.CreditStatement)
         .filter(
             models.CreditStatement.account_id == account_id,
-            models.CreditStatement.status == CreditStatementStatus.PAST_DUE,
+            models.CreditStatement.due_date < as_of_date,
+            models.CreditStatement.evaluated_at.is_(None),
+        )
+        .order_by(
+            models.CreditStatement.due_date.asc(),
+            models.CreditStatement.id.asc(),
+        )
+        .all()
+    )
+
+
+def get_deficient_statements(
+    account_id: int,
+    as_of_date: date,
+    db: Session,
+):
+    return (
+        db.query(models.CreditStatement)
+        .filter(
+            models.CreditStatement.account_id == account_id,
+            models.CreditStatement.due_date < as_of_date,
             models.CreditStatement.amount_paid
             < models.CreditStatement.minimum_payment,
         )
@@ -98,5 +119,23 @@ def get_current_past_due_statement(account_id: int, db: Session):
             models.CreditStatement.due_date.asc(),
             models.CreditStatement.id.asc(),
         )
+        .all()
+    )
+
+
+def has_active_deficiency(
+    account_id: int,
+    as_of_date: date,
+    db: Session,
+) -> bool:
+    return (
+        db.query(models.CreditStatement.id)
+        .filter(
+            models.CreditStatement.account_id == account_id,
+            models.CreditStatement.due_date < as_of_date,
+            models.CreditStatement.amount_paid
+            < models.CreditStatement.minimum_payment,
+        )
         .first()
+        is not None
     )

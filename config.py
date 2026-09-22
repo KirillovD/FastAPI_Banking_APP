@@ -23,6 +23,8 @@ class Settings(BaseSettings):
     # Credit calculations now derive the daily rate from APR.
     credit_card_default_dpr: Decimal | None = None
 
+    bank_business_timezone: str = "Europe/Berlin"
+
     model_config = SettingsConfigDict(
         env_file=BASE_DIR / ".env",
         env_file_encoding="utf-8",

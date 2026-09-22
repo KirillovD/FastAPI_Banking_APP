@@ -242,7 +242,7 @@ def test_missed_statement_due_date_recalculates_stored_score(
 
         credit_services.evaluate_due_statements(
             db,
-            date(2026, 9, 15),
+            date(2026, 9, 16),
         )
 
         user = (
@@ -284,7 +284,7 @@ def test_dpd_progression_can_reduce_score_further(
 
         credit_services.evaluate_due_statements(
             db,
-            date(2026, 9, 15),
+            date(2026, 9, 16),
         )
 
         user = (

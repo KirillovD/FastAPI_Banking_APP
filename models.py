@@ -1,7 +1,7 @@
 from datetime import date, datetime, timezone
 from decimal import Decimal
 
-from sqlalchemy import Date, DateTime, ForeignKey, Integer, JSON, Numeric, String
+from sqlalchemy import Date, DateTime, ForeignKey, Integer, JSON, Numeric, String, UniqueConstraint
 from sqlalchemy import Enum as SQLEnum
 from sqlalchemy.orm import Mapped, declarative_base, mapped_column, relationship
 
@@ -48,6 +48,10 @@ class Account(Base):
     acquired_interest: Mapped[Decimal] = mapped_column(
         Numeric(12, 2),
         default=Decimal("0.00"),
+    )
+    last_interest_accrual_date: Mapped[date | None] = mapped_column(
+        Date,
+        nullable=True,
     )
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
@@ -117,6 +121,13 @@ class CreditAccountMetrics(Base):
 
 class CreditStatement(Base):
     __tablename__ = "credit_statements"
+    __table_args__ = (
+        UniqueConstraint(
+            "account_id",
+            "period_end",
+            name="uq_credit_statement_account_period",
+        ),
+    )
 
     id: Mapped[int] = mapped_column(primary_key=True)
     account_id: Mapped[int] = mapped_column(

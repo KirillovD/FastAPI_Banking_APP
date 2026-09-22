@@ -154,6 +154,13 @@ def _utilization_factor(
     )
 
 
+def _as_utc(value: datetime) -> datetime:
+    if value.tzinfo is None:
+        return value.replace(tzinfo=timezone.utc)
+
+    return value.astimezone(timezone.utc)
+
+
 def _credit_age_factor(
     oldest_created_at: datetime | None,
     as_of: datetime,
@@ -166,9 +173,8 @@ def _credit_age_factor(
             explanation="No credit-account history exists yet.",
         )
 
-    created_at = oldest_created_at
-    if created_at.tzinfo is None:
-        created_at = created_at.replace(tzinfo=timezone.utc)
+    created_at = _as_utc(oldest_created_at)
+    as_of = _as_utc(as_of)
 
     age_days = max(
         (as_of - created_at).days,
@@ -389,11 +395,13 @@ def calculate_user_credit_score(
             Decimal("0.00"),
         )
 
+        account_created_at = _as_utc(account.created_at)
+
         if (
             oldest_created_at is None
-            or account.created_at < oldest_created_at
+            or account_created_at < oldest_created_at
         ):
-            oldest_created_at = account.created_at
+            oldest_created_at = account_created_at
 
         metrics = account.credit_account_metrics
         if metrics is None:

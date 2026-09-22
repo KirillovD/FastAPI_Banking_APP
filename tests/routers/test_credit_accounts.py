@@ -1,4 +1,4 @@
-from datetime import date, datetime, timezone
+from datetime import date, datetime, timedelta, timezone
 from decimal import Decimal
 
 import models
@@ -286,7 +286,7 @@ def test_minimum_paid_on_time_loses_grace_without_delinquency(
 
         credit_services.evaluate_due_statements(
             db,
-            due,
+            due + timedelta(days=1),
         )
 
         db.refresh(account)
@@ -325,7 +325,7 @@ def test_missed_minimum_creates_true_delinquency_and_dpd(
 
         credit_services.evaluate_due_statements(
             db,
-            due,
+            due + timedelta(days=1),
         )
         credit_services.calculate_acquired_interest_all_credit_accounts(
             db
@@ -373,7 +373,7 @@ def test_full_payment_on_time_waives_pending_interest_at_due_date(
 
         credit_services.evaluate_due_statements(
             db,
-            due,
+            due + timedelta(days=1),
         )
 
         db.refresh(account)
@@ -450,7 +450,10 @@ def test_minimum_paid_statement_never_accumulates_dpd(
         db.add(statement)
         db.commit()
 
-        credit_services.evaluate_due_statements(db, due)
+        credit_services.evaluate_due_statements(
+            db,
+            due + timedelta(days=1),
+        )
         credit_services.calculate_acquired_interest_all_credit_accounts(db)
         credit_services.calculate_acquired_interest_all_credit_accounts(db)
 
