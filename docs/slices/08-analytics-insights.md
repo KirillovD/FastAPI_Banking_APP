@@ -110,3 +110,10 @@ Allowed window:
 
 - spending analytics aggregation API
 - deterministic customer insights and demo offer suggestions
+
+
+## Implementation tracking
+
+- #34 — spending analytics aggregation API
+- #35 — deterministic customer insights and offer suggestions
+- implementation branch: `feat/slice-08-analytics`
