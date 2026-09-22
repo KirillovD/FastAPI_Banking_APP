@@ -1,6 +1,8 @@
 # Slice 7 — Synthetic Credit Score
 
-Status: **analysis / design proposal — not yet implemented**
+Status: **implemented and merged into `portfolio-v2` (PR #23); post-review categorizer/seed refinements are tracked in issue #27.**
+
+The sections below preserve the pre-implementation analysis. The Decision record and current implementation are authoritative; later review fixes refine the same approved model rather than replacing it.
 
 ## 1. Current implementation
 
