@@ -1,9 +1,10 @@
 from datetime import date, datetime
 from decimal import Decimal
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict
 
 from enums import CreditStatementStatus
+from money import PositiveMoney
 
 
 class CreditStatementResponse(BaseModel):
@@ -48,7 +49,7 @@ class CreditAccountDashboardResponse(BaseModel):
 
 
 class CreditRepaymentInput(BaseModel):
-    amount: Decimal = Field(gt=0)
+    amount: PositiveMoney
 
 
 class CreditRepaymentResponse(BaseModel):
