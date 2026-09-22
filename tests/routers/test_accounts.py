@@ -162,3 +162,16 @@ def test_list_accounts_only_returns_current_users_accounts(client, auth_headers)
     data = response.json()
     assert len(data) == 1
     assert data[0]["id"] == own_account.json()["id"]
+
+
+
+def test_huge_resource_id_is_rejected_before_sqlite_binding(
+    client,
+    auth_headers,
+):
+    response = client.get(
+        "/accounts/9223372036854775808",
+        headers=auth_headers,
+    )
+
+    assert response.status_code == 422
