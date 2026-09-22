@@ -6,6 +6,7 @@ import type {
   CreditScore,
   CreditStatement,
   CustomerInsights,
+  Money,
   SpendingSummary,
   Transaction,
   User,
