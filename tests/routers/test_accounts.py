@@ -1,3 +1,5 @@
+from datetime import datetime, timedelta
+
 from sqlalchemy import inspect
 
 import models
@@ -162,3 +164,39 @@ def test_list_accounts_only_returns_current_users_accounts(client, auth_headers)
     data = response.json()
     assert len(data) == 1
     assert data[0]["id"] == own_account.json()["id"]
+
+
+
+def test_huge_resource_id_is_rejected_before_sqlite_binding(
+    client,
+    auth_headers,
+):
+    response = client.get(
+        "/accounts/9223372036854775808",
+        headers=auth_headers,
+    )
+
+    assert response.status_code == 422
+
+
+
+def test_account_created_at_is_serialized_as_utc(
+    client,
+    auth_headers,
+):
+    account = create_account(
+        client,
+        auth_headers,
+        "checking",
+        0,
+    )
+
+    created_at = datetime.fromisoformat(
+        account["created_at"].replace(
+            "Z",
+            "+00:00",
+        )
+    )
+
+    assert created_at.tzinfo is not None
+    assert created_at.utcoffset() == timedelta(0)

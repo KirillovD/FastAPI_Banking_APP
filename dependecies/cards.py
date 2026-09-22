@@ -5,10 +5,11 @@ import exceptions
 import models
 from crud import accounts, cards
 from database import get_db
+from schemas.common import ResourceId
 from dependecies.users import get_current_user
 
 
-def get_valid_card(card_id : int,
+def get_valid_card(card_id: ResourceId,
                    user : models.User = Depends(get_current_user),
                    db : Session = Depends(get_db)):
 

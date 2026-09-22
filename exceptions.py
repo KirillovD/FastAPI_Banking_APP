@@ -119,14 +119,6 @@ class CardExpired(HTTPException):
         )
 
 
-class MinPaymentNotReached(HTTPException):
-    def __init__(self, detail: str = "Your payment is smaller than the minimal amount"):
-        super().__init__(
-            status_code=status.HTTP_400_NOT_FOUND,
-            detail=detail,
-        )
-
-
 class CvvMissing(HTTPException):
     def __init__(self, detail: str = "There is no CVV send"):
         super().__init__(

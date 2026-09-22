@@ -19,10 +19,16 @@ def _statement(
     minimum: str = "30.00",
     amount_paid: str = "0.00",
     status=CreditStatementStatus.OPEN,
-    due_date=date(2026, 10, 15),
+    due_date=None,
     minimum_paid_at=None,
     paid_in_full_at=None,
 ):
+    if due_date is None:
+        due_date = (
+            datetime.now(timezone.utc).date()
+            + timedelta(days=30)
+        )
+
     return models.CreditStatement(
         account_id=account_id,
         period_start=date(2026, 9, 1),

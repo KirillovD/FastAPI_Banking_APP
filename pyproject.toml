@@ -1,0 +1,65 @@
+[build-system]
+requires = ["setuptools>=75"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "fastapi-banking-app"
+version = "0.2.0"
+description = "Portfolio banking simulator with payments, statements, transaction intelligence and a synthetic credit score"
+requires-python = ">=3.13,<3.15"
+dependencies = [
+    "fastapi>=0.128,<1",
+    "uvicorn[standard]>=0.35,<1",
+    "sqlalchemy>=2.0.50,<3",
+    "pydantic[email]>=2.13,<3",
+    "pydantic-settings>=2.14,<3",
+    "bcrypt>=4.2,<6",
+    "PyJWT>=2.10,<3",
+    "cryptography>=45,<47",
+    "Faker>=37,<40",
+    "schwifty>=2025.1,<2027",
+    "python-dateutil>=2.9,<3",
+    "APScheduler>=3.11,<4",
+    "python-multipart>=0.0.20,<1",
+    "httpx>=0.28,<1",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=9,<10",
+    "ruff>=0.14,<1",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+addopts = "-ra --import-mode=importlib"
+
+[tool.ruff]
+target-version = "py313"
+line-length = 100
+
+[tool.setuptools]
+py-modules = [
+    "config",
+    "database",
+    "db_types",
+    "enums",
+    "exceptions",
+    "identity",
+    "main",
+    "models",
+    "money",
+    "scheduler",
+    "utils",
+]
+
+[tool.setuptools.packages.find]
+include = [
+    "crud*",
+    "dependecies*",
+    "mock_data_generator*",
+    "router*",
+    "schemas*",
+    "services*",
+]

@@ -1,10 +1,11 @@
 from datetime import date, datetime, timezone
 from decimal import Decimal
 
-from sqlalchemy import Date, DateTime, ForeignKey, Integer, JSON, Numeric, String, UniqueConstraint
+from sqlalchemy import Date, ForeignKey, Integer, JSON, Numeric, String, UniqueConstraint
 from sqlalchemy import Enum as SQLEnum
 from sqlalchemy.orm import Mapped, declarative_base, mapped_column, relationship
 
+from db_types import UTCDateTime
 from enums import (
     AccountType,
     CreditStatementStatus,
@@ -54,7 +55,7 @@ class Account(Base):
         nullable=True,
     )
     created_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True),
+        UTCDateTime(),
         default=lambda: datetime.now(timezone.utc),
         nullable=False,
     )
@@ -87,12 +88,12 @@ class Card(Base):
     linked_acc_id: Mapped[int] = mapped_column(ForeignKey("accounts.id"))
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
     number: Mapped[str] = mapped_column(unique=True, index=True)
-    expiry_date: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    expiry_date: Mapped[datetime] = mapped_column(UTCDateTime())
     CVV_encrypted: Mapped[bytes] = mapped_column()
     pin_code_hashed: Mapped[str] = mapped_column()
     metadata_json: Mapped[dict | None] = mapped_column(JSON, nullable=True)
     created_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True),
+        UTCDateTime(),
         default=lambda: datetime.now(timezone.utc),
         nullable=False,
     )
@@ -151,15 +152,15 @@ class CreditStatement(Base):
         nullable=False,
     )
     minimum_paid_at: Mapped[datetime | None] = mapped_column(
-        DateTime(timezone=True),
+        UTCDateTime(),
         nullable=True,
     )
     paid_in_full_at: Mapped[datetime | None] = mapped_column(
-        DateTime(timezone=True),
+        UTCDateTime(),
         nullable=True,
     )
     evaluated_at: Mapped[datetime | None] = mapped_column(
-        DateTime(timezone=True),
+        UTCDateTime(),
         nullable=True,
     )
     interest_charged: Mapped[Decimal] = mapped_column(
@@ -168,7 +169,7 @@ class CreditStatement(Base):
         nullable=False,
     )
     created_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True),
+        UTCDateTime(),
         default=lambda: datetime.now(timezone.utc),
         nullable=False,
     )
@@ -194,7 +195,7 @@ class Transaction(Base):
     recipient_iban: Mapped[str | None] = mapped_column(index=True, nullable=True)
     amount: Mapped[Decimal] = mapped_column(Numeric(12, 2), default=Decimal("0.00"))
     created_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True),
+        UTCDateTime(),
         default=lambda: datetime.now(timezone.utc),
         nullable=False,
         index=True,

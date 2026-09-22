@@ -18,7 +18,7 @@ from enums import (
 
 class TransferDataInput(BaseModel):
     recipient_iban: str
-    recipient_name: str = Field(min_length=1, max_length=100)
+    recipient_name: str = Field(min_length=1, max_length=101)
     amount: PositiveMoney
     description: str | None = Field(default=None, max_length=255)
 
