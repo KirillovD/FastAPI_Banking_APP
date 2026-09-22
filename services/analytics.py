@@ -425,6 +425,7 @@ def get_customer_insights(
     if (
         summary.total_spend > Decimal("0.00")
         and not offers
+        and shares["risk"] < Decimal("5.0")
     ):
         offers.append(
             SuggestedOffer(
