@@ -917,6 +917,8 @@ function CreditCenter({
     );
   }
 
+  const creditAccountId = credit.account_id;
+
   const utilization =
     compactNumber(credit.credit_limit) > 0
       ? (compactNumber(credit.outstanding_debt) /
@@ -930,7 +932,7 @@ function CreditCenter({
     setMessage(null);
 
     try {
-      await api.repayCredit(credit.account_id, amount);
+      await api.repayCredit(creditAccountId, amount);
       setMessage("Repayment posted. Score and statement state refreshed.");
       await refresh();
     } catch (error) {
