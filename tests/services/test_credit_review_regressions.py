@@ -268,6 +268,7 @@ def test_curing_last_past_due_obligation_restores_grace(
             account.id,
             period_end=date(2026, 8, 31),
             due_date=date(2026, 9, 15),
+            balance="100.00",
             status=CreditStatementStatus.PAST_DUE,
             evaluated_at=datetime(
                 2026, 9, 16, 1, tzinfo=timezone.utc
@@ -554,6 +555,13 @@ def test_score_handles_loaded_naive_and_new_aware_credit_timestamps(
             db.query(models.Account)
             .filter_by(owner_id=user_id)
             .one()
+        )
+        assert old_account.created_at.tzinfo is not None
+
+        # Simulate a legacy/in-memory naive timestamp so the scorer
+        # remains robust even though UTCDateTime now restores UTC on load.
+        old_account.created_at = old_account.created_at.replace(
+            tzinfo=None
         )
         assert old_account.created_at.tzinfo is None
 
