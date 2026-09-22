@@ -91,22 +91,21 @@ def transfer_money(
         )
 
         transaction_record_data = transactions.TransactionCreateRecord(
-        sender_account_id=valid_source_acc.id,
-        recipient_account_id=recipient_account.id,
-        sender_iban=valid_source_acc.iban,
-        recipient_iban=recipient_account.iban,
-        amount=transfer_data.amount,
-        status=TransactionStatus.SUCCESSFUL,
-        created_at=datetime.now(timezone.utc),
-        operation_type=OperationType.TRANSFER,
-        description=transfer_data.description,
-        category=categorizer_response["category"],
-        # A SEPA transfer has no merchant MCC in this simulator.
-        mcc_code=None,
-        classification_source=(
-            categorizer_response["classification_source"]
-        ),
-    )
+            sender_account_id=valid_source_acc.id,
+            recipient_account_id=recipient_account.id,
+            sender_iban=valid_source_acc.iban,
+            recipient_iban=recipient_account.iban,
+            amount=transfer_data.amount,
+            status=TransactionStatus.SUCCESSFUL,
+            created_at=datetime.now(timezone.utc),
+            operation_type=OperationType.TRANSFER,
+            description=transfer_data.description,
+            category=categorizer_response["category"],
+            mcc_code=None,
+            classification_source=(
+                categorizer_response["classification_source"]
+            ),
+        )
 
         new_record = transaction.create_transaction_record(
             transaction_record_data,
