@@ -1,5 +1,9 @@
 # FastAPI Banking App — Portfolio V2 Roadmap
 
+## Current implementation snapshot
+
+As of the post-Slice-7 review cycle, backend Slices 1–7 are implemented on `portfolio-v2`. Issues #24–#27 track the verified stabilization findings from the 10-loop repository review. The roadmap below is retained as the implementation plan/history; items already delivered should be read as completed context rather than future promises.
+
 ## 1. Purpose
 
 This document is the implementation plan for turning the existing FastAPI banking project into a reliable, polished portfolio project for freelance/backend work.

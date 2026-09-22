@@ -58,3 +58,63 @@ def test_categorizer_unknown_transaction_uses_other():
         result["classification_source"]
         == TransactionClassificationSource.FALLBACK
     )
+
+
+
+def test_specific_uber_rules_do_not_collide():
+    delivery = categorizer.categorize(
+        "Uber Eats München",
+        mcc_code="9999",
+        rule_source=TransactionClassificationSource.MERCHANT_RULE,
+    )
+    taxi = categorizer.categorize(
+        "Uber BV München",
+        mcc_code="9999",
+        rule_source=TransactionClassificationSource.MERCHANT_RULE,
+    )
+
+    assert (
+        delivery["category"]
+        == TransactionCategory.DELIVERY_FAST_FOOD
+    )
+    assert (
+        taxi["category"]
+        == TransactionCategory.TAXI_CARSHARING
+    )
+
+
+def test_generic_online_text_is_not_gambling():
+    result = categorizer.categorize(
+        "online payment confirmation"
+    )
+
+    assert result["category"] == TransactionCategory.OTHER
+    assert (
+        result["classification_source"]
+        == TransactionClassificationSource.FALLBACK
+    )
+
+
+def test_online_casino_phrase_is_gambling():
+    result = categorizer.categorize(
+        "Online Casino payment"
+    )
+
+    assert result["category"] == TransactionCategory.GAMBLING
+
+
+def test_rewe_short_alias_preserves_existing_transfer_behavior():
+    result = categorizer.categorize(
+        "Rewe sagt danke"
+    )
+
+    assert result["category"] == TransactionCategory.GROCERIES
+
+
+
+def test_brand_alias_does_not_match_inside_unrelated_word():
+    result = categorizer.categorize(
+        "Brewer services invoice"
+    )
+
+    assert result["category"] == TransactionCategory.OTHER

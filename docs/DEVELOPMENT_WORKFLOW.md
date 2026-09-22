@@ -71,8 +71,12 @@ Critical money-flow and authorization changes should always receive regression t
 
 ## Current status
 
-- Original branch preserved: `master`
-- Portfolio integration branch: `portfolio-v2`
-- Product roadmap: `docs/PORTFOLIO_V2_ROADMAP.md`
-- Application code has not yet been modified for Portfolio V2.
-- Current activity: architecture/design discussion before implementation.
+- Original branch preserved: `master`.
+- Portfolio integration branch: `portfolio-v2`.
+- Product roadmap: `docs/PORTFOLIO_V2_ROADMAP.md`.
+- Vertical Slices 1–7 have been implemented and merged into `portfolio-v2`.
+- The 10-loop repository review stabilization work is tracked in issues #24–#27.
+- The stabilization work preserves the approved money, credit, MCC and synthetic-score business rules while repairing confirmed runtime/correctness defects.
+- After stabilization, the planned product work is a small analytics/customer-insights layer, frontend/demo flow, deployment and portfolio presentation.
+
+The earlier workflow sections remain the process used to evolve the original handwritten project; they are not a claim that implementation has not started.
