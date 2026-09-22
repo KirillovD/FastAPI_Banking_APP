@@ -13,6 +13,7 @@ from enums import (
     TransactionClassificationSource,
     TransactionStatus,
 )
+from money import normalize_money
 from schemas import transactions
 from services import credit_score
 from services.categorizer import categorizer
@@ -41,12 +42,16 @@ def check_pin_code(send_pin: str | None, db_pin_hashed):
 
 
 def is_account_balance_sufficient(source_account, transfer_amount):
+    amount = normalize_money(
+        Decimal(str(transfer_amount)),
+        positive=True,
+    )
     available_funds = (
         Decimal(str(source_account.balance))
         + Decimal(str(source_account.limit))
     )
 
-    return available_funds >= Decimal(str(transfer_amount))
+    return available_funds >= amount
 
 
 def _is_card_expired(card: models.Card) -> bool:
@@ -62,7 +67,7 @@ def _is_card_expired(card: models.Card) -> bool:
 def _credit_utilization(
     account: models.Account,
     *,
-    balance: Decimal | None = None,
+    balance: Decimal,
 ) -> Decimal:
     if (
         account.type != AccountType.CREDIT
@@ -70,13 +75,8 @@ def _credit_utilization(
     ):
         return Decimal("0")
 
-    effective_balance = (
-        Decimal(account.balance)
-        if balance is None
-        else Decimal(balance)
-    )
     debt = max(
-        -effective_balance,
+        -Decimal(balance),
         Decimal("0"),
     )
 
@@ -85,18 +85,20 @@ def _credit_utilization(
 
 def _record_rapid_limit_depletion(
     account: models.Account,
-    payment_amount: Decimal,
+    *,
+    before_balance: Decimal,
+    after_balance: Decimal,
 ):
     if account.type != AccountType.CREDIT:
         return
 
-    before = _credit_utilization(account)
+    before = _credit_utilization(
+        account,
+        balance=before_balance,
+    )
     after = _credit_utilization(
         account,
-        balance=(
-            Decimal(account.balance)
-            - Decimal(payment_amount)
-        ),
+        balance=after_balance,
     )
 
     if (
@@ -158,56 +160,68 @@ def process_payment(
 
     account = card.linked_account
 
-    if not is_account_balance_sufficient(account, payment_info.amount):
-        raise exceptions.InsufficientFunds()
-
     categorizer_response = categorizer.categorize(
         payment_info.terminal_data.merchant_name,
         mcc_code=payment_info.terminal_data.mcc_code,
         rule_source=TransactionClassificationSource.MERCHANT_RULE,
     )
 
-    _record_rapid_limit_depletion(
-        account,
-        payment_info.amount,
-    )
-    transaction.withdraw_funds(account, payment_info.amount)
+    try:
+        transaction.withdraw_funds(
+            account,
+            payment_info.amount,
+            db,
+            enforce_available_funds=True,
+        )
 
-    transaction_data = transactions.TransactionCreateRecord(
-        amount=payment_info.amount,
-        status=TransactionStatus.SUCCESSFUL,
-        created_at=datetime.now(timezone.utc),
-        operation_type=OperationType.PAYMENT,
-        sender_account_id=account.id,
-        sender_iban=account.iban,
-        description=payment_info.terminal_data.merchant_name,
-        category=categorizer_response["category"],
-        mcc_code=categorizer_response["mcc_code"],
-        classification_source=(
-            categorizer_response["classification_source"]
-        ),
-    )
+        after_balance = Decimal(account.balance)
+        before_balance = after_balance + Decimal(
+            payment_info.amount
+        )
 
-    new_transaction = transaction.create_transaction_record(
-        transaction_data,
-        db,
-    )
+        _record_rapid_limit_depletion(
+            account,
+            before_balance=before_balance,
+            after_balance=after_balance,
+        )
 
-    # Session autoflush is disabled in this project, so flush the
-    # transaction and metric state before deterministic score queries.
-    db.flush()
-    credit_score.recalculate_user_credit_score(
-        user.id,
-        db,
-        commit=False,
-    )
+        transaction_data = transactions.TransactionCreateRecord(
+            amount=payment_info.amount,
+            status=TransactionStatus.SUCCESSFUL,
+            created_at=datetime.now(timezone.utc),
+            operation_type=OperationType.PAYMENT,
+            sender_account_id=account.id,
+            sender_iban=account.iban,
+            description=payment_info.terminal_data.merchant_name,
+            category=categorizer_response["category"],
+            mcc_code=categorizer_response["mcc_code"],
+            classification_source=(
+                categorizer_response["classification_source"]
+            ),
+        )
 
-    db.commit()
-    db.refresh(new_transaction)
+        new_transaction = transaction.create_transaction_record(
+            transaction_data,
+            db,
+        )
 
-    return transactions.CardPaymentResponse(
-        transaction_id=new_transaction.id,
-        status=new_transaction.status,
-        amount=new_transaction.amount,
-        message="Payment approved",
-    )
+        db.flush()
+        credit_score.recalculate_user_credit_score(
+            user.id,
+            db,
+            commit=False,
+        )
+
+        db.commit()
+        db.refresh(new_transaction)
+
+        return transactions.CardPaymentResponse(
+            transaction_id=new_transaction.id,
+            status=new_transaction.status,
+            amount=new_transaction.amount,
+            message="Payment approved",
+        )
+
+    except Exception:
+        db.rollback()
+        raise
