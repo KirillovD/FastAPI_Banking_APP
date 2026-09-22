@@ -182,6 +182,17 @@ def test_online_payment_rejects_wrong_cvv_without_mutation(
         account["id"],
     )
 
+    actual_cvv = _get_cvv(
+        client,
+        auth_headers,
+        card["id"],
+    )
+    wrong_cvv = (
+        "000"
+        if actual_cvv != "000"
+        else "001"
+    )
+
     response = client.post(
         "/payments/",
         json={
@@ -192,7 +203,7 @@ def test_online_payment_rejects_wrong_cvv_without_mutation(
                 "payment_type": "online",
                 "mcc_code": "5411",
             },
-            "cvv": "999",
+            "cvv": wrong_cvv,
         },
         headers=auth_headers,
     )
