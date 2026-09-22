@@ -109,3 +109,12 @@ def test_rewe_short_alias_preserves_existing_transfer_behavior():
     )
 
     assert result["category"] == TransactionCategory.GROCERIES
+
+
+
+def test_brand_alias_does_not_match_inside_unrelated_word():
+    result = categorizer.categorize(
+        "Brewer services invoice"
+    )
+
+    assert result["category"] == TransactionCategory.OTHER
