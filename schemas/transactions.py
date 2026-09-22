@@ -5,6 +5,8 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator
 from schwifty import IBAN
 from schwifty.exceptions import SchwiftyException
 
+from money import PositiveMoney
+
 from enums import (
     OperationType,
     PaymentType,
@@ -17,7 +19,7 @@ from enums import (
 class TransferDataInput(BaseModel):
     recipient_iban: str
     recipient_name: str = Field(min_length=1, max_length=100)
-    amount: Decimal = Field(gt=0)
+    amount: PositiveMoney
     description: str | None = Field(default=None, max_length=255)
 
     model_config = ConfigDict(extra="forbid")
@@ -71,7 +73,7 @@ class TransactionResponse(BaseModel):
 
 
 class CashOperation(BaseModel):
-    amount: Decimal = Field(gt=0, description="Amount must be greater than zero")
+    amount: PositiveMoney
 
 
 class CashOperationsResponse(BaseModel):
@@ -91,7 +93,7 @@ class PaymentTerminalData(BaseModel):
 
 
 class CardPaymentCreate(BaseModel):
-    amount: Decimal = Field(gt=0)
+    amount: PositiveMoney
     terminal_data: PaymentTerminalData
     pin_block: str | None = Field(default=None, pattern=r"^\d{4}$")
     cvv: str | None = Field(default=None, pattern=r"^\d{3,4}$")
