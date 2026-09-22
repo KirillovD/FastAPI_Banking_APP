@@ -581,3 +581,193 @@ def test_score_handles_loaded_naive_and_new_aware_credit_timestamps(
         )
 
         assert 300 <= result.score <= 850
+
+
+
+def test_credit_issuance_refreshes_stored_score_before_commit(
+    db_factory,
+    monkeypatch,
+):
+    from datetime import timedelta
+    from schemas.cards import CreateCard
+    from services import cards as card_services
+
+    with db_factory() as db:
+        user, existing = _create_credit_account(
+            db,
+            balance="-400.00",
+        )
+        user_id = user.id
+        credit_score.recalculate_user_credit_score(
+            user_id,
+            db,
+            commit=True,
+        )
+        before = user.credit_score
+        assert before < 500
+
+    with db_factory() as db:
+        user = db.get(models.User, user_id)
+        # Force the existing account to be loaded from SQLite (naive datetime).
+        db.query(models.Account).filter_by(
+            owner_id=user_id
+        ).all()
+
+        def fake_add_account(data, owner_id, session):
+            account = models.Account(
+                owner_id=owner_id,
+                type=AccountType.CREDIT,
+                iban="DE8888888888888888888888",
+                balance=Decimal("0.00"),
+                limit=Decimal("0.00"),
+            )
+            session.add(account)
+            return account
+
+        def fake_create_card(
+            acc_id,
+            owner_id,
+            card_data,
+            session,
+        ):
+            card = models.Card(
+                linked_acc_id=acc_id,
+                user_id=owner_id,
+                number="5555555555554444",
+                expiry_date=(
+                    datetime.now(timezone.utc)
+                    + timedelta(days=365)
+                ),
+                CVV_encrypted=b"test",
+                pin_code_hashed="test",
+            )
+            session.add(card)
+            return card
+
+        monkeypatch.setattr(
+            card_services.crud_accounts,
+            "add_account",
+            fake_add_account,
+        )
+        monkeypatch.setattr(
+            card_services.crud_cards,
+            "create_card",
+            fake_create_card,
+        )
+
+        card_services.create_credit_card(
+            CreateCard(
+                pin_code="1234",
+                type="mastercard",
+            ),
+            user,
+            db,
+        )
+
+        db.refresh(user)
+        freshly_calculated = (
+            credit_score.calculate_user_credit_score(
+                user_id,
+                db,
+            )
+        )
+
+        assert user.credit_score == freshly_calculated.score
+        assert user.credit_score != before
+
+
+def test_credit_issuance_rolls_back_if_score_refresh_fails(
+    db_factory,
+    monkeypatch,
+):
+    from datetime import timedelta
+    from schemas.cards import CreateCard
+    from services import cards as card_services
+
+    with db_factory() as db:
+        user = models.User(
+            email="rollback@example.com",
+            first_name="Rollback",
+            last_name="User",
+            password="hashed",
+        )
+        db.add(user)
+        db.commit()
+        user_id = user.id
+
+    with db_factory() as db:
+        user = db.get(models.User, user_id)
+
+        def fake_add_account(data, owner_id, session):
+            account = models.Account(
+                owner_id=owner_id,
+                type=AccountType.CREDIT,
+                iban="DE7777777777777777777777",
+                balance=Decimal("0.00"),
+                limit=Decimal("0.00"),
+            )
+            session.add(account)
+            return account
+
+        def fake_create_card(
+            acc_id,
+            owner_id,
+            card_data,
+            session,
+        ):
+            card = models.Card(
+                linked_acc_id=acc_id,
+                user_id=owner_id,
+                number="5105105105105100",
+                expiry_date=(
+                    datetime.now(timezone.utc)
+                    + timedelta(days=365)
+                ),
+                CVV_encrypted=b"test",
+                pin_code_hashed="test",
+            )
+            session.add(card)
+            return card
+
+        def fail_score(*args, **kwargs):
+            raise RuntimeError("score failure")
+
+        monkeypatch.setattr(
+            card_services.crud_accounts,
+            "add_account",
+            fake_add_account,
+        )
+        monkeypatch.setattr(
+            card_services.crud_cards,
+            "create_card",
+            fake_create_card,
+        )
+        monkeypatch.setattr(
+            card_services.credit_score,
+            "recalculate_user_credit_score",
+            fail_score,
+        )
+
+        with pytest.raises(RuntimeError):
+            card_services.create_credit_card(
+                CreateCard(
+                    pin_code="1234",
+                    type="mastercard",
+                ),
+                user,
+                db,
+            )
+
+    with db_factory() as db:
+        assert (
+            db.query(models.Account)
+            .filter_by(owner_id=user_id)
+            .count()
+            == 0
+        )
+        assert (
+            db.query(models.Card)
+            .filter_by(user_id=user_id)
+            .count()
+            == 0
+        )
