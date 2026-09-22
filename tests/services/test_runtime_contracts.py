@@ -4,6 +4,7 @@ import sys
 from datetime import datetime, timedelta, timezone
 from decimal import Decimal
 from pathlib import Path
+from typing import get_type_hints
 
 import pytest
 from pydantic import ValidationError
@@ -21,7 +22,8 @@ from schemas.users import UserCreate
 
 
 def test_user_service_imports_with_schema_annotation_intact():
-    assert user_services.create_user.__annotations__["user"] is UserCreate
+    hints = get_type_hints(user_services.create_user)
+    assert hints["user"] is UserCreate
 
 
 def test_pytest_uses_single_packaged_conftest_module():
