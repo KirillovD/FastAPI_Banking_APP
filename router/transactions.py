@@ -8,6 +8,7 @@ from dependecies.accounts import get_valid_acc
 from dependecies.users import get_current_user
 from crud import transaction
 from schemas import transactions
+from schemas.common import ResourceId
 from schemas.transactions import CashOperationsResponse
 from services import cash_operations, transfers
 
@@ -24,7 +25,7 @@ router = APIRouter(
     response_model=transactions.TransactionResponse,
 )
 def transfer_money(
-    acc_id: int,
+    acc_id: ResourceId,
     transfer_data: transactions.TransferDataInput,
     valid_source_acc: models.Account = Depends(get_valid_acc),
     db: Session = Depends(get_db),
@@ -52,7 +53,7 @@ def get_transactions_history(
     response_model=CashOperationsResponse,
 )
 def deposit_cash(
-    acc_id: int,
+    acc_id: ResourceId,
     amount_data: transactions.CashOperation,
     valid_acc: models.Account = Depends(get_valid_acc),
     db: Session = Depends(get_db),
@@ -65,7 +66,7 @@ def deposit_cash(
     response_model=CashOperationsResponse,
 )
 def withdraw_cash(
-    acc_id: int,
+    acc_id: ResourceId,
     amount_data: transactions.CashOperation,
     valid_acc: models.Account = Depends(get_valid_acc),
     db: Session = Depends(get_db),
