@@ -57,6 +57,13 @@ class Settings(BaseSettings):
         if not value:
             raise ValueError("database_url cannot be empty")
 
+        if value.startswith("postgresql://"):
+            return value.replace(
+                "postgresql://",
+                "postgresql+psycopg://",
+                1,
+            )
+
         sqlite_prefix = "sqlite:///"
         if (
             value.startswith(sqlite_prefix)
