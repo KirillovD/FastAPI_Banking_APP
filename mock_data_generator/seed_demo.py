@@ -209,25 +209,35 @@ def seed_demo_data(
         created_at=now - timedelta(days=720),
     )
 
-    previous_month_end = (
+    last_month_end = (
         today.replace(day=1)
         - timedelta(days=1)
     )
-    two_months_end = (
-        previous_month_end.replace(day=1)
+    latest_period_end = last_month_end
+
+    if today <= (
+        last_month_end + relativedelta(months=1)
+    ).replace(day=15):
+        latest_period_end = (
+            last_month_end.replace(day=1)
+            - timedelta(days=1)
+        )
+
+    older_period_end = (
+        latest_period_end.replace(day=1)
         - timedelta(days=1)
     )
     older_due = (
-        two_months_end + relativedelta(months=1)
+        older_period_end + relativedelta(months=1)
     ).replace(day=15)
     latest_due = (
-        previous_month_end + relativedelta(months=1)
+        latest_period_end + relativedelta(months=1)
     ).replace(day=15)
 
     older_statement = models.CreditStatement(
         linked_account=credit,
-        period_start=two_months_end.replace(day=1),
-        period_end=_month_end(two_months_end),
+        period_start=older_period_end.replace(day=1),
+        period_end=_month_end(older_period_end),
         due_date=older_due,
         statement_balance=Decimal("310.00"),
         minimum_payment=Decimal("30.00"),
@@ -254,8 +264,8 @@ def seed_demo_data(
 
     latest_statement = models.CreditStatement(
         linked_account=credit,
-        period_start=previous_month_end.replace(day=1),
-        period_end=_month_end(previous_month_end),
+        period_start=latest_period_end.replace(day=1),
+        period_end=_month_end(latest_period_end),
         due_date=latest_due,
         statement_balance=Decimal("250.00"),
         minimum_payment=Decimal("30.00"),
@@ -323,6 +333,27 @@ def seed_demo_data(
     ]
     transactions.extend(
         [
+            _card_payment(
+                credit,
+                "REWE München",
+                "5411",
+                "62.10",
+                now - timedelta(days=3),
+            ),
+            _card_payment(
+                credit,
+                "DB Vertrieb GmbH",
+                "4111",
+                "29.90",
+                now - timedelta(days=9),
+            ),
+            _card_payment(
+                credit,
+                "Amazon.de",
+                "5399",
+                "53.00",
+                now - timedelta(days=18),
+            ),
             _salary(
                 checking,
                 "3650.00",
