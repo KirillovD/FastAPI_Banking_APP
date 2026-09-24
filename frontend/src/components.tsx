@@ -66,6 +66,23 @@ function TransactionReceipt({ transaction, snapshot, onClose }: { transaction: T
   const recordedTime = transaction.created_at.replace("T", " ");
   return <dialog ref={dialogRef} className="transaction-dialog" aria-labelledby={titleId}
     onCancel={(event) => { event.preventDefault(); onClose(); }}
+    onKeyDown={(event) => {
+      if (event.key !== "Tab") return;
+      // Native modality makes the background inert. Explicitly wrap Tab as well,
+      // including the one-control case where Chromium can focus browser chrome.
+      const controls = event.currentTarget.querySelectorAll<HTMLElement>(
+        "button:not([disabled]), a[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex='-1'])",
+      );
+      const first = controls[0];
+      const last = controls[controls.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last?.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first?.focus();
+      }
+    }}
     onClick={(event) => {
       if (event.target !== event.currentTarget) return;
       const box = event.currentTarget.getBoundingClientRect();
