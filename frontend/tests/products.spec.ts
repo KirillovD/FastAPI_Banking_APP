@@ -33,7 +33,8 @@ test("account filters include both sides of internal transfers and receipts pres
   const { calls } = await mockApi(page);
   await page.goto("/");
   await openView(page, "Transactions");
-  const filter = page.getByLabel("Filter by account", { exact: true });
+  // Match the browser's accessible name, not the wrapper label's option text.
+  const filter = page.getByRole("combobox", { name: "Filter by account", exact: true });
   const row = page.getByRole("button", { name: /^View transaction 24:/ });
   await expect(page.getByRole("status")).toHaveText("4 matching transactions");
   await expect(row.locator(".transaction-side > strong")).toHaveText(/^[^−+]*200,00/);
@@ -87,7 +88,7 @@ test("summary tiles lead to accounts, credit details, score and transaction hist
   await expect(page.getByRole("heading", { name: "Credit Center", exact: true })).toBeVisible();
   await openView(page, "Overview");
   await page.getByRole("button", { name: "View 30-day spending", exact: true }).click();
-  await expect(page.getByLabel("Filter by account")).toBeVisible();
+  await expect(page.getByRole("combobox", { name: "Filter by account", exact: true })).toBeVisible();
 });
 
 test("selected account survives refresh, updates from API data and handles removal", async ({ page }) => {
@@ -176,7 +177,7 @@ for (const width of [360, 390, 768, 1440]) {
     await page.getByRole("button", { name: "Open synthetic card ending 9948, card #1", exact: true }).click();
     await check("card-details");
     await openView(page, "Transactions");
-    await page.getByLabel("Filter by account").selectOption("2");
+    await page.getByRole("combobox", { name: "Filter by account", exact: true }).selectOption("2");
     await check("filtered-transactions");
   });
 }
