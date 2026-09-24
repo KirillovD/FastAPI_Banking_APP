@@ -1249,7 +1249,7 @@ function PaymentSimulator({
             <input
               inputMode="numeric"
               value={credential}
-              pattern={paymentType === "pos" ? "\d{4}" : "\d{3,4}"}
+              pattern={paymentType === "pos" ? "[0-9]{4}" : "[0-9]{3,4}"}
               onChange={(event) => setCredential(event.target.value)}
               required
             />
