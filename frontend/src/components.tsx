@@ -1,6 +1,6 @@
 import { type ReactNode, useEffect, useId, useRef, useState } from "react";
 import type { AppSnapshot, Transaction } from "./types";
-import { formatDate, money, movement, titleCase } from "./presentation";
+import { formatDate, involvesAccount, money, movement, titleCase } from "./presentation";
 
 export function Brand() {
   return <div className="brand-lockup"><div className="brand-mark" aria-hidden="true">I</div><div><strong>Iron Bank</strong><span>Banking Lab</span></div></div>;
@@ -32,6 +32,7 @@ export function AmountInput({ value, onChange, label = "Amount (€)", allowZero
 export function NavIcon({ name }: { name: string }) {
   const paths: Record<string, ReactNode> = {
     overview: <><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></>,
+    accounts: <><path d="m3 8 9-5 9 5H3Zm2 3v8m7-8v8m7-8v8M3 21h18"/></>,
     transactions: <><path d="M4 7h15m-4-4 4 4-4 4M20 17H5m4-4-4 4 4 4"/></>,
     credit: <><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 10h18M7 15h4"/></>,
     simulator: <><path d="m4 4 17 8-17 8 4-8-4-8ZM8 12h13"/></>,
@@ -39,11 +40,11 @@ export function NavIcon({ name }: { name: string }) {
   };
   return <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">{paths[name]}</svg>;
 }
-function TransactionReceipt({ transaction, snapshot, onClose }: { transaction: Transaction; snapshot: AppSnapshot; onClose: () => void }) {
+function TransactionReceipt({ transaction, snapshot, onClose, accountId }: { transaction: Transaction; snapshot: AppSnapshot; onClose: () => void; accountId?: number }) {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const closeRef = useRef<HTMLButtonElement>(null);
   const titleId = useId();
-  const direction = movement(transaction, snapshot.accounts);
+  const direction = movement(transaction, snapshot.accounts, accountId);
   useEffect(() => {
     const dialog = dialogRef.current;
     if (!dialog) return;
@@ -105,21 +106,23 @@ function TransactionReceipt({ transaction, snapshot, onClose }: { transaction: T
     <p className="tiny-disclaimer">Synthetic transaction · no real funds or payment network.</p>
   </dialog>;
 }
-export function TransactionRows({ snapshot, limit }: { snapshot: AppSnapshot; limit?: number }) {
+export function TransactionRows({ snapshot, limit, accountId }: { snapshot: AppSnapshot; limit?: number; accountId?: number }) {
   const [selectedId, setSelectedId] = useState<number | null>(null);
-  const rows = limit ? snapshot.transactions.slice(0, limit) : snapshot.transactions;
-  const selected = snapshot.transactions.find((transaction) => transaction.id === selectedId);
-  if (!rows.length) return <EmptyState title="No transactions yet" body="Use the payment or transfer simulator to create the first movement." />;
+  const activity = accountId === undefined ? snapshot.transactions : snapshot.transactions.filter((transaction) => involvesAccount(transaction, accountId));
+  const rows = limit ? activity.slice(0, limit) : activity;
+  const selected = rows.find((transaction) => transaction.id === selectedId);
+  if (!rows.length) return <EmptyState title={accountId === undefined ? "No transactions yet" : "No transactions for this account"} body={accountId === undefined ? "Use the payment or transfer simulator to create the first movement." : "No recorded movements match this account. An opening or seeded balance does not necessarily have a matching transaction history."} />;
   return <><div className="transaction-list">{rows.map((transaction) => {
-    const direction = movement(transaction, snapshot.accounts);
+    const direction = movement(transaction, snapshot.accounts, accountId);
+    const internal = movement(transaction, snapshot.accounts).label === "Between your accounts";
     return <button type="button" className="transaction-row transaction-row-button" key={transaction.id}
       onClick={() => setSelectedId(transaction.id)} aria-haspopup="dialog"
       aria-label={`View transaction ${transaction.id}: ${transaction.description || titleCase(transaction.operation_type)}, ${direction.sign}${money(transaction.amount)}`}>
       <span className="transaction-icon" aria-hidden="true">{transaction.operation_type === "payment" ? "↗" : transaction.operation_type === "transfer" ? "⇄" : transaction.operation_type === "deposit" ? "+" : "−"}</span>
       <span className="transaction-main"><strong>{transaction.description || titleCase(transaction.operation_type)}</strong>
-        <span>{titleCase(transaction.category)} · {transaction.mcc_code ? `MCC ${transaction.mcc_code}` : titleCase(transaction.classification_source)}{direction.label === "Between your accounts" ? " · Internal" : ""}</span></span>
+        <span>{titleCase(transaction.category)} · {transaction.mcc_code ? `MCC ${transaction.mcc_code}` : titleCase(transaction.classification_source)}{internal ? " · Internal" : ""}</span></span>
       <span className="transaction-side"><strong className={direction.className}>{direction.sign}{money(transaction.amount)}</strong>
         <span>{transaction.status === "successful" ? formatDate(transaction.created_at) : titleCase(transaction.status)}</span></span><span className="transaction-chevron" aria-hidden="true">›</span>
     </button>;
-  })}</div>{selected && <TransactionReceipt transaction={selected} snapshot={snapshot} onClose={() => setSelectedId(null)} />}</>;
+  })}</div>{selected && <TransactionReceipt transaction={selected} snapshot={snapshot} accountId={accountId} onClose={() => setSelectedId(null)} />}</>;
 }
