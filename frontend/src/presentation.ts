@@ -37,10 +37,22 @@ export function amountValue(raw: string, allowZero = false): string {
   if (!allowZero && !/[1-9]/.test(value)) throw new Error("Amount must be greater than zero.");
   return value;
 }
-export function movement(transaction: Transaction, accounts: Account[]) {
+export function involvesAccount(transaction: Transaction, accountId: number): boolean {
+  return transaction.sender_account_id === accountId || transaction.recipient_account_id === accountId;
+}
+export function movement(transaction: Transaction, accounts: Account[], accountId?: number) {
   const owned = new Set(accounts.map((account) => account.id));
   const outgoing = transaction.sender_account_id !== null && owned.has(transaction.sender_account_id);
   const incoming = transaction.recipient_account_id !== null && owned.has(transaction.recipient_account_id);
+  // An internal transfer is neutral across the portfolio, but debits one account
+  // and credits the other. This is display context, not a new ledger calculation.
+  if (accountId !== undefined) {
+    const sent = transaction.sender_account_id === accountId;
+    const received = transaction.recipient_account_id === accountId;
+    if (sent && received) return { label: "Within this account", sign: "", className: "" };
+    if (received) return { label: outgoing ? "Incoming · internal transfer" : "Incoming", sign: "+", className: "money-positive" };
+    if (sent) return { label: incoming ? "Outgoing · internal transfer" : "Outgoing", sign: "−", className: "" };
+  }
   if (outgoing && incoming) return { label: "Between your accounts", sign: "", className: "" };
   if (incoming) return { label: "Incoming", sign: "+", className: "money-positive" };
   if (outgoing) return { label: "Outgoing", sign: "−", className: "" };

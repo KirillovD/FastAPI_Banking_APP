@@ -3,17 +3,19 @@ import {
   ApiError, api, clearToken, getStoredToken, loadSnapshot, login, register,
   SESSION_EXPIRED_EVENT, storeToken,
 } from "./api";
-import type { Account, AppSnapshot, Card, CreditScore, SpendingSummary } from "./types";
+import type { AppSnapshot, CreditScore, SpendingSummary } from "./types";
 import {
   AmountInput, Brand, EmptyState, Feedback, NavIcon, type Notice,
   PageHeading, SectionTitle, StatusPill, TransactionRows,
 } from "./components";
-import { amountValue, compactNumber, errorText, formatDate, maskCard, money, titleCase } from "./presentation";
+import { amountValue, compactNumber, errorText, formatDate, money, titleCase } from "./presentation";
+import { AccountCard, AccountTransactions, AccountsView, BankCard, type ProductTarget } from "./products";
 
-type View = "overview" | "transactions" | "credit" | "simulator" | "insights";
+type View = "overview" | "accounts" | "transactions" | "credit" | "simulator" | "insights";
 type Refresh = () => Promise<boolean>;
 const NAV_ITEMS: { id: View; label: string }[] = [
   { id: "overview", label: "Overview" },
+  { id: "accounts", label: "Accounts" },
   { id: "transactions", label: "Transactions" },
   { id: "credit", label: "Credit Center" },
   { id: "simulator", label: "Simulator" },
@@ -107,18 +109,9 @@ function AuthScreen({ onAuthenticated, sessionNotice }: { onAuthenticated: () =>
   </main>;
 }
 
-function StatCard({ label, value, detail, accent = false }: { label: string; value: string; detail: string; accent?: boolean }) {
+function StatCard({ label, value, detail, accent = false, onOpen }: { label: string; value: string; detail: string; accent?: boolean; onOpen?: () => void }) {
+  if (onOpen) return <button type="button" className={`stat-card stat-card-button${accent ? " accent" : ""}`} onClick={onOpen} aria-label={`View ${label.toLowerCase()}`}><span>{label}</span><strong>{value}</strong><span className="stat-description">{detail}</span></button>;
   return <article className={accent ? "stat-card accent" : "stat-card"}><span>{label}</span><strong>{value}</strong><p>{detail}</p></article>;
-}
-function AccountCard({ account }: { account: Account }) {
-  return <article className="account-card"><div className="account-card-head"><span className="eyebrow">{titleCase(account.type)}</span>
-    <StatusPill tone={account.type === "credit" ? "warn" : "neutral"}>{account.type === "credit" ? "Credit" : "Cash"}</StatusPill></div>
-    <h3>{money(account.balance)}</h3><code>{account.iban}</code><div className="card-meta"><span>Opened {formatDate(account.created_at)}</span><span>#{account.id}</span></div></article>;
-}
-function BankCard({ card, account }: { card: Card; account: Account | undefined }) {
-  return <article className="bank-card"><div className="bank-card-top"><span>IRON BANK</span><span className="chip" aria-hidden="true">▥</span></div>
-    <span className="bank-card-label">SYNTHETIC CARD</span><strong>{maskCard(card.number)}</strong><div className="bank-card-bottom">
-      <div><small>EXPIRES</small><span>{formatDate(card.expiry_date)}</span></div><div><small>LINKED ACCOUNT</small><span>{account ? titleCase(account.type) : "Not recorded"}</span></div><b>DEMO</b></div></article>;
 }
 function SpendingBars({ spending, limit }: { spending: SpendingSummary; limit?: number }) {
   if (!spending.categories.length) return <EmptyState title="No categorized spend" body="Merchant payments and external transfers will populate this view." />;
@@ -139,7 +132,7 @@ function ScorePanel({ score }: { score: CreditScore }) {
       <strong className={factor.impact > 0 ? "money-positive" : factor.impact < 0 ? "money-negative" : ""}>{factor.impact > 0 ? "+" : ""}{factor.impact}</strong></div>)}</div>
   </article>;
 }
-function Overview({ snapshot, goTo, refresh }: { snapshot: AppSnapshot; goTo: (view: View) => void; refresh: Refresh }) {
+function Overview({ snapshot, goTo, refresh, openProduct }: { snapshot: AppSnapshot; goTo: (view: View) => void; refresh: Refresh; openProduct: (target: ProductTarget) => void }) {
   const [showSetup, setShowSetup] = useState(false);
   const [accountType, setAccountType] = useState<"checking" | "savings">("checking");
   const [startingBalance, setStartingBalance] = useState("1500.00");
@@ -159,10 +152,10 @@ function Overview({ snapshot, goTo, refresh }: { snapshot: AppSnapshot; goTo: (v
   return <div className="view-stack"><PageHeading title="Overview" description={`Welcome back, ${snapshot.user.first_name}. Here is your account summary.`}
     action={<button className="secondary-button" type="button" aria-expanded={showSetup} aria-controls="account-setup" onClick={() => setShowSetup((value) => !value)}>{showSetup ? "Close setup" : "+ Add product"}</button>} />
     <section className="stats-grid" aria-label="Account summary">
-      <StatCard label="Available cash" value={money(totalCash)} detail={`${cashAccounts.length} everyday accounts`} accent />
-      <StatCard label="Available credit" value={money(credit?.available_credit)} detail={credit ? `${money(credit.outstanding_debt)} outstanding` : "No credit account"} />
-      <StatCard label="Synthetic score" value={String(snapshot.score.score)} detail="Explainable 300–850 demo model" />
-      <StatCard label="30-day spending" value={money(snapshot.spending.total_spend)} detail={`${snapshot.spending.transaction_count} categorized movements`} />
+      <StatCard label="Available cash" value={money(totalCash)} detail={`${cashAccounts.length} everyday accounts`} accent onOpen={() => openProduct(null)} />
+      <StatCard label="Available credit" value={money(credit?.available_credit)} detail={credit ? `${money(credit.outstanding_debt)} outstanding` : "No credit account"} onOpen={() => openProduct(credit ? { kind: "account", id: credit.account_id } : null)} />
+      <StatCard label="Synthetic score" value={String(snapshot.score.score)} detail="Explainable 300–850 demo model" onOpen={() => goTo("credit")} />
+      <StatCard label="30-day spending" value={money(snapshot.spending.total_spend)} detail={`${snapshot.spending.transaction_count} categorized movements`} onOpen={() => goTo("transactions")} />
     </section>
     {showSetup && <section id="account-setup" className="setup-grid">
       <form className="surface-card compact-form" onSubmit={createCashAccount} aria-label="Open an account"><SectionTitle kicker="Cash account" title="Open an account" />
@@ -175,17 +168,12 @@ function Overview({ snapshot, goTo, refresh }: { snapshot: AppSnapshot; goTo: (v
       <Feedback notice={action.notice} />
     </section>}
     <section className="two-column overview-products"><div><SectionTitle kicker="Your accounts" title="Balances at a glance" />
-      {!snapshot.accounts.length ? <EmptyState title="No accounts yet" body="Use Add product to create a checking or savings account." /> : <div className="account-grid">{snapshot.accounts.map((account) => <AccountCard key={account.id} account={account} />)}</div>}</div>
-      <div><SectionTitle kicker="Your cards" title="Synthetic cards" />{!snapshot.cards.length ? <EmptyState title="No cards issued" body="Issue a credit card to unlock the payment simulator and Credit Center." /> : <div className="card-stack">{snapshot.cards.map((card) => <BankCard key={card.id} card={card} account={snapshot.accounts.find((account) => account.id === card.linked_acc_id)} />)}<p className="card-caption">Demo cards only. No real payment network is connected.</p></div>}</div></section>
+      {!snapshot.accounts.length ? <EmptyState title="No accounts yet" body="Use Add product to create a checking or savings account." /> : <div className="account-grid">{snapshot.accounts.map((account) => <AccountCard key={account.id} account={account} onOpen={() => openProduct({ kind: "account", id: account.id })} />)}</div>}</div>
+      <div><SectionTitle kicker="Your cards" title="Synthetic cards" />{!snapshot.cards.length ? <EmptyState title="No cards issued" body="Issue a credit card to unlock the payment simulator and Credit Center." /> : <div className="card-stack">{snapshot.cards.map((card) => <BankCard key={card.id} card={card} account={snapshot.accounts.find((account) => account.id === card.linked_acc_id)} onOpen={() => openProduct({ kind: "card", id: card.id })} />)}<p className="card-caption">Demo cards only. No real payment network is connected.</p></div>}</div></section>
     <section className="two-column wide-left"><div className="surface-card"><SectionTitle kicker="Recent activity" title="Latest transactions" action={<button className="text-button" type="button" onClick={() => goTo("transactions")}>View all →</button>} /><TransactionRows snapshot={snapshot} limit={5} /></div>
       <div><ScorePanel score={snapshot.score} /><button className="wide-secondary" type="button" onClick={() => goTo("credit")}>Explore score factors →</button></div></section>
     <section className="surface-card"><SectionTitle kicker="Top spending categories" title="Where your money went" action={<button className="text-button" type="button" onClick={() => goTo("insights")}>All spending insights →</button>} /><SpendingBars spending={snapshot.spending} limit={5} /></section>
   </div>;
-}
-function TransactionsView({ snapshot }: { snapshot: AppSnapshot }) {
-  return <div className="view-stack"><PageHeading title="Transactions" description="Your account activity. Select a transaction to inspect its details." />
-    <section className="surface-card"><div className="analytics-strip"><div><span>Transactions</span><strong>{snapshot.transactions.length}</strong></div><div><span>30-day spending</span><strong>{money(snapshot.spending.total_spend)}</strong></div><div><span>Top category</span><strong>{snapshot.spending.categories[0] ? titleCase(snapshot.spending.categories[0].category) : "No spending yet"}</strong></div></div>
-      <TransactionRows snapshot={snapshot} /><p className="tiny-disclaimer">Card payments use MCC first. Bank transfers use remittance/description rules, not a fabricated MCC.</p></section></div>;
 }
 function FactorList({ score }: { score: CreditScore }) {
   return <div className="factor-list">{score.factors.map((factor) => <article key={factor.name} className="factor-row"><div><strong>{titleCase(factor.name)}</strong><span>{factor.value}</span><p>{factor.explanation}</p></div>
@@ -294,22 +282,27 @@ function InsightsView({ snapshot }: { snapshot: AppSnapshot }) {
 }
 function AppShell({ snapshot, refresh, logout, loading }: { snapshot: AppSnapshot; refresh: Refresh; logout: () => void; loading: boolean }) {
   const [view, setView] = useState<View>("overview");
+  const [product, setProduct] = useState<ProductTarget>(null);
   const mainRef = useRef<HTMLElement>(null);
-  const previousView = useRef(view);
+  const pageKey = `${view}:${product?.kind ?? ""}:${product?.id ?? ""}`;
+  const previousView = useRef(pageKey);
   useEffect(() => {
-    if (previousView.current === view) return;
-    previousView.current = view;
+    if (previousView.current === pageKey) return;
+    previousView.current = pageKey;
     window.scrollTo({ top: 0, behavior: "instant" });
     mainRef.current?.querySelector("h1")?.focus({ preventScroll: true });
-  }, [view]);
-  const navigation = NAV_ITEMS.map((item) => <button key={item.id} type="button" className={view === item.id ? "active" : ""} aria-current={view === item.id ? "page" : undefined} onClick={() => setView(item.id)}><NavIcon name={item.id} /><span>{item.label}</span></button>);
+  }, [pageKey]);
+  function goTo(next: View) { setProduct(null); setView(next); }
+  function openProduct(target: ProductTarget) { setProduct(target); setView("accounts"); }
+  const navigation = NAV_ITEMS.map((item) => <button key={item.id} type="button" className={view === item.id ? "active" : ""} aria-current={view === item.id ? "page" : undefined} onClick={() => goTo(item.id)}><NavIcon name={item.id} /><span>{item.label}</span></button>);
   let content;
   switch (view) {
-    case "transactions": content = <TransactionsView snapshot={snapshot} />; break;
-    case "credit": content = <CreditCenter snapshot={snapshot} refresh={refresh} goTo={setView} />; break;
+    case "accounts": content = <AccountsView key={pageKey} snapshot={snapshot} target={product} onSelect={openProduct} onCredit={() => goTo("credit")} />; break;
+    case "transactions": content = <AccountTransactions snapshot={snapshot} />; break;
+    case "credit": content = <CreditCenter snapshot={snapshot} refresh={refresh} goTo={goTo} />; break;
     case "simulator": content = <SimulatorView snapshot={snapshot} refresh={refresh} />; break;
     case "insights": content = <InsightsView snapshot={snapshot} />; break;
-    default: content = <Overview snapshot={snapshot} refresh={refresh} goTo={setView} />;
+    default: content = <Overview snapshot={snapshot} refresh={refresh} goTo={goTo} openProduct={openProduct} />;
   }
   return <div className="app-shell"><a className="skip-link" href="#main-content">Skip to content</a><aside className="sidebar"><Brand /><span className="nav-caption">Workspace</span><nav aria-label="Main navigation">{navigation}</nav>
     <div className="sidebar-footer"><div className="sidebar-demo"><span className="demo-dot" aria-hidden="true" /><span>Portfolio simulator<br /><small>Synthetic data only</small></span></div><div className="user-chip"><div aria-hidden="true">{snapshot.user.first_name[0]}{snapshot.user.last_name[0]}</div><span><strong>{snapshot.user.first_name} {snapshot.user.last_name}</strong><small>{snapshot.user.email}</small></span></div><button className="signout-button" type="button" onClick={logout}>Sign out</button></div></aside>
