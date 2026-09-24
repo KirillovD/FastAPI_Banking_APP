@@ -142,7 +142,7 @@ function AuthScreen({
 }) {
   const [mode, setMode] = useState<"login" | "register">("login");
   const [email, setEmail] = useState("demo@example.com");
-  const [password, setPassword] = useState("securepassword123");
+  const [password, setPassword] = useState("");
   const [firstName, setFirstName] = useState("Demo");
   const [lastName, setLastName] = useState("User");
   const [busy, setBusy] = useState(false);
@@ -177,9 +177,9 @@ function AuthScreen({
     <main className="auth-page">
       <section className="auth-hero">
         <div className="brand-lockup">
-          <div className="brand-mark">A</div>
+          <div className="brand-mark">I</div>
           <div>
-            <strong>Aurelia</strong>
+            <strong>Iron Bank</strong>
             <span>Banking Lab</span>
           </div>
         </div>
@@ -200,7 +200,7 @@ function AuthScreen({
 
         <div className="auth-metrics">
           <div>
-            <strong>152</strong>
+            <strong>161</strong>
             <span>backend tests</span>
           </div>
           <div>
@@ -359,7 +359,7 @@ function BankCard({
   return (
     <article className="bank-card">
       <div className="bank-card-top">
-        <span>AURELIA</span>
+        <span>IRON BANK</span>
         <span className="chip">◫</span>
       </div>
       <strong>{maskCard(card.number)}</strong>
@@ -385,6 +385,9 @@ function TransactionRows({
   snapshot: AppSnapshot;
   limit?: number;
 }) {
+  const [selectedTransaction, setSelectedTransaction] =
+    useState<Transaction | null>(null);
+
   const accountIds = useMemo(
     () => new Set(snapshot.accounts.map((account) => account.id)),
     [snapshot.accounts],
@@ -403,51 +406,173 @@ function TransactionRows({
     );
   }
 
-  return (
-    <div className="transaction-list">
-      {rows.map((transaction) => {
-        const outgoing =
-          transaction.sender_account_id !== null &&
-          accountIds.has(transaction.sender_account_id);
-        const incoming =
-          transaction.recipient_account_id !== null &&
-          accountIds.has(transaction.recipient_account_id) &&
-          !outgoing;
+  const selectedOutgoing =
+    selectedTransaction?.sender_account_id !== null &&
+    selectedTransaction?.sender_account_id !== undefined &&
+    accountIds.has(selectedTransaction.sender_account_id);
+  const selectedIncoming =
+    selectedTransaction?.recipient_account_id !== null &&
+    selectedTransaction?.recipient_account_id !== undefined &&
+    accountIds.has(selectedTransaction.recipient_account_id) &&
+    !selectedOutgoing;
 
-        return (
-          <article className="transaction-row" key={transaction.id}>
-            <div className="transaction-icon">
-              {transaction.operation_type === "payment"
-                ? "P"
-                : transaction.operation_type === "transfer"
-                  ? "T"
-                  : transaction.operation_type === "deposit"
-                    ? "+"
-                    : "–"}
+  return (
+    <>
+      <div className="transaction-list">
+        {rows.map((transaction) => {
+          const outgoing =
+            transaction.sender_account_id !== null &&
+            accountIds.has(transaction.sender_account_id);
+          const incoming =
+            transaction.recipient_account_id !== null &&
+            accountIds.has(transaction.recipient_account_id) &&
+            !outgoing;
+
+          return (
+            <button
+              className="transaction-row transaction-row-button"
+              key={transaction.id}
+              type="button"
+              onClick={() => setSelectedTransaction(transaction)}
+            >
+              <div className="transaction-icon">
+                {transaction.operation_type === "payment"
+                  ? "P"
+                  : transaction.operation_type === "transfer"
+                    ? "T"
+                    : transaction.operation_type === "deposit"
+                      ? "+"
+                      : "–"}
+              </div>
+              <div className="transaction-main">
+                <strong>
+                  {transaction.description ||
+                    titleCase(transaction.operation_type)}
+                </strong>
+                <span>
+                  {titleCase(transaction.category)} ·{" "}
+                  {transaction.mcc_code
+                    ? `MCC ${transaction.mcc_code}`
+                    : titleCase(transaction.classification_source)}
+                </span>
+              </div>
+              <div className="transaction-side">
+                <strong className={incoming ? "money-positive" : ""}>
+                  {incoming ? "+" : outgoing ? "−" : ""}
+                  {money(transaction.amount)}
+                </strong>
+                <span>{formatDate(transaction.created_at)}</span>
+              </div>
+            </button>
+          );
+        })}
+      </div>
+
+      {selectedTransaction && (
+        <div
+          className="transaction-dialog-backdrop"
+          onClick={() => setSelectedTransaction(null)}
+        >
+          <section
+            className="transaction-dialog"
+            role="dialog"
+            aria-modal="true"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <div className="transaction-dialog-head">
+              <div>
+                <span className="eyebrow">TRANSACTION DETAILS</span>
+                <h2>
+                  {selectedTransaction.description ||
+                    titleCase(selectedTransaction.operation_type)}
+                </h2>
+              </div>
+              <button
+                className="dialog-close"
+                type="button"
+                onClick={() => setSelectedTransaction(null)}
+                aria-label="Close transaction details"
+              >
+                ×
+              </button>
             </div>
-            <div className="transaction-main">
-              <strong>
-                {transaction.description ||
-                  titleCase(transaction.operation_type)}
+
+            <div className="transaction-dialog-summary">
+              <strong
+                className={
+                  selectedIncoming
+                    ? "money-positive"
+                    : selectedOutgoing
+                      ? "money-negative"
+                      : ""
+                }
+              >
+                {selectedIncoming ? "+" : selectedOutgoing ? "−" : ""}
+                {money(selectedTransaction.amount)}
               </strong>
-              <span>
-                {titleCase(transaction.category)} ·{" "}
-                {transaction.mcc_code
-                  ? `MCC ${transaction.mcc_code}`
-                  : titleCase(transaction.classification_source)}
-              </span>
+              <StatusPill
+                tone={
+                  selectedTransaction.status === "successful"
+                    ? "good"
+                    : selectedTransaction.status === "declined"
+                      ? "bad"
+                      : "warn"
+                }
+              >
+                {titleCase(selectedTransaction.status)}
+              </StatusPill>
             </div>
-            <div className="transaction-side">
-              <strong className={incoming ? "money-positive" : ""}>
-                {incoming ? "+" : outgoing ? "−" : ""}
-                {money(transaction.amount)}
-              </strong>
-              <span>{formatDate(transaction.created_at)}</span>
+
+            <div className="transaction-detail-grid">
+              <div>
+                <span>Type</span>
+                <strong>{titleCase(selectedTransaction.operation_type)}</strong>
+              </div>
+              <div>
+                <span>Category</span>
+                <strong>{titleCase(selectedTransaction.category)}</strong>
+              </div>
+              <div>
+                <span>Classification</span>
+                <strong>
+                  {titleCase(selectedTransaction.classification_source)}
+                </strong>
+              </div>
+              <div>
+                <span>MCC</span>
+                <strong>{selectedTransaction.mcc_code ?? "—"}</strong>
+              </div>
+              <div>
+                <span>Date</span>
+                <strong>{formatDate(selectedTransaction.created_at)}</strong>
+              </div>
+              <div>
+                <span>Transaction ID</span>
+                <strong>#{selectedTransaction.id}</strong>
+              </div>
+              <div className="wide">
+                <span>Source</span>
+                <code>
+                  {selectedTransaction.sender_iban ??
+                    (selectedTransaction.sender_account_id !== null
+                      ? `Account #${selectedTransaction.sender_account_id}`
+                      : "—")}
+                </code>
+              </div>
+              <div className="wide">
+                <span>Recipient</span>
+                <code>
+                  {selectedTransaction.recipient_iban ??
+                    (selectedTransaction.recipient_account_id !== null
+                      ? `Account #${selectedTransaction.recipient_account_id}`
+                      : "—")}
+                </code>
+              </div>
             </div>
-          </article>
-        );
-      })}
-    </div>
+          </section>
+        </div>
+      )}
+    </>
   );
 }
 
@@ -1593,9 +1718,9 @@ function AppShell({
     <div className="app-shell">
       <aside className="sidebar">
         <div className="brand-lockup compact">
-          <div className="brand-mark">A</div>
+          <div className="brand-mark">I</div>
           <div>
-            <strong>Aurelia</strong>
+            <strong>Iron Bank</strong>
             <span>Banking Lab</span>
           </div>
         </div>
@@ -1636,9 +1761,9 @@ function AppShell({
       <main className="app-main">
         <header className="mobile-header">
           <div className="brand-lockup compact">
-            <div className="brand-mark">A</div>
+            <div className="brand-mark">I</div>
             <div>
-              <strong>Aurelia</strong>
+              <strong>Iron Bank</strong>
               <span>Banking Lab</span>
             </div>
           </div>
@@ -1724,7 +1849,7 @@ export default function App() {
   if (loading && !snapshot) {
     return (
       <div className="loading-page">
-        <div className="brand-mark pulse">A</div>
+        <div className="brand-mark pulse">I</div>
         <p>Loading your banking lab…</p>
       </div>
     );
