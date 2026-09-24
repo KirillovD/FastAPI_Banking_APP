@@ -22,6 +22,7 @@ The API response already contained transaction detail fields. No new endpoint wa
 - The receipt used `Mcc`, discarded the recorded time, and put each value in a separate card. It now preserves the recorded timestamp without guessing a missing timezone.
 - Generic "pending interest" wording was misleading when grace was already lost. The UI says "Accumulated interest" and explains conditional/owed treatment without changing calculations.
 - Request errors no longer include raw HTML or echoed validation inputs. Uncertain network responses do not trigger automatic write retries.
+- Browser accessibility scans identified insufficient contrast in the shared top bar, footer and merchant-rank labels. These three text declarations now use the existing `--muted` color; no accessibility test was disabled or weakened.
 
 ## Reproduce the checks
 
@@ -39,6 +40,22 @@ The test runner serves the Vite production build on `127.0.0.1:4173`. Test route
 Coverage includes all five views at 360, 390, 768 and 1440 pixels; long transaction data; empty states; transaction-dialog keyboard/focus behavior; input validation; synthetic card payment and CVV selection; transfer and repayment payloads; account/card setup; 422/non-JSON/network failures; accepted writes followed by failed refresh; duplicate-submit prevention; registration/sign-in; expired sessions and delayed reads after sign-out. Automated axe scans supplement these checks; they do not certify complete accessibility compliance.
 
 The CI artifact `frontend-browser-report` contains the report and actual rendered screenshots. Check the PR's Frontend CI result for the authoritative execution outcome. Backend CI (pytest/Ruff) and Container CI remain separate required review checkpoints.
+
+## Verified execution — 24 September 2026
+
+Implementation commit: `fe016ef5cfa9e1e6cc3e69f4a1acc802b8a5aa6b` on `polish/iron-bank-workspace` (PR #53).
+
+| Check | Result | Evidence |
+| --- | --- | --- |
+| TypeScript and production Vite build | Passed | [Frontend CI run 36037541433](https://github.com/KirillovD/FastAPI_Banking_APP/actions/runs/36037541433) |
+| Playwright browser suite | 44 passed; 0 failed, skipped or flaky | Same run; downloaded `frontend-browser-report` report statistics |
+| Action regressions | 12 passed | `actions.spec.ts`: payment/PIN/CVV, validation, transfer, repayment, setup, failure feedback and duplicate-submit prevention |
+| Layout and accessibility regressions | 29 passed | `layout.spec.ts`: five views at four widths, axe scans, receipt keyboard/focus handling, long data and empty states |
+| Authentication/session regressions | 3 passed | `session.spec.ts`: registration/sign-in, authenticated rejection, stale reads after sign-out |
+| Backend pytest/Ruff CI | Passed | [Backend CI run 36037541494](https://github.com/KirillovD/FastAPI_Banking_APP/actions/runs/36037541494) |
+| Production Docker image build | Passed | [Container CI run 36037541428](https://github.com/KirillovD/FastAPI_Banking_APP/actions/runs/36037541428) |
+
+Actual React/Vite screenshots were captured at 360, 390, 768 and 1440 pixels, plus the transaction receipt. They use isolated synthetic API fixtures, not live Neon data. Earlier compatibility previews are not substitutes for this production-build evidence. Any later code change must pass CI again before merge.
 
 ## Preserved boundaries
 
